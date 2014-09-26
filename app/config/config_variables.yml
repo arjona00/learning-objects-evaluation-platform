@@ -1,0 +1,22 @@
+parameters:
+
+    # Idioma  por defecto
+    locale: es
+
+    # Idiomas disponibles
+    languagesRouting: es|en
+
+    # Formato permitido en las urls
+    formatUrl: html
+
+    # Tipos de preguntas
+    question_types: ['multichoice', 'truefalse', 'shortanswer', 'matching', 'cloze', 'essay', 'numerical', 'description']
+    question_type:
+      multichoice: 0
+      truefalse: 1
+      shortanswer: 2
+      matching: 3
+      cloze: 4
+      essay: 5
+      numerical: 6
+      description: 7

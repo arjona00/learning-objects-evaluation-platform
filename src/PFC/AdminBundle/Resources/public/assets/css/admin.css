@@ -1,0 +1,18 @@
+
+   /* Remove rounds from all elements */
+   div, input, select, textarea, span, img, table, td, th, p, a, button, ul, li
+   {
+     -webkit-border-radius: 0 !important;
+        -moz-border-radius: 0 !important;
+             border-radius: 0 !important;
+   }
+
+   .flag
+   {
+       margin: -3px 5px 0px 0px;
+   }
+
+   .white
+   {
+       color:#ffffff !important;
+   }

@@ -1,0 +1,88 @@
+{% extends "WebBundle::base.html.twig" %}
+
+{% block template %}
+    {#{ oneup_uploader_endpoint('imports') }#}
+
+    <form id="fileuploadForm" method="POST" action="{{ path('question_upload_result', { 'subcategory_id' : subcategory.id }) }}" enctype="multipart/form-data">
+        <div style="margin: 5px">
+            <select class="form-control" id="import-type" name="import-type">
+                <option value="xml">MoodleXML</option>
+                <option value="qti">IMS QTI</option>
+                <option value="gift">Formato GIFT</option>
+                <option value="scorm">Paquete Scorm (tipo IMS CP)</option>
+            </select>
+         </div>
+        <span class="btn btn-success fileinput-button" style="margin: 5px">
+            <i class="glyphicon glyphicon-plus"></i>
+            <span>Selecciona el fichero...</span>
+            <!-- The file input field used as target for the file upload widget -->
+            <input id="fileupload" type="file" name="files[]" data-url="{{ oneup_uploader_endpoint('imports') }}" multiple/>
+        </span>
+        <input id="fileName"  name="fileName" type="hidden" value="" /><br/> {#  #}
+        <input type="submit" class="btn btn-success" style="margin: 5px" value="Procesar Fichero"/>
+    </form>
+
+    <!-- The global progress bar -->
+    <div id="progress" class="progress">
+        <div class="progress-bar progress-bar-success"></div>
+    </div>
+    <!-- The container for the uploaded files -->
+    <div id="files" class="files"></div>
+
+    <div id="serializacion">
+        {#{ category | serialize('xml') }#}
+    </div>
+
+    <div id="results">
+        {{ result }}
+    </div>
+    <p>
+        <br/>
+        <a href="{{ path('subject_list', {'subject' : subcategory.subject.slug }) }}">
+            Volver a la selección de asignaturas
+        </a>
+    </p>
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+	    $('#fileupload').fileupload({
+            dataType: 'json',
+            autoUpload: true,
+            replaceFileInput: false,
+            paramName: 'files[]',
+            //acceptFileTypes: /(\.|\/)(xml)$/i,
+	    	done: function (e, data) {
+                console.log("done", data.result);
+                $('#files').append('Fichero subido correctamente.<br/>');
+                $('#fileupload').prop("disabled", true);
+                //console.log(data);
+                //console.log(e);
+                //console.log(data.files);
+                if (data.files[0] != undefined)
+                   {
+                        $('#files').append('Fichero: ');
+                        $('#files').append(data.files[0].name);
+
+                        var $file = $("#fileName");
+                        $file.prop("value", data.files[0].name);
+                        console.log($file);
+                        // update c_newfileName
+                        // results in: data.result.UserFileName
+                   }else{
+                        $('#files').append('No ha sido posible recopilar los datos del fichero subido.');
+                   };
+        	},
+	        progress: function (e, data) {
+	            var progress = parseInt(data.loaded / data.total * 100, 10);
+	            $('#progress .progress-bar').css(
+	                'width',
+	                progress + '%'
+	            );
+	        }
+
+	    }).prop('disabled', !$.support.fileInput)
+        .parent().addClass($.support.fileInput ? undefined : 'disabled');;
+    });
+</script>
+
+{% endblock %}

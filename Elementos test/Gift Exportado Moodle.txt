@@ -1,0 +1,46 @@
+// question: 132  name: Contesta a la siguiente pregunta
+::Contesta a la siguiente pregunta::[html]¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?{
+	~32
+	~25
+	=36
+}
+
+
+// question: 133  name: Fabricantes de móviles con sistema android
+::Fabricantes de móviles con sistema android::[html]<p>Fabricantes de móviles con sistema android</p>{
+	~%25%<p>Samsung</p>
+	~<p>Nokia</p>
+	~%25%<p>LG</p>
+	~%25%<p>Google Nexus</p>
+	~<p>Iphone</p>
+	~%25%<p>Xaomi</p>
+}
+
+
+// question: 125  name: Calcula el resultado de la siguiente formula
+::Calcula el resultado de la siguiente formula::[html]<p>$$ \\sqrt[4]\{16\} $$</p>{#
+	=%100%4:0.1#
+	=%100%5:0.5#
+}
+
+
+// question: 131  name: Resuelve la siguiente ecuación
+::Resuelve la siguiente ecuación::[html]<p>$$x^\{2\}+3 \\cdot y^\{2\}+x-3 \\cdot y\=8$$</p>\n<p>$$3 \\cdot x^\{2\}-2 \\cdot y^\{2\}+y\=2$$</p>\n<p>Indica los posibles valores de X para Y \= 2</p>{#
+	=%100%3:0.1#
+	=%100%5:0.1#
+	=%75%4:0#
+}
+
+
+// question: 7  name: Resuelve la siguiente operación
+::Resuelve la siguiente operación::[html]<p>$$ \\sqrt\{16\} $$</p>{#
+	=%100%4:0.1#
+	=%50%5:0.2#
+	=%25%6:0.05#
+}
+
+
+// question: 129  name: Contesta con verdadero o falso la siguiente afirmación
+::Contesta con verdadero o falso la siguiente afirmación::[html]<p>La tierra es redonda?</p>{TRUE}
+
+

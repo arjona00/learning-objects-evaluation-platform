@@ -1,0 +1,87 @@
+web_homepage:
+    pattern:  /
+    defaults: { _controller: WebBundle:Pages:index}
+
+web_homepage_locale:
+    pattern:  /{_locale}
+    defaults: { _controller: WebBundle:Pages:index, _format: %formatUrl% }
+    requirements:
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+subjects:
+    pattern:  /{_locale}/{subjectSlug}
+    defaults: { _controller: WebBundle:Pages:subject, _format: %formatUrl% }
+    requirements:
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+
+subjectTestLevelSelection:
+    pattern:  /{_locale}/{subjectSlug}/testLevels
+    defaults: { _controller: WebBundle:Pages:levelSelection, _format: %formatUrl%  }
+    requirements:
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+categoryTestLevelSelection:
+    pattern:  /{_locale}/{subjectSlug}/{categorySlug}/testLevels
+    defaults: { _controller: WebBundle:Pages:levelSelection, _format: %formatUrl%  }
+    requirements:
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+subcategoryTestLevelSelection:
+    pattern:  /{_locale}/{subjectSlug}/{categorySlug}/{subCategorySlug}/testLevels
+    defaults: { _controller: WebBundle:Pages:levelSelection, _format: %formatUrl%  }
+    requirements:
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+subjectTest:
+    pattern:  /{_locale}/{subjectSlug}/test
+    defaults: { _controller: WebBundle:Pages:test, _format: %formatUrl%  }
+    requirements:
+        _method: POST
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+categoryTest:
+    pattern:  /{_locale}/{subjectSlug}/{categorySlug}/test
+    defaults: { _controller: WebBundle:Pages:test, _format: %formatUrl%  }
+    requirements:
+        _method: POST
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+subcategoryTest:
+    pattern:  /{_locale}/{subjectSlug}/{categorySlug}/{subCategorySlug}/test
+    defaults: { _controller: WebBundle:Pages:test, _format: %formatUrl%  }
+    requirements:
+        _method: POST
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+subjectTestPost:
+    pattern:  /{_locale}/{subjectSlug}/{level}/post
+    defaults: { _controller: WebBundle:Pages:TestPost, _format: %formatUrl%  }
+    requirements:
+        _method: POST
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+categoryTestPost:
+    pattern:  /{_locale}/{subjectSlug}/{categorySlug}/{level}/post
+    defaults: { _controller: WebBundle:Pages:TestPost, _format: %formatUrl%  }
+    requirements:
+        _method: POST
+        _format: %formatUrl%
+        _locale: %languagesRouting%
+
+subcategoryTestPost:
+    pattern:  /{_locale}/{subjectSlug}/{categorySlug}/{subCategorySlug}/{level}/post
+    defaults: { _controller: WebBundle:Pages:TestPost, _format: %formatUrl%  }
+    requirements:
+       _method: POST
+       _format: %formatUrl%
+       _locale: %languagesRouting%

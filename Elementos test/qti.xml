@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assessmentItem xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:m="http://www.w3.org/1998/Math/MathML" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1  http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd" identifier="i1410781252908617" title="Test numero 1 1" label="" xml:lang="en-US" adaptive="false" timeDependent="false">
+  <responseDeclaration identifier="RESPONSE" cardinality="multiple" baseType="identifier">
+    <correctResponse>
+      <value>Choice_1</value>
+      <value>Choice_2</value>
+      <value>Choice_3</value>
+    </correctResponse>
+    <mapping defaultValue="0">
+      <mapEntry mapKey="Choice_1" mappedValue="33"/>
+      <mapEntry mapKey="Choice_2" mappedValue="33"/>
+      <mapEntry mapKey="Choice_3" mappedValue="34"/>
+      <mapEntry mapKey="Choice_4" mappedValue="-25"/>
+    </mapping>
+  </responseDeclaration>
+  <responseDeclaration identifier="RESPONSE_1" cardinality="single" baseType="float">
+    <correctResponse>
+      <value>4</value>
+    </correctResponse>
+    <mapping defaultValue="1" lowerBound="0.3" upperBound="0.4">
+      <mapEntry mapKey="4" mappedValue="100"/>
+    </mapping>
+  </responseDeclaration>
+  <outcomeDeclaration identifier="SCORE" cardinality="single" baseType="float"/>
+  <itemBody>
+    <div> <choiceInteraction responseIdentifier="RESPONSE" shuffle="true" maxChoices="3" minChoices="0"><prompt>¿Cual de las siguientes marcas fabrica coches?
+</prompt><simpleChoice identifier="Choice_1" fixed="false">Ford
+</simpleChoice><simpleChoice identifier="Choice_2" fixed="false">Mercedes
+</simpleChoice><simpleChoice identifier="Choice_3" fixed="false">Honda
+</simpleChoice><simpleChoice identifier="Choice_4" fixed="false">Boeing
+</simpleChoice></choiceInteraction>
+ <extendedTextInteraction responseIdentifier="RESPONSE_1" base="2" minStrings="0" format="plain"><prompt>Calcula la siguiente expresión$$ \sqrt{16} $$<br/>
+
+<m:math/>
+
+</prompt></extendedTextInteraction>
+
+</div>
+  </itemBody>
+  <responseProcessing>
+    <responseCondition>
+      <responseIf>
+        <not>
+          <isNull>
+            <variable identifier="RESPONSE"/>
+          </isNull>
+        </not>
+        <setOutcomeValue identifier="SCORE">
+          <sum>
+            <variable identifier="SCORE"/>
+            <mapResponse identifier="RESPONSE"/>
+          </sum>
+        </setOutcomeValue>
+      </responseIf>
+    </responseCondition>
+    <responseCondition>
+      <responseIf>
+        <not>
+          <isNull>
+            <variable identifier="RESPONSE_1"/>
+          </isNull>
+        </not>
+        <setOutcomeValue identifier="SCORE">
+          <sum>
+            <variable identifier="SCORE"/>
+            <mapResponse identifier="RESPONSE_1"/>
+          </sum>
+        </setOutcomeValue>
+      </responseIf>
+    </responseCondition>
+  </responseProcessing>
+</assessmentItem>

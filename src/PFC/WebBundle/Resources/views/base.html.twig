@@ -1,0 +1,156 @@
+{% extends '::base.html.twig' %}
+
+{% block title %}<title>testasignaturas.com</title>{% endblock %}
+
+{% block stylesheets %}
+	{% stylesheets
+					'bundles/web/style/bootstrap.css'
+					'bundles/web/style/slider.css'
+					'bundles/web/style/prettyPhoto.css'
+					'bundles/web/style/font-awesome.css'
+					'bundles/web/style/blue.css'
+					'bundles/web/style/bootstrap-responsive.css'
+          'bundles/web/style/bootstrap.min.css'
+          'bundles/admin/assets/jquery-file-upload/css/jquery.fileupload.css'
+          'bundles/web/style/style.css'
+
+					filter='cssrewrite'
+	%}
+		<link rel="stylesheet" href="{{ asset_url }}" >
+
+	{% endstylesheets %}
+
+	<!--[if IE 7]><link rel="stylesheet" href="{{ asset('bundles/web/css/font-awesome-ie7.css') }}"><![endif]-->
+
+	{# Web Fonts #}
+	<link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic' 	rel='stylesheet' type='text/css' />
+	<link href='http://fonts.googleapis.com/css?family=Oswald:400,700' 				rel='stylesheet' type='text/css' />
+
+{% endblock %}
+
+{% block favicon %}
+    <link rel="shortcut icon" href="bundles/web/img/favicon/favicon.png">
+{% endblock %}
+
+{% block javascripts %}
+	{% javascripts
+                    'bundles/web/js/jquery.js'
+                    'bundles/web/js/bootstrap.js'
+                    'bundles/web/js/modernizr.custom.28468.js'
+                    'bundles/web/js/jquery.cslider.js'
+                    'bundles/web/js/jquery.prettyPhoto.js'
+                    'bundles/web/js/filter.js'
+					          'bundles/web/js/custom.js'
+                    'bundles/admin/assets/bootstrap-editable/js/bootstrap-editable.min.js'
+                    'bundles/admin/assets/inputs-ext/wysihtml5/bootstrap-wysihtml5-0.0.2/wysihtml5-0.3.0.js'
+                    'bundles/admin/assets/js/admin.js'
+                    'bundles/admin/assets/js/jquery.blockui.js'
+                    'bundles/admin/assets/inputs-ext/wysihtml5/bootstrap-wysihtml5-0.0.2/bootstrap-wysihtml5-0.0.2.js'
+                    'bundles/admin/assets/inputs-ext/wysihtml5/wysihtml5.js'
+                    'bundles/admin/assets/data-tables/jquery.dataTables.js'
+                    'bundles/admin/assets/data-tables/DT_bootstrap.js'
+                    'bundles/admin/assets/jquery-file-upload/js/vendor/jquery.ui.widget.js'
+                    'bundles/admin/assets/jquery-file-upload/js/jquery.fileupload.js'
+                    'bundles/admin/assets/jquery-file-upload/js/jquery.iframe-transport.js'
+	%}
+		<script src="{{ asset_url }}"></script>
+
+	{% endjavascripts %}
+  <!--'bundles/admin/assets/jquery-file-upload/js/jquery.iframe-transport.js'-->
+	<!-- HTML5 Support for IE -->
+	<!--[if lt IE 9]><script src="{{ asset('bundles/web/js/html5shim.js') }}"></script><![endif]-->
+
+{% endblock %}
+
+{% block body %}
+
+{% block header %}
+
+{# Header Start #}
+<header>
+    <div class="container">
+        <div class="span12">
+            <div class="span2"><img alt="" class="" src="{{ asset('bundles/web/img/logoUca.gif')}}"></div>
+            <div class="span slogan" ><span>{#TESTS PARA AUTOEVALUACIÓN#}</span></div>
+            <div class="flags-container" style="float: right;">
+                {% if (app.environment == 'dev') %}
+                  {% set env = 'app_dev.php' %}
+                {% else %}
+                  {% set env = 'app.php' %}
+                {% endif %}
+                <a href="{{ app.request.basepath ~ '/' ~ env ~ '/es' }}">
+                  <img class="flags" src="{{ asset('bundles/web/img/es.png') }}" alt="Español" title="Español"></a>
+                <a href="{{ app.request.basepath ~ '/' ~ env ~ '/en' }}">
+                  <img class="flags" src="{{ asset('bundles/web/img/en.png') }}" alt="English" title="English"></a>
+            </div>
+        </div>
+    </div>
+</header>
+{# Header End #}
+
+{% endblock %}
+
+{% block navigation %}
+
+    {# Navigation Start #}
+    {#{ ld(subjects) }#}
+    {% include 'WebBundle:Menu:menu.html.twig' with {'subjects': subjects} %}
+    {# Navigation Ends #}
+
+{% endblock %}
+
+{% block container %}
+
+{# Container Start #}
+<div class="content" id="bg">
+	<div class="container container-body">
+		<div class="row">
+    		<div class="span12">
+
+                {% block pagetitle %}
+                {% endblock %}
+
+         		{# Template Start #}
+         		{% block template %}{% endblock %}
+         		{# Template End #}
+         	</div>
+      	</div>
+   	</div>
+</div>
+{# Container End #}
+
+{% endblock %}
+
+{% block footer %}
+
+{# Footer Start #}
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="span4">
+            <!-- Sellos de calidad -->
+            <div>
+              <img alt="" class="" src="{{ asset('bundles/web/img/sello_calidad.png') }}">
+            </div>
+         </div>
+         <div class="span6 fright">
+            <div class="list">
+               <div class=" fright right">
+                  <i class="icon-phone"></i> Teléfono: 555 12 27 49<br>
+                  <i class="icon-envelope-alt"></i> Email: antonio.arjonarodriguez@alum.uca.es<br>
+                  <i class="icon-home"></i> Dirección: C/ del suplicio, avda del olvido 3 </div>
+               </div>
+          </div>
+          <div class="span6 fright right">
+            <a class="copy">Copyright &copy;</a> <a href="#">antonio.arjonarodriguez.com</a> | Web desarrollada por <a href="http://www.antonio.arjonarodriguez.com">Antonio Arjona</a>
+          </div>
+    </div>
+  </div>
+</footer>
+{# Footer End #}
+    <script type="text/javascript">
+                $(function() { $('#da-slider').cslider({autoplay  : true,interval : 6000});});
+    </script>
+{% endblock %}
+
+{% endblock body %}

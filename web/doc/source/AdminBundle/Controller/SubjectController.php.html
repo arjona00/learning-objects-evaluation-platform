@@ -1,0 +1,275 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\AdminBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+use PFC\ModelBundle\Entity\Subject;
+use PFC\AdminBundle\Utils\factoryActions;
+
+/**
+* Clase controlador que implementa el CRUD de las asignaturas
+*
+* @package PFC\AdminBundle\Controller;
+* @version 1.0
+*
+*/
+class SubjectController extends Controller
+{
+    /**
+    * &raquo; M&eacute;todo para que muestra un listado de las asignaturas
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   Null 
+    * @return  Render      Devuelve la vista AdminBundle:Subject:list.html.twig, que se encuentra factorizada en la clase factoryActions-&gt;subjectComponentsList
+    */
+    public function listAction()
+    {
+        $fa     = new factoryActions();
+        $em     = $this-&gt;getDoctrine()-&gt;getManager();
+
+        //$user = $this-&gt;getUser();
+        //ld($user-&gt;getUsername());
+
+        return $this-&gt;render('AdminBundle:Subject:list.html.twig', $fa-&gt;subjectComponentsList($em));
+    }
+
+    /**
+    *  &raquo; M&eacute;todo para que muestra un listado de cuestiones de la asignatura
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   string       $subject           slug &uacute;nico de la asignatura
+    * @return  Render       Devuelve la vista Subject:subcategory-test-list.html.twig, que se encuentra factorizada en la clase factoryActions-&gt;testList
+    *
+    */
+    public function testListAction($subject)
+    {
+        $em     = $this-&gt;getDoctrine()-&gt;getManager();
+        $fa     = new factoryActions();
+
+        $subject   = $em-&gt;getRepository(&quot;ModelBundle:Subject&quot;)-&gt;findOneBySlug($subject);
+
+        return $this-&gt;render('AdminBundle:Subject:subject-test-list.html.twig', $fa-&gt;testList($em,  $subject));
+    }
+
+    /**
+    *  &raquo; Actualiza los datos de las asignaturas
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   string       $field              Campo de la asignatura a actualizar
+    * @return  Response     Devuelve el control a la vista actual
+    *
+    */
+    public function updateAction($field)
+    {
+        $request     = $this-&gt;container-&gt;get('request');
+        $subject_id = $request-&gt;get('pk');
+
+        if(isset($subject_id)){
+
+            // Obtenemos el objeto a actualizar
+            $em         = $this-&gt;getDoctrine()-&gt;getManager();
+            $subject   = $em-&gt;getRepository('ModelBundle:Subject')-&gt;findOneById($subject_id);
+            $value      = $request-&gt;get('value');
+
+            switch ($field) {
+                case 'name':
+                        $subject-&gt;setName(strtoupper($value));
+                    break;
+                case 'description':
+                        $subject-&gt;setDescription($value);
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+
+            // Actualizamos los datos de la asignatura
+            $em-&gt;persist($subject);
+            $em-&gt;flush();
+        }
+
+        return new Response();
+    }
+
+    /**
+    *  &raquo; Crea una asignatura vac&iacute;a y guardando solo el titulo introducido
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   null
+    * 
+    * @return  Function  $this-&gt;listAction()
+    */
+    public function createAction()
+    {
+        $request     = $this-&gt;container-&gt;get('request');
+
+        // Creamos el nuevo objeto
+        $em         = $this-&gt;getDoctrine()-&gt;getManager();
+
+        $subject    = new Subject();
+        $value      = $request-&gt;get('value');
+
+        //Pueden existir dos asignaturas con el mismo nombre, ya que est&aacute;n slugeadas
+        $subject-&gt;setName(strtoupper($value));
+        $subject-&gt;setDescription('Descripci&oacute;n');
+
+        // Actualizamos los datos de la asignatura
+        $em-&gt;persist($subject);
+        $em-&gt;flush();
+
+        return $this-&gt;listAction();
+    }
+
+    /**
+    *  &raquo; Elimina la asignatura seleccionada, las categor&iacute;as, subcategor&iacute;as y preguntas asociadas
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   Integer  $subject_id    Id de la asignatura a eliminar
+    * 
+    * @return  Function  $this-&gt;listAction()
+    */
+    public function deleteAction($subject_id)
+    {
+        if(isset($subject_id)){
+
+            // Obtenemos el objeto a actualizar
+            $em         = $this-&gt;getDoctrine()-&gt;getManager();
+            $subject    = $em-&gt;getRepository('ModelBundle:Subject')-&gt;findOneById($subject_id);
+
+            //Eliminamos las preguntas y respuestas
+            $questions = $em-&gt;getRepository('ModelBundle:Question')-&gt;findBySubject($subject-&gt;getId());
+            if(!empty($questions)){
+                $fa = new factoryActions();
+                $fa-&gt;deleteQuestions($em, $questions);
+            }
+            //Eliminamos las subcategor&iacute;as
+            $subcategories   = $em-&gt;getRepository('ModelBundle:Subcategory')-&gt;findBySubject($subject-&gt;getId());
+
+            if(!empty($subcategories)){
+                foreach($subcategories as $subcategory){
+                    $em-&gt;remove($subcategory);
+                }
+            }
+
+            //Eliminamos las categor&iacute;as
+            $categories   = $em-&gt;getRepository('ModelBundle:Category')-&gt;findBySubject($subject_id);
+
+            if(!empty($categories)){
+                foreach($categories as $category){
+                    $em-&gt;remove($category);
+                }
+            }
+
+            // Eliminamos la asignatura
+            $em-&gt;remove($subject);
+            $em-&gt;flush();
+        }
+
+        return $this-&gt;listAction();
+    }
+
+    /**
+    *  &raquo; Elimina una pregunta especifica seleccionada
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   String   $subject            Slug de la asignatura seleccionada
+    * @param   Integer  $question_id        Id de la pregunta a eliminar
+    * 
+    * @return  Function  $this-&gt;testListAction($subject, $subcategory_id)
+    */
+    public function deleteTestAction($subject, $question_id)
+    {
+        $em         = $this-&gt;getDoctrine()-&gt;getManager();
+        $questions = $em-&gt;getRepository('ModelBundle:Question')-&gt;findById($question_id);
+        if(!empty($questions)){
+            $fa = new factoryActions();
+            $fa-&gt;deleteQuestions($em, $questions);
+        }
+
+        return $this-&gt;testListAction($subject);
+    }
+
+    /**
+    *  &raquo; M&eacute;todo para que exporta a un fichero moodelXml, una bater&iacute;a de preguntas pertenecientes a la asignatura pasada como par&aacute;metro
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   Integer  $subject_id    Id de la asignatura seleccionada
+    * 
+    * @return  Function  $fa-&gt;exportTest($em, $path, 'Subject', $subject_id)
+    */
+    public function exportAction($subject_id)
+    {
+
+        $em     = $this-&gt;getDoctrine()-&gt;getManager();
+        $fa     = new factoryActions();
+        $path   = $this-&gt;get('kernel')-&gt;getRootDir() . '/../web/downloads/';
+
+        $request     = $this-&gt;container-&gt;get('request');
+        $level = $request-&gt;get('level'); 
+        $numQuestions = $request-&gt;get('numQuestions'); 
+
+        return ($fa-&gt;exportTest($em, $path, 'Subject', $subject_id, $level, $numQuestions));
+    }
+
+
+}
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

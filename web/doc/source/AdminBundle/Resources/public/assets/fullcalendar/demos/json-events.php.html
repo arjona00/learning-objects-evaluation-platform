@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../../../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../../../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../../../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../../../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+	$year = date('Y');
+	$month = date('m');
+
+	echo json_encode(array(
+	
+		array(
+			'id' =&gt; 111,
+			'title' =&gt; &quot;Event1&quot;,
+			'start' =&gt; &quot;$year-$month-10&quot;,
+			'url' =&gt; &quot;http://yahoo.com/&quot;
+		),
+		
+		array(
+			'id' =&gt; 222,
+			'title' =&gt; &quot;Event2&quot;,
+			'start' =&gt; &quot;$year-$month-20&quot;,
+			'end' =&gt; &quot;$year-$month-22&quot;,
+			'url' =&gt; &quot;http://yahoo.com/&quot;
+		)
+	
+	));
+
+?&gt;
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

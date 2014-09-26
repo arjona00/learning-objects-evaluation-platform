@@ -1,0 +1,208 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\AdminBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+
+use PFC\AdminBundle\Utils\importXml;
+use PFC\AdminBundle\Utils\importScorm;
+use PFC\AdminBundle\Utils\importQTI;
+use PFC\AdminBundle\Utils\importGift;
+
+/**
+* Clase controlador que implementa las operaciones de importaci&oacute;n de preguntas
+*
+* @package PFC\AdminBundle\Controller;
+* @version 1.0
+*
+*/
+class QuestionController extends Controller
+{
+    /**
+    *  &raquo; M&eacute;todo para que muestra el formulario de importaci&oacute;n de preguntas
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   integer    $subcategory_id   id de la subcategor&iacute;a
+    *
+    * @return  Render      Devuelve la vista AdminBundle:Question:index.html.twig
+    */
+    public function indexAction($subcategory_id)
+    {
+        $em             = $this-&gt;getDoctrine()-&gt;getManager();
+        $subjects       = $em-&gt;getRepository(&quot;ModelBundle:Subject&quot;)-&gt;findBy(array(), array('name' =&gt; 'ASC'));
+        $pages          = $em-&gt;getRepository(&quot;ModelBundle:Page&quot;)-&gt;findBy(array(), array('slug' =&gt; 'ASC'));
+        $subcategory    = $em-&gt;getRepository(&quot;ModelBundle:Subcategory&quot;)-&gt;findOneById($subcategory_id);
+
+        $result = '';
+
+        return $this-&gt;render('AdminBundle:Question:index.html.twig',
+                                                    array(  'pages'             =&gt; $pages,
+                                                            'subjects'          =&gt; $subjects,
+                                                            'subcategory'       =&gt; $subcategory,
+                                                            'result'            =&gt; $result));
+    }
+
+    /**
+     * M&eacute;todo para la importaci&oacute;n de Questions. Landing page para la importaci&oacute;n. Selecciona el m&eacute;todo dependiendo del tipo de importaci&oacute;n a realizar.
+     *
+     * @package PFC\AdminBundle\Controller;
+     * @version 1.0
+     *
+     * @param    integer   $subcategory_id   Identificador de la subcategor&iacute;a a la que pertenecer&aacute; las Quiestions
+     *
+     * @return   Render    Devuelve la vista AdminBundle:Question:index.html.twig con el resultado de la operaci&oacute;n de importaci&oacute;n
+     *
+     */
+    public function uploadAction($subcategory_id)
+    {
+        $em             = $this-&gt;getDoctrine()-&gt;getManager();
+        $subjects       = $em-&gt;getRepository(&quot;ModelBundle:Subject&quot;)-&gt;findBy(array(), array('name' =&gt; 'ASC'));
+        $pages          = $em-&gt;getRepository(&quot;ModelBundle:Page&quot;)-&gt;findBy(array(), array('slug' =&gt; 'ASC'));
+        $subcategory    = $em-&gt;getRepository(&quot;ModelBundle:Subcategory&quot;)-&gt;findOneById($subcategory_id);
+
+        $request        = $this-&gt;container-&gt;get('request');
+
+        $pathDir = $this-&gt;get('kernel')-&gt;getRootDir() . '/../web/uploads/imports/';
+
+        $importType = $request-&gt;get('import-type');
+
+        switch ($importType) {
+            case 'gift':
+                $file = new importGift();
+                break;
+
+            case 'qti':
+                $file = new importQTI();
+                break;
+
+            case 'scorm':
+                $file = new importQTI(); //Solo importamos SCORM si cumple la especificaci&oacute;n IMS CP
+                break;
+
+            case 'xml':
+                $file = new importXml();
+                break;
+
+            default:
+                // error
+                break;
+        }
+
+        $file-&gt;setPathDir($pathDir);
+
+        $result = $this-&gt;getUpload($file, $em, $subcategory);
+
+        return $this-&gt;render('AdminBundle:Question:index.html.twig',
+                                                    array(  'pages'             =&gt; $pages,
+                                                            'subjects'          =&gt; $subjects,
+                                                            'subcategory'       =&gt; $subcategory,
+                                                            'result'            =&gt; $result));
+    }
+
+    /**
+    *  &raquo; M&eacute;todo usado por el action upload para la importaci&oacute;n de las Questions
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   object   $file          Objeto que representa al tipo de importaci&oacute;n (XML, QTI, etc.)
+    * @param   object   $em            Entity Managers, necesario para manejar bases de datos con Doctrine
+    * @param   object   $subcategory   Objeto que contiene una entidad Subcategor&iacute;a.
+    *
+    * @return  string   $result        Devuleve un mensaje de salida con el resultado de la operaci&oacute;n de imporaci&oacute;n
+    *
+    */
+    private function getUpload ($file, $em, $subcategory)
+    {
+        $fs = new Filesystem();
+        switch ($file-&gt;importFile()) {
+            case '-1': // Importaci&oacute;n correcta
+                $result = 'Fichero importado correctamente.';
+                $file-&gt;saveFileToBd($em, $subcategory);
+                break;
+
+            case '-2': // Importaci&oacute;n correcta (resultado parcial, algunas preguntas se consideraron como incorrectas)
+                $result = 'Fichero importado parcialmente. Algunas de las preguntas fueron desechadas devido a fallos en su formato o incompatibilidades.';
+                $file-&gt;saveFileToBd($em, $subcategory);
+                break;
+
+            case '0': // Importaci&oacute;n incorrecta, error
+                $result = 'Fichero no tine la extensi&oacute;n requerida.';
+                break;
+
+            case '1': // Importaci&oacute;n incorrecta, error
+                $result = 'Error en la serializaci&oacute;n del archivo. No contiene el formato requerido.';
+                break;
+
+            case '2': // Importaci&oacute;n incorrecta, error
+                $result = 'El fichero no puede ser desempaquetado. El formato no es el requerido.';
+                break;
+
+            case '3': // Importaci&oacute;n incorrecta, error
+                $result = 'El formato del paquete no es correcto. Faltan alguno de los archivos necesarios';
+                break;
+
+            case '4': // Importaci&oacute;n incorrecta, error
+                $result = 'El formato del/os fichero/s no es el compatible o contiene/n errore/s.';
+                break;
+
+            default: // Importaci&oacute;n incorrecta, error
+                $result = 'Error indeterminado.';
+                break;
+        }
+        $fs-&gt;remove($file-&gt;pathDir); //Borra el directorio temporal de importaci&oacute;n de la aplicaci&oacute;n
+        return $result;
+    }
+}
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

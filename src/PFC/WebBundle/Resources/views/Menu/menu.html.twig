@@ -1,0 +1,33 @@
+{# menu.html.twig #}
+<div class="header">
+  <div class="navbar">
+  	<div class="navbar-inner">
+      	<div class="container">
+          	<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">Menu</a>
+            	<div class="nav-collapse collapse " style="display: block !important;"> {# collapse propiedad quitada#}
+              	{# Navigation links starts here #}
+              	<ul class="nav">
+                		<!-- Main menu -->
+                  <li><a href="{{ path('web_homepage') }}">{{ 'menu.index' | trans }}</a></li>
+                  <!-- Navigation with sub menu. Please note down the syntax before you need. Each and every link is important. -->
+
+
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ 'menu.subjets' | trans  }}<b class="caret"></b></a>
+                    <!-- Submenus -->
+                    <ul class="dropdown-menu">
+                      {% for subject in subjects %}
+                        <li><a href="{{ path('subjects', {'subjectSlug' : subject.slug }) }}">{{ subject.name }}</a></li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+
+                  <li>
+                    <a href="{{ path('subject_list') }}" >{{ 'menu.admin' | trans }}</a>
+                  </li>
+              	</ul>
+            	</div>
+        </div>
+  	</div>
+  </div>
+</div>

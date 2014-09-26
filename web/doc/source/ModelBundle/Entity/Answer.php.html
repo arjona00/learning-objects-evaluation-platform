@@ -1,0 +1,201 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace PFC\ModelBundle\Entity;
+
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+/**
+ * &raquo; Entidad Answers
+ *
+ * @ORM\Table(name=&quot;Answers&quot;)
+ * @ORM\Entity
+ * @UniqueEntity(&quot;id&quot;)
+ */
+class Answer
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name=&quot;id&quot;, type=&quot;integer&quot;)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy=&quot;AUTO&quot;)
+     */
+    private $id;
+
+    /**
+     * Texto con el contenido de las respuestas
+     * @var string
+     * @ORM\Column(name=&quot;content&quot;, type=&quot;text&quot;)
+     */
+    private $content;
+
+    /**
+     * Valor de la respuesta.
+     * @var float
+     * @ORM\Column(name=&quot;value&quot;, type=&quot;float&quot;)
+     */
+    private $value;
+
+    /**
+     * Tolerancia.
+     * @var float
+     * @ORM\Column(name=&quot;tolerance&quot;, type=&quot;float&quot;)
+     */
+    private $tolerance;
+
+    /**
+     * Enlace a la pregunta relacionada.
+     * @ORM\ManyToOne(targetEntity=&quot;PFC\ModelBundle\Entity\Question&quot;)
+     * @ORM\JoinColumn(name=&quot;question_id&quot;, referencedColumnName=&quot;id&quot;)
+     */
+    protected $question;
+
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this-&gt;id;
+    }
+
+    /**
+     * Set content
+     *
+     * @param string $content
+     * @return Answer
+     */
+    public function setContent($content)
+    {
+        $this-&gt;content = $content;
+
+        return $this;
+    }
+
+    /**
+     * Get content
+     *
+     * @return string
+     */
+    public function getContent()
+    {
+        return $this-&gt;content;
+    }
+
+    /**
+     * Set value
+     *
+     * @param float $value
+     * @return Answer
+     */
+    public function setValue($value)
+    {
+        $this-&gt;value = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get value
+     *
+     * @return float
+     */
+    public function getValue()
+    {
+        return $this-&gt;value;
+    }
+
+    /**
+     * Set tolerance
+     *
+     * @param float $tolerance
+     * @return Answer
+     */
+    public function setTolerance($value)
+    {
+        $this-&gt;tolerance = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get tolerance
+     *
+     * @return float
+     */
+    public function getTolerance()
+    {
+        return $this-&gt;tolerance;
+    }
+
+    /**
+     * Set question
+     *
+     * @param \PFC\ModelBundle\Entity\Question $question
+     * @return Answer
+     */
+    public function setQuestion(\PFC\ModelBundle\Entity\Question $question = null)
+    {
+        $this-&gt;question = $question;
+
+        return $this;
+    }
+
+    /**
+     * Get question
+     *
+     * @return \PFC\ModelBundle\Entity\Question
+     */
+    public function getQuestion()
+    {
+        return $this-&gt;question;
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

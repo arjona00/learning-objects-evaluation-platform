@@ -1,0 +1,1375 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+/*
+ * jQuery File Upload Plugin PHP Class 7.1.4
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2010, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+
+class UploadHandler
+{
+
+    protected $options;
+
+    // PHP File Upload error message codes:
+    // http://php.net/manual/en/features.file-upload.errors.php
+    protected $error_messages = array(
+        1 =&gt; 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+        2 =&gt; 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+        3 =&gt; 'The uploaded file was only partially uploaded',
+        4 =&gt; 'No file was uploaded',
+        6 =&gt; 'Missing a temporary folder',
+        7 =&gt; 'Failed to write file to disk',
+        8 =&gt; 'A PHP extension stopped the file upload',
+        'post_max_size' =&gt; 'The uploaded file exceeds the post_max_size directive in php.ini',
+        'max_file_size' =&gt; 'File is too big',
+        'min_file_size' =&gt; 'File is too small',
+        'accept_file_types' =&gt; 'Filetype not allowed',
+        'max_number_of_files' =&gt; 'Maximum number of files exceeded',
+        'max_width' =&gt; 'Image exceeds maximum width',
+        'min_width' =&gt; 'Image requires a minimum width',
+        'max_height' =&gt; 'Image exceeds maximum height',
+        'min_height' =&gt; 'Image requires a minimum height',
+        'abort' =&gt; 'File upload aborted',
+        'image_resize' =&gt; 'Failed to resize image'
+    );
+
+    protected $image_objects = array();
+
+    function __construct($options = null, $initialize = true, $error_messages = null) {
+        $this-&gt;options = array(
+            'script_url' =&gt; $this-&gt;get_full_url().'/',
+            'upload_dir' =&gt; dirname($this-&gt;get_server_var('SCRIPT_FILENAME')).'/files/',
+            'upload_url' =&gt; $this-&gt;get_full_url().'/files/',
+            'user_dirs' =&gt; false,
+            'mkdir_mode' =&gt; 0755,
+            'param_name' =&gt; 'files',
+            // Set the following option to 'POST', if your server does not support
+            // DELETE requests. This is a parameter sent to the client:
+            'delete_type' =&gt; 'DELETE',
+            'access_control_allow_origin' =&gt; '*',
+            'access_control_allow_credentials' =&gt; false,
+            'access_control_allow_methods' =&gt; array(
+                'OPTIONS',
+                'HEAD',
+                'GET',
+                'POST',
+                'PUT',
+                'PATCH',
+                'DELETE'
+            ),
+            'access_control_allow_headers' =&gt; array(
+                'Content-Type',
+                'Content-Range',
+                'Content-Disposition'
+            ),
+            // Enable to provide file downloads via GET requests to the PHP script:
+            //     1. Set to 1 to download files via readfile method through PHP
+            //     2. Set to 2 to send a X-Sendfile header for lighttpd/Apache
+            //     3. Set to 3 to send a X-Accel-Redirect header for nginx
+            // If set to 2 or 3, adjust the upload_url option to the base path of
+            // the redirect parameter, e.g. '/files/'.
+            'download_via_php' =&gt; false,
+            // Read files in chunks to avoid memory limits when download_via_php
+            // is enabled, set to 0 to disable chunked reading of files:
+            'readfile_chunk_size' =&gt; 10 * 1024 * 1024, // 10 MiB
+            // Defines which files can be displayed inline when downloaded:
+            'inline_file_types' =&gt; '/\.(gif|jpe?g|png)$/i',
+            // Defines which files (based on their names) are accepted for upload:
+            'accept_file_types' =&gt; '/.+$/i',
+            // The php.ini settings upload_max_filesize and post_max_size
+            // take precedence over the following max_file_size setting:
+            'max_file_size' =&gt; null,
+            'min_file_size' =&gt; 1,
+            // The maximum number of files for the upload directory:
+            'max_number_of_files' =&gt; null,
+            // Defines which files are handled as image files:
+            'image_file_types' =&gt; '/\.(gif|jpe?g|png)$/i',
+            // Image resolution restrictions:
+            'max_width' =&gt; null,
+            'max_height' =&gt; null,
+            'min_width' =&gt; 1,
+            'min_height' =&gt; 1,
+            // Set the following option to false to enable resumable uploads:
+            'discard_aborted_uploads' =&gt; true,
+            // Set to 0 to use the GD library to scale and orient images,
+            // set to 1 to use imagick (if installed, falls back to GD),
+            // set to 2 to use the ImageMagick convert binary directly:
+            'image_library' =&gt; 1,
+            // Uncomment the following to define an array of resource limits
+            // for imagick:
+            /*
+            'imagick_resource_limits' =&gt; array(
+                imagick::RESOURCETYPE_MAP =&gt; 32,
+                imagick::RESOURCETYPE_MEMORY =&gt; 32
+            ),
+            */
+            // Command or path for to the ImageMagick convert binary:
+            'convert_bin' =&gt; 'convert',
+            // Uncomment the following to add parameters in front of each
+            // ImageMagick convert call (the limit constraints seem only
+            // to have an effect if put in front):
+            /*
+            'convert_params' =&gt; '-limit memory 32MiB -limit map 32MiB',
+            */
+            // Command or path for to the ImageMagick identify binary:
+            'identify_bin' =&gt; 'identify',
+            'image_versions' =&gt; array(
+                // The empty image version key defines options for the original image:
+                '' =&gt; array(
+                    // Automatically rotate images based on EXIF meta data:
+                    'auto_orient' =&gt; true
+                ),
+                // Uncomment the following to create medium sized images:
+                /*
+                'medium' =&gt; array(
+                    'max_width' =&gt; 800,
+                    'max_height' =&gt; 600
+                ),
+                */
+                'thumbnail' =&gt; array(
+                    // Uncomment the following to use a defined directory for the thumbnails
+                    // instead of a subdirectory based on the version identifier.
+                    // Make sure that this directory doesn't allow execution of files if you
+                    // don't pose any restrictions on the type of uploaded files, e.g. by
+                    // copying the .htaccess file from the files directory for Apache:
+                    //'upload_dir' =&gt; dirname($this-&gt;get_server_var('SCRIPT_FILENAME')).'/thumb/',
+                    //'upload_url' =&gt; $this-&gt;get_full_url().'/thumb/',
+                    // Uncomment the following to force the max
+                    // dimensions and e.g. create square thumbnails:
+                    //'crop' =&gt; true,
+                    'max_width' =&gt; 80,
+                    'max_height' =&gt; 80
+                )
+            )
+        );
+        if ($options) {
+            $this-&gt;options = $options + $this-&gt;options;
+        }
+        if ($error_messages) {
+            $this-&gt;error_messages = $error_messages + $this-&gt;error_messages;
+        }
+        if ($initialize) {
+            $this-&gt;initialize();
+        }
+    }
+
+    protected function initialize() {
+        switch ($this-&gt;get_server_var('REQUEST_METHOD')) {
+            case 'OPTIONS':
+            case 'HEAD':
+                $this-&gt;head();
+                break;
+            case 'GET':
+                $this-&gt;get();
+                break;
+            case 'PATCH':
+            case 'PUT':
+            case 'POST':
+                $this-&gt;post();
+                break;
+            case 'DELETE':
+                $this-&gt;delete();
+                break;
+            default:
+                $this-&gt;header('HTTP/1.1 405 Method Not Allowed');
+        }
+    }
+
+    protected function get_full_url() {
+        $https = !empty($_SERVER['HTTPS']) &amp;&amp; strcasecmp($_SERVER['HTTPS'], 'on') === 0;
+        return
+            ($https ? 'https://' : 'http://').
+            (!empty($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'].'@' : '').
+            (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ($_SERVER['SERVER_NAME'].
+            ($https &amp;&amp; $_SERVER['SERVER_PORT'] === 443 ||
+            $_SERVER['SERVER_PORT'] === 80 ? '' : ':'.$_SERVER['SERVER_PORT']))).
+            substr($_SERVER['SCRIPT_NAME'],0, strrpos($_SERVER['SCRIPT_NAME'], '/'));
+    }
+
+    protected function get_user_id() {
+        @session_start();
+        return session_id();
+    }
+
+    protected function get_user_path() {
+        if ($this-&gt;options['user_dirs']) {
+            return $this-&gt;get_user_id().'/';
+        }
+        return '';
+    }
+
+    protected function get_upload_path($file_name = null, $version = null) {
+        $file_name = $file_name ? $file_name : '';
+        if (empty($version)) {
+            $version_path = '';
+        } else {
+            $version_dir = @$this-&gt;options['image_versions'][$version]['upload_dir'];
+            if ($version_dir) {
+                return $version_dir.$this-&gt;get_user_path().$file_name;
+            }
+            $version_path = $version.'/';
+        }
+        return $this-&gt;options['upload_dir'].$this-&gt;get_user_path()
+            .$version_path.$file_name;
+    }
+
+    protected function get_query_separator($url) {
+        return strpos($url, '?') === false ? '?' : '&amp;';
+    }
+
+    protected function get_download_url($file_name, $version = null, $direct = false) {
+        if (!$direct &amp;&amp; $this-&gt;options['download_via_php']) {
+            $url = $this-&gt;options['script_url']
+                .$this-&gt;get_query_separator($this-&gt;options['script_url'])
+                .$this-&gt;get_singular_param_name()
+                .'='.rawurlencode($file_name);
+            if ($version) {
+                $url .= '&amp;version='.rawurlencode($version);
+            }
+            return $url.'&amp;download=1';
+        }
+        if (empty($version)) {
+            $version_path = '';
+        } else {
+            $version_url = @$this-&gt;options['image_versions'][$version]['upload_url'];
+            if ($version_url) {
+                return $version_url.$this-&gt;get_user_path().rawurlencode($file_name);
+            }
+            $version_path = rawurlencode($version).'/';
+        }
+        return $this-&gt;options['upload_url'].$this-&gt;get_user_path()
+            .$version_path.rawurlencode($file_name);
+    }
+
+    protected function set_additional_file_properties($file) {
+        $file-&gt;deleteUrl = $this-&gt;options['script_url']
+            .$this-&gt;get_query_separator($this-&gt;options['script_url'])
+            .$this-&gt;get_singular_param_name()
+            .'='.rawurlencode($file-&gt;name);
+        $file-&gt;deleteType = $this-&gt;options['delete_type'];
+        if ($file-&gt;deleteType !== 'DELETE') {
+            $file-&gt;deleteUrl .= '&amp;_method=DELETE';
+        }
+        if ($this-&gt;options['access_control_allow_credentials']) {
+            $file-&gt;deleteWithCredentials = true;
+        }
+    }
+
+    // Fix for overflowing signed 32 bit integers,
+    // works for sizes up to 2^32-1 bytes (4 GiB - 1):
+    protected function fix_integer_overflow($size) {
+        if ($size &lt; 0) {
+            $size += 2.0 * (PHP_INT_MAX + 1);
+        }
+        return $size;
+    }
+
+    protected function get_file_size($file_path, $clear_stat_cache = false) {
+        if ($clear_stat_cache) {
+            if (version_compare(PHP_VERSION, '5.3.0') &gt;= 0) {
+                clearstatcache(true, $file_path);
+            } else {
+                clearstatcache();
+            }
+        }
+        return $this-&gt;fix_integer_overflow(filesize($file_path));
+    }
+
+    protected function is_valid_file_object($file_name) {
+        $file_path = $this-&gt;get_upload_path($file_name);
+        if (is_file($file_path) &amp;&amp; $file_name[0] !== '.') {
+            return true;
+        }
+        return false;
+    }
+
+    protected function get_file_object($file_name) {
+        if ($this-&gt;is_valid_file_object($file_name)) {
+            $file = new stdClass();
+            $file-&gt;name = $file_name;
+            $file-&gt;size = $this-&gt;get_file_size(
+                $this-&gt;get_upload_path($file_name)
+            );
+            $file-&gt;url = $this-&gt;get_download_url($file-&gt;name);
+            foreach($this-&gt;options['image_versions'] as $version =&gt; $options) {
+                if (!empty($version)) {
+                    if (is_file($this-&gt;get_upload_path($file_name, $version))) {
+                        $file-&gt;{$version.'Url'} = $this-&gt;get_download_url(
+                            $file-&gt;name,
+                            $version
+                        );
+                    }
+                }
+            }
+            $this-&gt;set_additional_file_properties($file);
+            return $file;
+        }
+        return null;
+    }
+
+    protected function get_file_objects($iteration_method = 'get_file_object') {
+        $upload_dir = $this-&gt;get_upload_path();
+        if (!is_dir($upload_dir)) {
+            return array();
+        }
+        return array_values(array_filter(array_map(
+            array($this, $iteration_method),
+            scandir($upload_dir)
+        )));
+    }
+
+    protected function count_file_objects() {
+        return count($this-&gt;get_file_objects('is_valid_file_object'));
+    }
+
+    protected function get_error_message($error) {
+        return array_key_exists($error, $this-&gt;error_messages) ?
+            $this-&gt;error_messages[$error] : $error;
+    }
+
+    function get_config_bytes($val) {
+        $val = trim($val);
+        $last = strtolower($val[strlen($val)-1]);
+        switch($last) {
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+        return $this-&gt;fix_integer_overflow($val);
+    }
+
+    protected function validate($uploaded_file, $file, $error, $index) {
+        if ($error) {
+            $file-&gt;error = $this-&gt;get_error_message($error);
+            return false;
+        }
+        $content_length = $this-&gt;fix_integer_overflow(intval(
+            $this-&gt;get_server_var('CONTENT_LENGTH')
+        ));
+        $post_max_size = $this-&gt;get_config_bytes(ini_get('post_max_size'));
+        if ($post_max_size &amp;&amp; ($content_length &gt; $post_max_size)) {
+            $file-&gt;error = $this-&gt;get_error_message('post_max_size');
+            return false;
+        }
+        if (!preg_match($this-&gt;options['accept_file_types'], $file-&gt;name)) {
+            $file-&gt;error = $this-&gt;get_error_message('accept_file_types');
+            return false;
+        }
+        if ($uploaded_file &amp;&amp; is_uploaded_file($uploaded_file)) {
+            $file_size = $this-&gt;get_file_size($uploaded_file);
+        } else {
+            $file_size = $content_length;
+        }
+        if ($this-&gt;options['max_file_size'] &amp;&amp; (
+                $file_size &gt; $this-&gt;options['max_file_size'] ||
+                $file-&gt;size &gt; $this-&gt;options['max_file_size'])
+            ) {
+            $file-&gt;error = $this-&gt;get_error_message('max_file_size');
+            return false;
+        }
+        if ($this-&gt;options['min_file_size'] &amp;&amp;
+            $file_size &lt; $this-&gt;options['min_file_size']) {
+            $file-&gt;error = $this-&gt;get_error_message('min_file_size');
+            return false;
+        }
+        if (is_int($this-&gt;options['max_number_of_files']) &amp;&amp;
+                ($this-&gt;count_file_objects() &gt;= $this-&gt;options['max_number_of_files']) &amp;&amp;
+                // Ignore additional chunks of existing files:
+                !is_file($this-&gt;get_upload_path($file-&gt;name))) {
+            $file-&gt;error = $this-&gt;get_error_message('max_number_of_files');
+            return false;
+        }
+        $max_width = @$this-&gt;options['max_width'];
+        $max_height = @$this-&gt;options['max_height'];
+        $min_width = @$this-&gt;options['min_width'];
+        $min_height = @$this-&gt;options['min_height'];
+        if (($max_width || $max_height || $min_width || $min_height)) {
+            list($img_width, $img_height) = $this-&gt;get_image_size($uploaded_file);
+        }
+        if (!empty($img_width)) {
+            if ($max_width &amp;&amp; $img_width &gt; $max_width) {
+                $file-&gt;error = $this-&gt;get_error_message('max_width');
+                return false;
+            }
+            if ($max_height &amp;&amp; $img_height &gt; $max_height) {
+                $file-&gt;error = $this-&gt;get_error_message('max_height');
+                return false;
+            }
+            if ($min_width &amp;&amp; $img_width &lt; $min_width) {
+                $file-&gt;error = $this-&gt;get_error_message('min_width');
+                return false;
+            }
+            if ($min_height &amp;&amp; $img_height &lt; $min_height) {
+                $file-&gt;error = $this-&gt;get_error_message('min_height');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected function upcount_name_callback($matches) {
+        $index = isset($matches[1]) ? intval($matches[1]) + 1 : 1;
+        $ext = isset($matches[2]) ? $matches[2] : '';
+        return ' ('.$index.')'.$ext;
+    }
+
+    protected function upcount_name($name) {
+        return preg_replace_callback(
+            '/(?:(?: \(([\d]+)\))?(\.[^.]+))?$/',
+            array($this, 'upcount_name_callback'),
+            $name,
+            1
+        );
+    }
+
+    protected function get_unique_filename($file_path, $name, $size, $type, $error,
+            $index, $content_range) {
+        while(is_dir($this-&gt;get_upload_path($name))) {
+            $name = $this-&gt;upcount_name($name);
+        }
+        // Keep an existing filename if this is part of a chunked upload:
+        $uploaded_bytes = $this-&gt;fix_integer_overflow(intval($content_range[1]));
+        while(is_file($this-&gt;get_upload_path($name))) {
+            if ($uploaded_bytes === $this-&gt;get_file_size(
+                    $this-&gt;get_upload_path($name))) {
+                break;
+            }
+            $name = $this-&gt;upcount_name($name);
+        }
+        return $name;
+    }
+
+    protected function trim_file_name($file_path, $name, $size, $type, $error,
+            $index, $content_range) {
+        // Remove path information and dots around the filename, to prevent uploading
+        // into different directories or replacing hidden system files.
+        // Also remove control characters and spaces (\x00..\x20) around the filename:
+        $name = trim(basename(stripslashes($name)), &quot;.\x00..\x20&quot;);
+        // Use a timestamp for empty filenames:
+        if (!$name) {
+            $name = str_replace('.', '-', microtime(true));
+        }
+        // Add missing file extension for known image types:
+        if (strpos($name, '.') === false &amp;&amp;
+                preg_match('/^image\/(gif|jpe?g|png)/', $type, $matches)) {
+            $name .= '.'.$matches[1];
+        }
+        if (function_exists('exif_imagetype')) {
+            switch(@exif_imagetype($file_path)){
+                case IMAGETYPE_JPEG:
+                    $extensions = array('jpg', 'jpeg');
+                    break;
+                case IMAGETYPE_PNG:
+                    $extensions = array('png');
+                    break;
+                case IMAGETYPE_GIF:
+                    $extensions = array('gif');
+                    break;
+            }
+            // Adjust incorrect image file extensions:
+            if (!empty($extensions)) {
+                $parts = explode('.', $name);
+                $extIndex = count($parts) - 1;
+                $ext = strtolower(@$parts[$extIndex]);
+                if (!in_array($ext, $extensions)) {
+                    $parts[$extIndex] = $extensions[0];
+                    $name = implode('.', $parts);
+                }
+            }
+        }
+        return $name;
+    }
+
+    protected function get_file_name($file_path, $name, $size, $type, $error,
+            $index, $content_range) {
+        return $this-&gt;get_unique_filename(
+            $file_path,
+            $this-&gt;trim_file_name($file_path, $name, $size, $type, $error,
+                $index, $content_range),
+            $size,
+            $type,
+            $error,
+            $index,
+            $content_range
+        );
+    }
+
+    protected function handle_form_data($file, $index) {
+        // Handle form data, e.g. $_REQUEST['description'][$index]
+    }
+
+    protected function get_scaled_image_file_paths($file_name, $version) {
+        $file_path = $this-&gt;get_upload_path($file_name);
+        if (!empty($version)) {
+            $version_dir = $this-&gt;get_upload_path(null, $version);
+            if (!is_dir($version_dir)) {
+                mkdir($version_dir, $this-&gt;options['mkdir_mode'], true);
+            }
+            $new_file_path = $version_dir.'/'.$file_name;
+        } else {
+            $new_file_path = $file_path;
+        }
+        return array($file_path, $new_file_path);
+    }
+
+    protected function gd_get_image_object($file_path, $func, $no_cache = false) {
+        if (empty($this-&gt;image_objects[$file_path]) || $no_cache) {
+            $this-&gt;gd_destroy_image_object($file_path);
+            $this-&gt;image_objects[$file_path] = $func($file_path);
+        }
+        return $this-&gt;image_objects[$file_path];
+    }
+
+    protected function gd_set_image_object($file_path, $image) {
+        $this-&gt;gd_destroy_image_object($file_path);
+        $this-&gt;image_objects[$file_path] = $image;
+    }
+
+    protected function gd_destroy_image_object($file_path) {
+        $image = @$this-&gt;image_objects[$file_path];
+        return $image &amp;&amp; imagedestroy($image);
+    }
+
+    protected function gd_imageflip($image, $mode) {
+        if (function_exists('imageflip')) {
+            return imageflip($image, $mode);
+        }
+        $new_width = $src_width = imagesx($image);
+        $new_height = $src_height = imagesy($image);
+        $new_img = imagecreatetruecolor($new_width, $new_height);
+        $src_x = 0;
+        $src_y = 0;
+        switch ($mode) {
+            case '1': // flip on the horizontal axis
+                $src_y = $new_height - 1;
+                $src_height = -$new_height;
+                break;
+            case '2': // flip on the vertical axis
+                $src_x  = $new_width - 1;
+                $src_width = -$new_width;
+                break;
+            case '3': // flip on both axes
+                $src_y = $new_height - 1;
+                $src_height = -$new_height;
+                $src_x  = $new_width - 1;
+                $src_width = -$new_width;
+                break;
+            default:
+                return $image;
+        }
+        imagecopyresampled(
+            $new_img,
+            $image,
+            0,
+            0,
+            $src_x,
+            $src_y,
+            $new_width,
+            $new_height,
+            $src_width,
+            $src_height
+        );
+        return $new_img;
+    }
+
+    protected function gd_orient_image($file_path, $src_img) {
+        if (!function_exists('exif_read_data')) {
+            return false;
+        }
+        $exif = @exif_read_data($file_path);
+        if ($exif === false) {
+            return false;
+        }
+        $orientation = intval(@$exif['Orientation']);
+        if ($orientation &lt; 2 || $orientation &gt; 8) {
+            return false;
+        }
+        switch ($orientation) {
+            case 2:
+                $new_img = $this-&gt;gd_imageflip(
+                    $src_img,
+                    defined('IMG_FLIP_VERTICAL') ? IMG_FLIP_VERTICAL : 2
+                );
+                break;
+            case 3:
+                $new_img = imagerotate($src_img, 180, 0);
+                break;
+            case 4:
+                $new_img = $this-&gt;gd_imageflip(
+                    $src_img,
+                    defined('IMG_FLIP_HORIZONTAL') ? IMG_FLIP_HORIZONTAL : 1
+                );
+                break;
+            case 5:
+                $tmp_img = $this-&gt;gd_imageflip(
+                    $src_img,
+                    defined('IMG_FLIP_HORIZONTAL') ? IMG_FLIP_HORIZONTAL : 1
+                );
+                $new_img = imagerotate($tmp_img, 270, 0);
+                imagedestroy($tmp_img);
+                break;
+            case 6:
+                $new_img = imagerotate($src_img, 270, 0);
+                break;
+            case 7:
+                $tmp_img = $this-&gt;gd_imageflip(
+                    $src_img,
+                    defined('IMG_FLIP_VERTICAL') ? IMG_FLIP_VERTICAL : 2
+                );
+                $new_img = imagerotate($tmp_img, 270, 0);
+                imagedestroy($tmp_img);
+                break;
+            case 8:
+                $new_img = imagerotate($src_img, 90, 0);
+                break;
+            default:
+                return false;
+        }
+        $this-&gt;gd_set_image_object($file_path, $new_img);
+        return true;
+    }
+
+    protected function gd_create_scaled_image($file_name, $version, $options) {
+        if (!function_exists('imagecreatetruecolor')) {
+            error_log('Function not found: imagecreatetruecolor');
+            return false;
+        }
+        list($file_path, $new_file_path) =
+            $this-&gt;get_scaled_image_file_paths($file_name, $version);
+        $type = strtolower(substr(strrchr($file_name, '.'), 1));
+        switch ($type) {
+            case 'jpg':
+            case 'jpeg':
+                $src_func = 'imagecreatefromjpeg';
+                $write_func = 'imagejpeg';
+                $image_quality = isset($options['jpeg_quality']) ?
+                    $options['jpeg_quality'] : 75;
+                break;
+            case 'gif':
+                $src_func = 'imagecreatefromgif';
+                $write_func = 'imagegif';
+                $image_quality = null;
+                break;
+            case 'png':
+                $src_func = 'imagecreatefrompng';
+                $write_func = 'imagepng';
+                $image_quality = isset($options['png_quality']) ?
+                    $options['png_quality'] : 9;
+                break;
+            default:
+                return false;
+        }
+        $src_img = $this-&gt;gd_get_image_object(
+            $file_path,
+            $src_func,
+            !empty($options['no_cache'])
+        );
+        $image_oriented = false;
+        if (!empty($options['auto_orient']) &amp;&amp; $this-&gt;gd_orient_image(
+                $file_path,
+                $src_img
+            )) {
+            $image_oriented = true;
+            $src_img = $this-&gt;gd_get_image_object(
+                $file_path,
+                $src_func
+            );
+        }
+        $max_width = $img_width = imagesx($src_img);
+        $max_height = $img_height = imagesy($src_img);
+        if (!empty($options['max_width'])) {
+            $max_width = $options['max_width'];
+        }
+        if (!empty($options['max_height'])) {
+            $max_height = $options['max_height'];
+        }
+        $scale = min(
+            $max_width / $img_width,
+            $max_height / $img_height
+        );
+        if ($scale &gt;= 1) {
+            if ($image_oriented) {
+                return $write_func($src_img, $new_file_path, $image_quality);
+            }
+            if ($file_path !== $new_file_path) {
+                return copy($file_path, $new_file_path);
+            }
+            return true;
+        }
+        if (empty($options['crop'])) {
+            $new_width = $img_width * $scale;
+            $new_height = $img_height * $scale;
+            $dst_x = 0;
+            $dst_y = 0;
+            $new_img = imagecreatetruecolor($new_width, $new_height);
+        } else {
+            if (($img_width / $img_height) &gt;= ($max_width / $max_height)) {
+                $new_width = $img_width / ($img_height / $max_height);
+                $new_height = $max_height;
+            } else {
+                $new_width = $max_width;
+                $new_height = $img_height / ($img_width / $max_width);
+            }
+            $dst_x = 0 - ($new_width - $max_width) / 2;
+            $dst_y = 0 - ($new_height - $max_height) / 2;
+            $new_img = imagecreatetruecolor($max_width, $max_height);
+        }
+        // Handle transparency in GIF and PNG images:
+        switch ($type) {
+            case 'gif':
+            case 'png':
+                imagecolortransparent($new_img, imagecolorallocate($new_img, 0, 0, 0));
+            case 'png':
+                imagealphablending($new_img, false);
+                imagesavealpha($new_img, true);
+                break;
+        }
+        $success = imagecopyresampled(
+            $new_img,
+            $src_img,
+            $dst_x,
+            $dst_y,
+            0,
+            0,
+            $new_width,
+            $new_height,
+            $img_width,
+            $img_height
+        ) &amp;&amp; $write_func($new_img, $new_file_path, $image_quality);
+        $this-&gt;gd_set_image_object($file_path, $new_img);
+        return $success;
+    }
+
+    protected function imagick_get_image_object($file_path, $no_cache = false) {
+        if (empty($this-&gt;image_objects[$file_path]) || $no_cache) {
+            $this-&gt;imagick_destroy_image_object($file_path);
+            $image = new Imagick();
+            if (!empty($this-&gt;options['imagick_resource_limits'])) {
+                foreach ($this-&gt;options['imagick_resource_limits'] as $type =&gt; $limit) {
+                    $image-&gt;setResourceLimit($type, $limit);
+                }
+            }
+            $image-&gt;readImage($file_path);
+            $this-&gt;image_objects[$file_path] = $image;
+        }
+        return $this-&gt;image_objects[$file_path];
+    }
+
+    protected function imagick_set_image_object($file_path, $image) {
+        $this-&gt;imagick_destroy_image_object($file_path);
+        $this-&gt;image_objects[$file_path] = $image;
+    }
+
+    protected function imagick_destroy_image_object($file_path) {
+        $image = @$this-&gt;image_objects[$file_path];
+        return $image &amp;&amp; $image-&gt;destroy();
+    }
+
+    protected function imagick_orient_image($image) {
+        $orientation = $image-&gt;getImageOrientation();
+        $background = new ImagickPixel('none');
+        switch ($orientation) {
+            case imagick::ORIENTATION_TOPRIGHT: // 2
+                $image-&gt;flopImage(); // horizontal flop around y-axis
+                break;
+            case imagick::ORIENTATION_BOTTOMRIGHT: // 3
+                $image-&gt;rotateImage($background, 180);
+                break;
+            case imagick::ORIENTATION_BOTTOMLEFT: // 4
+                $image-&gt;flipImage(); // vertical flip around x-axis
+                break;
+            case imagick::ORIENTATION_LEFTTOP: // 5
+                $image-&gt;flopImage(); // horizontal flop around y-axis
+                $image-&gt;rotateImage($background, 270);
+                break;
+            case imagick::ORIENTATION_RIGHTTOP: // 6
+                $image-&gt;rotateImage($background, 90);
+                break;
+            case imagick::ORIENTATION_RIGHTBOTTOM: // 7
+                $image-&gt;flipImage(); // vertical flip around x-axis
+                $image-&gt;rotateImage($background, 270);
+                break;
+            case imagick::ORIENTATION_LEFTBOTTOM: // 8
+                $image-&gt;rotateImage($background, 270);
+                break;
+            default:
+                return false;
+        }
+        $image-&gt;setImageOrientation(imagick::ORIENTATION_TOPLEFT); // 1
+        return true;
+    }
+
+    protected function imagick_create_scaled_image($file_name, $version, $options) {
+        list($file_path, $new_file_path) =
+            $this-&gt;get_scaled_image_file_paths($file_name, $version);
+        $image = $this-&gt;imagick_get_image_object(
+            $file_path,
+            !empty($options['no_cache'])
+        );
+        if ($image-&gt;getImageFormat() === 'GIF') {
+            // Handle animated GIFs:
+            $images = $image-&gt;coalesceImages();
+            foreach ($images as $frame) {
+                $image = $frame;
+                $this-&gt;imagick_set_image_object($file_name, $image);
+                break;
+            }
+        }
+        $image_oriented = false;
+        if (!empty($options['auto_orient'])) {
+            $image_oriented = $this-&gt;imagick_orient_image($image);
+        }
+        $new_width = $max_width = $img_width = $image-&gt;getImageWidth();
+        $new_height = $max_height = $img_height = $image-&gt;getImageHeight();
+        if (!empty($options['max_width'])) {
+            $new_width = $max_width = $options['max_width'];
+        }
+        if (!empty($options['max_height'])) {
+            $new_height = $max_height = $options['max_height'];
+        }
+        if (!($image_oriented || $max_width &lt; $img_width || $max_height &lt; $img_height)) {
+            if ($file_path !== $new_file_path) {
+                return copy($file_path, $new_file_path);
+            }
+            return true;
+        }
+        $crop = !empty($options['crop']);
+        if ($crop) {
+            $x = 0;
+            $y = 0;
+            if (($img_width / $img_height) &gt;= ($max_width / $max_height)) {
+                $new_width = 0; // Enables proportional scaling based on max_height
+                $x = ($img_width / ($img_height / $max_height) - $max_width) / 2;
+            } else {
+                $new_height = 0; // Enables proportional scaling based on max_width
+                $y = ($img_height / ($img_width / $max_width) - $max_height) / 2;
+            }
+        }
+        $success = $image-&gt;resizeImage(
+            $new_width,
+            $new_height,
+            isset($options['filter']) ? $options['filter'] : imagick::FILTER_LANCZOS,
+            isset($options['blur']) ? $options['blur'] : 1,
+            $new_width &amp;&amp; $new_height // fit image into constraints if not to be cropped
+        );
+        if ($success &amp;&amp; $crop) {
+            $success = $image-&gt;cropImage(
+                $max_width,
+                $max_height,
+                $x,
+                $y
+            );
+            if ($success) {
+                $success = $image-&gt;setImagePage($max_width, $max_height, 0, 0);
+            }
+        }
+        $type = strtolower(substr(strrchr($file_name, '.'), 1));
+        switch ($type) {
+            case 'jpg':
+            case 'jpeg':
+                if (!empty($options['jpeg_quality'])) {
+                    $image-&gt;setImageCompression(Imagick::COMPRESSION_JPEG);
+                    $image-&gt;setImageCompressionQuality($options['jpeg_quality']);
+                }
+                break;
+        }
+        if (!empty($options['strip'])) {
+            $image-&gt;stripImage();
+        }
+        return $success &amp;&amp; $image-&gt;writeImage($new_file_path);
+    }
+
+    protected function imagemagick_create_scaled_image($file_name, $version, $options) {
+        list($file_path, $new_file_path) =
+            $this-&gt;get_scaled_image_file_paths($file_name, $version);
+        $resize = @$options['max_width']
+            .(empty($options['max_height']) ? '' : 'x'.$options['max_height']);
+        if (!$resize &amp;&amp; empty($options['auto_orient'])) {
+            if ($file_path !== $new_file_path) {
+                return copy($file_path, $new_file_path);
+            }
+            return true;
+        }
+        $cmd = $this-&gt;options['convert_bin'];
+        if (!empty($this-&gt;options['convert_params'])) {
+            $cmd .= ' '.$this-&gt;options['convert_params'];
+        }
+        $cmd .= ' '.escapeshellarg($file_path);
+        if (!empty($options['auto_orient'])) {
+            $cmd .= ' -auto-orient';
+        }
+        if ($resize) {
+            // Handle animated GIFs:
+            $cmd .= ' -coalesce';
+            if (empty($options['crop'])) {
+                $cmd .= ' -resize '.escapeshellarg($resize.'&gt;');
+            } else {
+                $cmd .= ' -resize '.escapeshellarg($resize.'^');
+                $cmd .= ' -gravity center';
+                $cmd .= ' -crop '.escapeshellarg($resize.'+0+0');
+            }
+            // Make sure the page dimensions are correct (fixes offsets of animated GIFs):
+            $cmd .= ' +repage';
+        }
+        if (!empty($options['convert_params'])) {
+            $cmd .= ' '.$options['convert_params'];
+        }
+        $cmd .= ' '.escapeshellarg($new_file_path);
+        exec($cmd, $output, $error);
+        if ($error) {
+            error_log(implode('\n', $output));
+            return false;
+        }
+        return true;
+    }
+
+    protected function get_image_size($file_path) {
+        if ($this-&gt;options['image_library']) {
+            if (extension_loaded('imagick')) {
+                $image = new Imagick();
+                try {
+                    if (@$image-&gt;pingImage($file_path)) {
+                        $dimensions = array($image-&gt;getImageWidth(), $image-&gt;getImageHeight());
+                        $image-&gt;destroy();
+                        return $dimensions;
+                    }
+                    return false;
+                } catch (Exception $e) {
+                    error_log($e-&gt;getMessage());
+                }
+            }
+            if ($this-&gt;options['image_library'] === 2) {
+                $cmd = $this-&gt;options['identify_bin'];
+                $cmd .= ' -ping '.escapeshellarg($file_path);
+                exec($cmd, $output, $error);
+                if (!$error &amp;&amp; !empty($output)) {
+                    // image.jpg JPEG 1920x1080 1920x1080+0+0 8-bit sRGB 465KB 0.000u 0:00.000
+                    $infos = preg_split('/\s+/', $output[0]);
+                    $dimensions = preg_split('/x/', $infos[2]);
+                    return $dimensions;
+                }
+                return false;
+            }
+        }
+        if (!function_exists('getimagesize')) {
+            error_log('Function not found: getimagesize');
+            return false;
+        }
+        return @getimagesize($file_path);
+    }
+
+    protected function create_scaled_image($file_name, $version, $options) {
+        if ($this-&gt;options['image_library'] === 2) {
+            return $this-&gt;imagemagick_create_scaled_image($file_name, $version, $options);
+        }
+        if ($this-&gt;options['image_library'] &amp;&amp; extension_loaded('imagick')) {
+            return $this-&gt;imagick_create_scaled_image($file_name, $version, $options);
+        }
+        return $this-&gt;gd_create_scaled_image($file_name, $version, $options);
+    }
+
+    protected function destroy_image_object($file_path) {
+        if ($this-&gt;options['image_library'] &amp;&amp; extension_loaded('imagick')) {
+            return $this-&gt;imagick_destroy_image_object($file_path);
+        }
+    }
+
+    protected function is_valid_image_file($file_path) {
+        if (!preg_match($this-&gt;options['image_file_types'], $file_path)) {
+            return false;
+        }
+        if (function_exists('exif_imagetype')) {
+            return @exif_imagetype($file_path);
+        }
+        $image_info = $this-&gt;get_image_size($file_path);
+        return $image_info &amp;&amp; $image_info[0] &amp;&amp; $image_info[1];
+    }
+
+    protected function handle_image_file($file_path, $file) {
+        $failed_versions = array();
+        foreach($this-&gt;options['image_versions'] as $version =&gt; $options) {
+            if ($this-&gt;create_scaled_image($file-&gt;name, $version, $options)) {
+                if (!empty($version)) {
+                    $file-&gt;{$version.'Url'} = $this-&gt;get_download_url(
+                        $file-&gt;name,
+                        $version
+                    );
+                } else {
+                    $file-&gt;size = $this-&gt;get_file_size($file_path, true);
+                }
+            } else {
+                $failed_versions[] = $version ? $version : 'original';
+            }
+        }
+        if (count($failed_versions)) {
+            $file-&gt;error = $this-&gt;get_error_message('image_resize')
+                    .' ('.implode($failed_versions,', ').')';
+        }
+        // Free memory:
+        $this-&gt;destroy_image_object($file_path);
+    }
+
+    protected function handle_file_upload($uploaded_file, $name, $size, $type, $error,
+            $index = null, $content_range = null) {
+        $file = new stdClass();
+        $file-&gt;name = $this-&gt;get_file_name($uploaded_file, $name, $size, $type, $error,
+            $index, $content_range);
+        $file-&gt;size = $this-&gt;fix_integer_overflow(intval($size));
+        $file-&gt;type = $type;
+        if ($this-&gt;validate($uploaded_file, $file, $error, $index)) {
+            $this-&gt;handle_form_data($file, $index);
+            $upload_dir = $this-&gt;get_upload_path();
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, $this-&gt;options['mkdir_mode'], true);
+            }
+            $file_path = $this-&gt;get_upload_path($file-&gt;name);
+            $append_file = $content_range &amp;&amp; is_file($file_path) &amp;&amp;
+                $file-&gt;size &gt; $this-&gt;get_file_size($file_path);
+            if ($uploaded_file &amp;&amp; is_uploaded_file($uploaded_file)) {
+                // multipart/formdata uploads (POST method uploads)
+                if ($append_file) {
+                    file_put_contents(
+                        $file_path,
+                        fopen($uploaded_file, 'r'),
+                        FILE_APPEND
+                    );
+                } else {
+                    move_uploaded_file($uploaded_file, $file_path);
+                }
+            } else {
+                // Non-multipart uploads (PUT method support)
+                file_put_contents(
+                    $file_path,
+                    fopen('php://input', 'r'),
+                    $append_file ? FILE_APPEND : 0
+                );
+            }
+            $file_size = $this-&gt;get_file_size($file_path, $append_file);
+            if ($file_size === $file-&gt;size) {
+                $file-&gt;url = $this-&gt;get_download_url($file-&gt;name);
+                if ($this-&gt;is_valid_image_file($file_path)) {
+                    $this-&gt;handle_image_file($file_path, $file);
+                }
+            } else {
+                $file-&gt;size = $file_size;
+                if (!$content_range &amp;&amp; $this-&gt;options['discard_aborted_uploads']) {
+                    unlink($file_path);
+                    $file-&gt;error = $this-&gt;get_error_message('abort');
+                }
+            }
+            $this-&gt;set_additional_file_properties($file);
+        }
+        return $file;
+    }
+
+    protected function readfile($file_path) {
+        $file_size = $this-&gt;get_file_size($file_path);
+        $chunk_size = $this-&gt;options['readfile_chunk_size'];
+        if ($chunk_size &amp;&amp; $file_size &gt; $chunk_size) {
+            $handle = fopen($file_path, 'rb');
+            while (!feof($handle)) {
+                echo fread($handle, $chunk_size);
+                ob_flush();
+                flush();
+            }
+            fclose($handle);
+            return $file_size;
+        }
+        return readfile($file_path);
+    }
+
+    protected function body($str) {
+        echo $str;
+    }
+    
+    protected function header($str) {
+        header($str);
+    }
+
+    protected function get_server_var($id) {
+        return isset($_SERVER[$id]) ? $_SERVER[$id] : '';
+    }
+
+    protected function generate_response($content, $print_response = true) {
+        if ($print_response) {
+            $json = json_encode($content);
+            $redirect = isset($_REQUEST['redirect']) ?
+                stripslashes($_REQUEST['redirect']) : null;
+            if ($redirect) {
+                $this-&gt;header('Location: '.sprintf($redirect, rawurlencode($json)));
+                return;
+            }
+            $this-&gt;head();
+            if ($this-&gt;get_server_var('HTTP_CONTENT_RANGE')) {
+                $files = isset($content[$this-&gt;options['param_name']]) ?
+                    $content[$this-&gt;options['param_name']] : null;
+                if ($files &amp;&amp; is_array($files) &amp;&amp; is_object($files[0]) &amp;&amp; $files[0]-&gt;size) {
+                    $this-&gt;header('Range: 0-'.(
+                        $this-&gt;fix_integer_overflow(intval($files[0]-&gt;size)) - 1
+                    ));
+                }
+            }
+            $this-&gt;body($json);
+        }
+        return $content;
+    }
+
+    protected function get_version_param() {
+        return isset($_GET['version']) ? basename(stripslashes($_GET['version'])) : null;
+    }
+
+    protected function get_singular_param_name() {
+        return substr($this-&gt;options['param_name'], 0, -1);
+    }
+
+    protected function get_file_name_param() {
+        $name = $this-&gt;get_singular_param_name();
+        return isset($_GET[$name]) ? basename(stripslashes($_GET[$name])) : null;
+    }
+
+    protected function get_file_names_params() {
+        $params = isset($_GET[$this-&gt;options['param_name']]) ?
+            $_GET[$this-&gt;options['param_name']] : array();
+        foreach ($params as $key =&gt; $value) {
+            $params[$key] = basename(stripslashes($value));
+        }
+        return $params;
+    }
+
+    protected function get_file_type($file_path) {
+        switch (strtolower(pathinfo($file_path, PATHINFO_EXTENSION))) {
+            case 'jpeg':
+            case 'jpg':
+                return 'image/jpeg';
+            case 'png':
+                return 'image/png';
+            case 'gif':
+                return 'image/gif';
+            default:
+                return '';
+        }
+    }
+
+    protected function download() {
+        switch ($this-&gt;options['download_via_php']) {
+            case 1:
+                $redirect_header = null;
+                break;
+            case 2:
+                $redirect_header = 'X-Sendfile';
+                break;
+            case 3:
+                $redirect_header = 'X-Accel-Redirect';
+                break;
+            default:
+                return $this-&gt;header('HTTP/1.1 403 Forbidden');
+        }
+        $file_name = $this-&gt;get_file_name_param();
+        if (!$this-&gt;is_valid_file_object($file_name)) {
+            return $this-&gt;header('HTTP/1.1 404 Not Found');
+        }
+        if ($redirect_header) {
+            return $this-&gt;header(
+                $redirect_header.': '.$this-&gt;get_download_url(
+                    $file_name,
+                    $this-&gt;get_version_param(),
+                    true
+                )
+            );
+        }
+        $file_path = $this-&gt;get_upload_path($file_name, $this-&gt;get_version_param());
+        // Prevent browsers from MIME-sniffing the content-type:
+        $this-&gt;header('X-Content-Type-Options: nosniff');
+        if (!preg_match($this-&gt;options['inline_file_types'], $file_name)) {
+            $this-&gt;header('Content-Type: application/octet-stream');
+            $this-&gt;header('Content-Disposition: attachment; filename=&quot;'.$file_name.'&quot;');
+        } else {
+            $this-&gt;header('Content-Type: '.$this-&gt;get_file_type($file_path));
+            $this-&gt;header('Content-Disposition: inline; filename=&quot;'.$file_name.'&quot;');
+        }
+        $this-&gt;header('Content-Length: '.$this-&gt;get_file_size($file_path));
+        $this-&gt;header('Last-Modified: '.gmdate('D, d M Y H:i:s T', filemtime($file_path)));
+        $this-&gt;readfile($file_path);
+    }
+
+    protected function send_content_type_header() {
+        $this-&gt;header('Vary: Accept');
+        if (strpos($this-&gt;get_server_var('HTTP_ACCEPT'), 'application/json') !== false) {
+            $this-&gt;header('Content-type: application/json');
+        } else {
+            $this-&gt;header('Content-type: text/plain');
+        }
+    }
+
+    protected function send_access_control_headers() {
+        $this-&gt;header('Access-Control-Allow-Origin: '.$this-&gt;options['access_control_allow_origin']);
+        $this-&gt;header('Access-Control-Allow-Credentials: '
+            .($this-&gt;options['access_control_allow_credentials'] ? 'true' : 'false'));
+        $this-&gt;header('Access-Control-Allow-Methods: '
+            .implode(', ', $this-&gt;options['access_control_allow_methods']));
+        $this-&gt;header('Access-Control-Allow-Headers: '
+            .implode(', ', $this-&gt;options['access_control_allow_headers']));
+    }
+
+    public function head() {
+        $this-&gt;header('Pragma: no-cache');
+        $this-&gt;header('Cache-Control: no-store, no-cache, must-revalidate');
+        $this-&gt;header('Content-Disposition: inline; filename=&quot;files.json&quot;');
+        // Prevent Internet Explorer from MIME-sniffing the content-type:
+        $this-&gt;header('X-Content-Type-Options: nosniff');
+        if ($this-&gt;options['access_control_allow_origin']) {
+            $this-&gt;send_access_control_headers();
+        }
+        $this-&gt;send_content_type_header();
+    }
+
+    public function get($print_response = true) {
+        if ($print_response &amp;&amp; isset($_GET['download'])) {
+            return $this-&gt;download();
+        }
+        $file_name = $this-&gt;get_file_name_param();
+        if ($file_name) {
+            $response = array(
+                $this-&gt;get_singular_param_name() =&gt; $this-&gt;get_file_object($file_name)
+            );
+        } else {
+            $response = array(
+                $this-&gt;options['param_name'] =&gt; $this-&gt;get_file_objects()
+            );
+        }
+        return $this-&gt;generate_response($response, $print_response);
+    }
+
+    public function post($print_response = true) {
+        if (isset($_REQUEST['_method']) &amp;&amp; $_REQUEST['_method'] === 'DELETE') {
+            return $this-&gt;delete($print_response);
+        }
+        $upload = isset($_FILES[$this-&gt;options['param_name']]) ?
+            $_FILES[$this-&gt;options['param_name']] : null;
+        // Parse the Content-Disposition header, if available:
+        $file_name = $this-&gt;get_server_var('HTTP_CONTENT_DISPOSITION') ?
+            rawurldecode(preg_replace(
+                '/(^[^&quot;]+&quot;)|(&quot;$)/',
+                '',
+                $this-&gt;get_server_var('HTTP_CONTENT_DISPOSITION')
+            )) : null;
+        // Parse the Content-Range header, which has the following form:
+        // Content-Range: bytes 0-524287/2000000
+        $content_range = $this-&gt;get_server_var('HTTP_CONTENT_RANGE') ?
+            preg_split('/[^0-9]+/', $this-&gt;get_server_var('HTTP_CONTENT_RANGE')) : null;
+        $size =  $content_range ? $content_range[3] : null;
+        $files = array();
+        if ($upload &amp;&amp; is_array($upload['tmp_name'])) {
+            // param_name is an array identifier like &quot;files[]&quot;,
+            // $_FILES is a multi-dimensional array:
+            foreach ($upload['tmp_name'] as $index =&gt; $value) {
+                $files[] = $this-&gt;handle_file_upload(
+                    $upload['tmp_name'][$index],
+                    $file_name ? $file_name : $upload['name'][$index],
+                    $size ? $size : $upload['size'][$index],
+                    $upload['type'][$index],
+                    $upload['error'][$index],
+                    $index,
+                    $content_range
+                );
+            }
+        } else {
+            // param_name is a single object identifier like &quot;file&quot;,
+            // $_FILES is a one-dimensional array:
+            $files[] = $this-&gt;handle_file_upload(
+                isset($upload['tmp_name']) ? $upload['tmp_name'] : null,
+                $file_name ? $file_name : (isset($upload['name']) ?
+                        $upload['name'] : null),
+                $size ? $size : (isset($upload['size']) ?
+                        $upload['size'] : $this-&gt;get_server_var('CONTENT_LENGTH')),
+                isset($upload['type']) ?
+                        $upload['type'] : $this-&gt;get_server_var('CONTENT_TYPE'),
+                isset($upload['error']) ? $upload['error'] : null,
+                null,
+                $content_range
+            );
+        }
+        return $this-&gt;generate_response(
+            array($this-&gt;options['param_name'] =&gt; $files),
+            $print_response
+        );
+    }
+
+    public function delete($print_response = true) {
+        $file_names = $this-&gt;get_file_names_params();
+        if (empty($file_names)) {
+            $file_names = array($this-&gt;get_file_name_param());
+        }
+        $response = array();
+        foreach($file_names as $file_name) {
+            $file_path = $this-&gt;get_upload_path($file_name);
+            $success = is_file($file_path) &amp;&amp; $file_name[0] !== '.' &amp;&amp; unlink($file_path);
+            if ($success) {
+                foreach($this-&gt;options['image_versions'] as $version =&gt; $options) {
+                    if (!empty($version)) {
+                        $file = $this-&gt;get_upload_path($file_name, $version);
+                        if (is_file($file)) {
+                            unlink($file);
+                        }
+                    }
+                }
+            }
+            $response[$file_name] = $success;
+        }
+        return $this-&gt;generate_response($response, $print_response);
+    }
+
+}
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación ]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cómo es el cielo de marte?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[verde]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[rojo]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[azul]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[amarillo]]></text>
+    </answer>
+  </question>
+  <question type="truefalse">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación ]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[true]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[false]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula  ]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="truefalse">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación ]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[true]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[false]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cómo es el cielo de marte?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[verde]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[rojo]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[azul]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[amarillo]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Que parte de las abejas es la ponzoña?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[Cabeza]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[Aguijón]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Patas]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación ]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+</quiz>

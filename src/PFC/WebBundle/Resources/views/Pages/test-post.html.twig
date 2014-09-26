@@ -1,0 +1,44 @@
+{% extends "WebBundle::base.html.twig" %}
+{% block template %}
+
+<div class="content">
+   <div class="container">
+      <div class="row">
+         <div class="span12">
+
+            <!-- testing starts -->
+
+            <div class="process">
+               <div class="row">
+                  <div class="span12">
+
+                     <!-- testing hero -->
+                     <div class="hero">
+                        <!-- Title. Don't forget the <span> tag -->
+                        <h3><span>{{ subject.name }}</span></h3>
+                        <!-- para -->
+                        <h5><p><br/>{{ 'test-post.level' | trans }} {{ level }}</p></h5>
+                        <p>{{ 'test-post.questions' | trans }} {{ feedback['questions'] }}</p>
+                        <p>{{ 'test-post.answers' | trans }} {{ feedback['answered'] }}</p>
+                        <p>{{ 'test-post.correctAnswers' | trans }} {{ feedback['right'] }}</p>
+                        <p>{{ 'test-post.partiallyCorrectAnswers' | trans }} {{ feedback['partiallyRight'] }}</p>
+                        <p>{{ 'test-post.incorrect' | trans }} {{ feedback['incorrect'] }}</p>
+                        <p>{{ 'test-post.result' | trans }} <strong>{{ result | number_format(2)}} %</strong></p>
+                     </div>
+                     <div class="row">
+                        <div class="span12">
+                           <p>
+                              <a href="{{ path('subjects', {'subjectSlug' : subject.slug }) }}">{{ 'test-post.return' | trans }} </a>
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+                </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

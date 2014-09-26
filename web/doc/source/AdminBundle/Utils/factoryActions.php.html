@@ -1,0 +1,253 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace PFC\AdminBundle\Utils;
+
+use Doctrine\Common\Persistence\ObjectManager;
+use PFC\AdminBundle\Utils\exportXml;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+* &raquo; Clase que factoriza varias funciones usadas en el proyecto.
+*
+*/
+class factoryActions {
+    /**
+    * &raquo; M&eacute;todo para que muestra un listado de las asignaturas, y sus componentes, categor&iacute;as y subcategor&iacute;as
+    *
+    * @package PFC\AdminBundle\Utils;
+    * @version 1.0
+    *
+    * @param    ObjectManager     $em     Doctine manager
+    * @return   array       array con los par&aacute;metros para la renderizaci&oacute;n de la vista.
+    */
+    public function subjectComponentsList(ObjectManager $em)
+    {
+        $subjects   = $em-&gt;getRepository(&quot;ModelBundle:Subject&quot;)-&gt;findBy(array(), array('name' =&gt; 'ASC'));
+        $pages      = $em-&gt;getRepository(&quot;ModelBundle:Page&quot;)-&gt;findBy(array(), array('slug' =&gt; 'ASC'));
+
+        $subjectCategories = array();
+        $categorySubcategories = array();
+        $questions = array();
+
+        foreach ($subjects as $subject) {
+            $subjectCategories[$subject-&gt;getId()]    = $em-&gt;getRepository('ModelBundle:Category')
+                                                            -&gt;findBySubject($subject-&gt;getId());
+
+            $questions['subject'][$subject-&gt;getId()] = 0;
+
+            $questions['subject'][$subject-&gt;getId()] = count($em-&gt;getRepository('ModelBundle:Question')
+                                                            -&gt;findBySubject($subject-&gt;getId()));
+
+
+            if (isset($subjectCategories[$subject-&gt;getId()])){
+                foreach ($subjectCategories[$subject-&gt;getId()] as $category) {
+
+                    $questions['category'][$category-&gt;getId()] = 0;
+
+                    $questions['category'][$category-&gt;getId()] = count($em-&gt;getRepository('ModelBundle:Question')
+                                                            -&gt;findByCategory($category-&gt;getId()));
+
+                    $categorySubcategories[$category-&gt;getId()]  = $em-&gt;getRepository('ModelBundle:Subcategory')
+                                                            -&gt;findByCategory($category-&gt;getId());
+
+                    if (isset($categorySubcategories[$category-&gt;getId()])){
+                        foreach ($categorySubcategories[$category-&gt;getId()] as $subcategory) {
+                            $questions['subcategory'][$subcategory-&gt;getId()] = 0;
+
+                            $questions['subcategory'][$subcategory-&gt;getId()] = count($em-&gt;getRepository('ModelBundle:Question')
+                                                                            -&gt;findBySubcategory($subcategory-&gt;getId()));
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return  array(  'pages'                 =&gt; $pages,
+                        'subjects'              =&gt; $subjects,
+                        'subjectCategories'     =&gt; $subjectCategories,
+                        'categorySubcategories' =&gt; $categorySubcategories,
+                        'questions'             =&gt; $questions);
+    }
+
+    /**
+    * &raquo; M&eacute;todo para que elimina un array de preguntas. Evita su repetici&oacute;n en los controladores.
+    *
+    * @package PFC\AdminBundle\Utils;
+    * @version 1.0
+    *
+    * @param    ObjectManager     $em             Doctine manager.
+    * @param    array       $questions      Array de preguntas a eliminar.
+    * @return   void
+    */
+    public function deleteQuestions(ObjectManager $em, array $questions)
+    {
+        if(!empty($questions)){
+            foreach($questions as $question){
+                $answers = $em-&gt;getRepository('ModelBundle:Answer')-&gt;findByQuestion($question-&gt;getId());
+
+                if(!empty($answers)){
+                    foreach($answers as $answer){
+                        $em-&gt;remove($answer);
+                        $em-&gt;flush();
+                    }
+                }
+
+                $em-&gt;remove($question);
+                $em-&gt;flush();
+            }
+        }
+    }
+
+    /**
+    * &raquo; M&eacute;todo para que muestra un listado de preguntas, del tipo seleccionado en el par&aacute;metro $selector
+    *
+    * @package PFC\AdminBundle\Utils;
+    * @version 1.0
+    *
+    * @param    ObjectManager     $em            Doctine manager.
+    * @param    subject     $subject       Objecto subject sobre el que se realiza la consulta.
+    * @param    string      $selector      Indica el tipo objeto Subject, Category o Subcategory, para el que se exporta la lista.
+    * @return   array()     Parametros necesarios para la renderizaci&oacute;n
+    */
+    public function testList(ObjectManager $em, $subject, $selector = '', $id = '')
+    {
+        $subjects   = $em-&gt;getRepository(&quot;ModelBundle:Subject&quot;)-&gt;findBy(array(), array('name' =&gt; 'ASC'));
+        $pages      = $em-&gt;getRepository(&quot;ModelBundle:Page&quot;)-&gt;findBy(array(), array('slug' =&gt; 'ASC'));
+
+        if ($selector == '') {
+            $selector = 'Subject';
+            $id = $subject-&gt;getId();
+        }
+
+        $object   = $em-&gt;getRepository(&quot;ModelBundle:&quot; . $selector )-&gt;findOneById($id);
+
+        $parameters = array('pages'                 =&gt; $pages,
+                            'subjects'              =&gt; $subjects,
+                            'subject'               =&gt; $subject,
+                             strtolower($selector)  =&gt; $object);
+
+
+        $questions = array();
+        switch ($selector) {
+            case 'Subject':
+                $questions  = $em-&gt;getRepository(&quot;ModelBundle:Question&quot;)-&gt;findBySubject($id);
+                break;
+            case 'Category':
+                $questions  = $em-&gt;getRepository(&quot;ModelBundle:Question&quot;)-&gt;findByCategory($id);
+                break;
+            case 'Subcategory':
+                $questions  = $em-&gt;getRepository(&quot;ModelBundle:Question&quot;)-&gt;findBySubcategory($id);
+                break;
+        }
+        $parameters['questions'] =  $questions;
+        $questionAnswers        = array();
+
+        foreach ($questions as $question){
+            $answers    = $em-&gt;getRepository('ModelBundle:Answer')
+                            -&gt;findByQuestion($question-&gt;getId());
+            $questionAnswers [$question-&gt;getId()] = $answers;
+        }
+
+        $parameters['questionAnswers'] =  $questionAnswers;
+
+        return $parameters;
+    }
+
+    /**
+    * &raquo; Devuelve al controlador la respuesta para la descarga de un fichero
+    *
+    * @package PFC\AdminBundle\Utils;
+    * @version 1.0
+    *
+    * @param    string     $path           Directorio donde se encuentra el fichero a descargar en el navegador del cliente.
+    * @param    string     $filename       Nombre del fichero a descargar en el navegador del cliente.
+    * @return   response   objeto response compuesto con el fichero adjuntado.
+    */
+    public function downloadfileAction($path, $filename)
+    {
+        $path = $path . $filename;
+
+        $content = file_get_contents($path);
+
+        $response = new Response();
+
+        $response-&gt;headers-&gt;set('Content-Type', 'text/xml');
+        $response-&gt;headers-&gt;set('Content-Disposition', 'attachment;filename=&quot;'.$filename);
+
+        $response-&gt;setContent($content);
+        return $response;
+    }
+
+    /**
+    * &raquo; M&eacute;todo que gestiona la exportaci&oacute;n de un cuestionario a un fichero.
+    *
+    * @package PFC\AdminBundle\Utils;
+    * @version 1.0
+    *
+    * @param    ObjectManager    $em                 Doctine manager.
+    * @param    string     $path               Directorio donde se encuentra el fichero a descargar en el navegador del cliente.
+    * @param    string     $selector           Indica el tipo objeto Subject, Category o Subcategory, para el que se exporta la lista.
+    * @param    string     $level              Par&aacute;metro opcional con el nivel de las preguntas a exportar. 0 implica cualquier nivel
+    * @param    string     $numQuestions       Par&aacute;metro opcional con el n&uacute;mero de preguntas m&aacute;ximo a exportar.
+    * @return   render     Renderizaci&oacute;n de un objeto response con el fichero adjunto. Provoca la descarga en el navegador del cliente
+    */
+    public function exportTest(ObjectManager $em, $path, $selector = '', $id = '', $level = 0, $numQuestions = '' )
+    {
+
+        $questions = array();
+
+        $questions  = $em-&gt;getRepository(&quot;ModelBundle:Question&quot;)-&gt;findByTypeIdLevelCount($selector, $id, $level, $numQuestions);
+
+        $quizExport = new exportXml();
+        $quizExport-&gt;loadFromBd($em, $questions);
+        $quizExport-&gt;setPathDir($path);
+
+        if ($quizExport-&gt;saveFile()){
+            return  $this-&gt;downloadfileAction($quizExport-&gt;getPathDir(), $quizExport-&gt;getFilename());
+        }
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

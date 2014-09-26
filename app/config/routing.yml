@@ -1,0 +1,16 @@
+
+oneup_uploader:
+    resource: .
+    type: uploader
+
+admin:
+    resource: "@AdminBundle/Resources/config/routing.yml"
+    prefix:   /
+
+model:
+    resource: "@ModelBundle/Resources/config/routing.yml"
+    prefix:   /
+
+web:
+    resource: "@WebBundle/Resources/config/routing.yml"
+    prefix:   /

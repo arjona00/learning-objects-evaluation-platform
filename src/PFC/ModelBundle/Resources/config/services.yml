@@ -1,0 +1,7 @@
+parameters:
+#    model.example.class: PFC\ModelBundle\Example
+
+services:
+#    model.example:
+#        class: %model.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

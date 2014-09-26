@@ -1,0 +1,782 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\ModelBundle\DataFixtures\ORM;
+
+use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+
+use PFC\ModelBundle\Entity\Subject;
+use PFC\ModelBundle\Entity\Category;
+use PFC\ModelBundle\Entity\Subcategory;
+use PFC\ModelBundle\Entity\Question;
+use PFC\ModelBundle\Entity\Answer;
+
+
+/**
+*  &raquo; Data Fixtures que crea las asignaturas, categor&iacute;as, y subcategor&iacute;as de prueba, y relaci&oacute;n entre ellas
+*
+*/
+class LoadSubjectsData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+{
+    private $container;
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this-&gt;container = $container;
+    }
+
+    public function load(ObjectManager $manager)
+    {
+        // Listado de asiganturas (subjects), con sus categor&iacute;as (categories), subcategor&iacute;as (subcategories), preguntas (questions) y respuestas (answers)
+        $question_types = array (
+                            'multichoice' =&gt; 0,
+                            'truefalse' =&gt; 1,
+                            'shortanswer' =&gt; 2,
+                            'matching' =&gt; 3,
+                            'cloze'=&gt; 4,
+                            'essay' =&gt; 5,
+                            'numerical' =&gt; 6,
+                            'description'=&gt; -1,
+                            'category' =&gt; -1
+                            );
+
+        $arrayQuestions =  array (
+                               array(
+                                        'title'       =&gt; &quot;Responda a la siguiente afirmaci&oacute;n&quot;,
+                                        'description' =&gt; &quot;&iquest;Cu&aacute;ntas patas tiene el gato?&quot;,
+                                        'type'        =&gt; $question_types['multichoice'],
+                                        'single'      =&gt; true,  //indica si la respuesta permite marcar m&aacute;s de una
+                                        'penalty'    =&gt; 0.0,
+                                        'level'       =&gt; 5.0,
+                                        'answers'     =&gt;
+                                        array
+                                         (
+                                            array(
+                                                'content'  =&gt; &quot;4&quot;,
+                                                'value'    =&gt; 100.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;3&quot;,
+                                                'value'    =&gt; 0.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;1&quot;,
+                                                'value'    =&gt; 0.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;2&quot;,
+                                                'value'    =&gt; 0.0
+                                                 )
+                                         )
+                                    ),
+                               array(
+                                        'title'       =&gt; &quot;Responda a la siguiente afirmaci&oacute;n&quot;,
+                                        'description' =&gt; &quot;&iquest;Que parte de las abejas es la ponzo&ntilde;a?&quot;,
+                                        'type'        =&gt; $question_types['multichoice'],
+                                        'single'      =&gt; true,
+                                        'penalty'    =&gt; 0.0,
+                                        'level'       =&gt; 5.0,
+                                        'answers'     =&gt;
+                                        array
+                                         (
+                                            array(
+                                                'content'  =&gt; &quot;Cabeza&quot;,
+                                                'value'    =&gt; 0.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;Aguij&oacute;n&quot;,
+                                                'value'    =&gt; 100.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;Patas&quot;,
+                                                'value'    =&gt; 0.0
+                                                 )
+                                         )
+                                    ),
+                               array(
+                                        'title' =&gt; &quot;Responda a la siguiente afirmaci&oacute;n&quot;,
+                                        'description' =&gt; &quot;&iquest;C&oacute;mo es el cielo de marte?&quot;,
+                                        'type' =&gt;  $question_types['multichoice'],
+                                        'single'      =&gt; true,
+                                        'penalty'    =&gt; 0.0,
+                                        'level'       =&gt; 5.0,
+                                        'answers'     =&gt;
+                                        array
+                                         (
+                                            array(
+                                                'content'  =&gt; &quot;verde&quot;,
+                                                'value'    =&gt; 0.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;rojo&quot;,
+                                                'value'    =&gt; 100.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;azul&quot;,
+                                                'value'    =&gt; 0.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;amarillo&quot;,
+                                                'value'    =&gt; 0.0
+                                                 )
+                                         )
+                                    ),
+                                array(
+                                        'title'       =&gt; &quot;Responda a la siguiente afirmaci&oacute;n &quot;,
+                                        'description' =&gt; &quot;&iquest;La tierra es redonda?&quot;,
+                                        'type'        =&gt;  $question_types['truefalse'],
+                                        'single'      =&gt; true,
+                                        'penalty'    =&gt; 100.0,
+                                        'level'       =&gt; 5.0,
+                                        'answers'     =&gt;
+                                        array
+                                         (
+                                            array(
+                                                'content'  =&gt; &quot;true&quot;,
+                                                'value'    =&gt; 100.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;false&quot;,
+                                                'value'    =&gt; 0.0
+                                                 )
+                                         )
+                                    ),
+                               array(
+                                        'title'       =&gt; &quot;Responda a la siguiente afirmaci&oacute;n &quot;,
+                                        'description' =&gt; &quot;&iquest;C&uacute;al es la puntuaci&oacute;n m&aacute;xima que puedes conseguir tirando seis dados normales?&quot;,
+                                        'type'        =&gt;  $question_types['multichoice'],
+                                        'single'      =&gt; true,
+                                        'penalty'    =&gt; 0.0,
+                                        'level'       =&gt; 5.0,
+                                        'answers'     =&gt;
+                                        array
+                                         (
+                                            array(
+                                                'content'  =&gt; &quot;32&quot;,
+                                                'value'    =&gt; 0.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;25&quot;,
+                                                'value'    =&gt; 0.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;36&quot;,
+                                                'value'    =&gt; 100.0
+                                                 )
+                                         )
+                                    ),
+                                array(
+                                        'title'       =&gt; &quot;Calcula el resultado de la siguiente formula  &quot;,
+                                        'description' =&gt; &quot;$$ \sqrt{16} $$&quot;,
+                                        'type'        =&gt;  $question_types['numerical'],
+                                        'single'      =&gt; true,
+                                        'penalty'    =&gt; 33.33,
+                                        'level'       =&gt; 5.0,
+                                        'answers'     =&gt;
+                                        array
+                                         (
+                                            array(
+                                                'content'  =&gt; &quot;4&quot;,
+                                                'value'    =&gt; 100.0,
+                                                'tolerance' =&gt; 0.1
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;5&quot;,
+                                                'value'    =&gt; 100.0,
+                                                'tolerance' =&gt; 0.5
+                                                 )
+                                         )
+                                    ),
+                                array(
+                                        'title'       =&gt; &quot;Responda a la siguiente afirmaci&oacute;n con seleccionando las respuestas que considere correctas&quot;,
+                                        'description' =&gt; &quot;&iquest;Cu&aacute;l es la composici&oacute;n del aire?&quot;,
+                                        'type'        =&gt;  $question_types['multichoice'],
+                                        'single'      =&gt; false,
+                                        'penalty'    =&gt; 33.33,
+                                        'level'       =&gt; 5.0,
+                                        'answers'     =&gt;
+                                        array
+                                         (
+                                            array(
+                                                'content'  =&gt; &quot;Ox&iacute;geno&quot;,
+                                                'value'    =&gt; 25.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;Nitr&oacute;geno&quot;,
+                                                'value'    =&gt; 25.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;Di&oacute;xido de carbono&quot;,
+                                                'value'    =&gt; 25.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;Gases inertes como arg&oacute;n y ne&oacute;n&quot;,
+                                                'value'    =&gt; 25.0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;Cloro&quot;,
+                                                'value'    =&gt; 0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;Azufre&quot;,
+                                                'value'    =&gt; 0
+                                                 ),
+                                            array(
+                                                'content'  =&gt; &quot;Zinc&quot;,
+                                                'value'    =&gt; 0
+                                                 )
+                                         )
+                                    )
+                            );
+
+        $arraySubjects = array (
+                                   array (
+                                   'name' =&gt; &quot;MATEM&Aacute;TICA DISCRETA&quot;,
+                                   'description' =&gt; &quot;1 Praesent at tellus porttitor nisl porttitor sagittis. Mauris in massa ligula, a tempor nulla. Ut tempus interdum mauris vel vehicula. Nulla ullamcorper tortor commodo in sagittis est accumsan&quot;
+                                   ),
+                                    array (
+                                   'name' =&gt; &quot;M&Eacute;TODOS NUM&Eacute;RICOS&quot;,
+                                   'description' =&gt; &quot;2 Praesent at tellus porttitor nisl porttitor sagittis. Mauris in massa ligula, a tempor nulla. Ut tempus interdum mauris vel vehicula. Nulla ullamcorper tortor commodo in sagittis est accumsan&quot;
+                                   ),
+                                    array (
+                                   'name' =&gt; &quot;ESTAD&Iacute;STICA Y PROBABILIDAD I&quot;,
+                                   'description' =&gt; &quot;3 Praesent at tellus porttitor nisl porttitor sagittis. Mauris in massa ligula, a tempor nulla. Ut tempus interdum mauris vel vehicula. Nulla ullamcorper tortor commodo in sagittis est accumsan&quot;
+                                   ),
+                                    array (
+                                   'name' =&gt; &quot;ESTAD&Iacute;STICA Y PROBABILIDAD II&quot;,
+                                   'description' =&gt; &quot;4 Praesent at tellus porttitor nisl porttitor sagittis. Mauris in massa ligula, a tempor nulla. Ut tempus interdum mauris vel vehicula. Nulla ullamcorper tortor commodo in sagittis est accumsan&quot;
+                                   ),
+                                    array (
+                                   'name' =&gt; &quot;PROGRAMACI&Oacute;N MATEM&Aacute;TICA Y T&Eacute;CNICAS DE OPTIMIZACI&Oacute;N&quot;,
+                                   'description' =&gt; &quot;5 Praesent at tellus porttitor nisl porttitor sagittis. Mauris in massa ligula, a tempor nulla. Ut tempus interdum mauris vel vehicula. Nulla ullamcorper tortor commodo in sagittis est accumsan&quot;
+                                   )
+                                );
+
+        $arraySubjectCategories   =  array (
+                                            &quot;MATEM&Aacute;TICA DISCRETA&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 1&quot;,
+                                                    'title'       =&gt; &quot;Introducci&oacute;n&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;1&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 2&quot;,
+                                                    'title'       =&gt; &quot;L&oacute;gica y conjuntos&quot;,
+                                                    'description' =&gt; &quot;2 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;2&quot;
+                                                    )
+                                                ),
+                                            &quot;M&Eacute;TODOS NUM&Eacute;RICOS&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 1&quot;,
+                                                    'title'       =&gt; &quot;Metodos de solucion de ecuaciones&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;3&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 2&quot;,
+                                                    'title'       =&gt; &quot;Metodos de solucion de sistemas de ecuaciones&quot;,
+                                                    'description' =&gt; &quot;2 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;4&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 3&quot;,
+                                                    'title'       =&gt; &quot;Diferenciacion e integracion num&eacute;rica&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;5&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 4&quot;,
+                                                    'title'       =&gt; &quot;Soluci&oacute;n de ecuaciones diferenciales&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;6&quot;
+                                                    )
+                                                ),
+                                            &quot;ESTAD&Iacute;STICA Y PROBABILIDAD I&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 2&quot;,
+                                                    'title'       =&gt; &quot;Conjuntos y t&eacute;cnicas de conteo&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;7&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 5&quot;,
+                                                    'title'       =&gt; &quot;Axiomas y teoremas I&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;8&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 5&quot;,
+                                                    'title'       =&gt; &quot;Axiomas y teoremas II&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;9&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 7&quot;,
+                                                    'title'       =&gt; &quot;Teorema de Bayes&quot;,
+                                                    'description' =&gt; &quot;5 porttitor nisl sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;10&quot;
+                                                    )
+                                                ),
+                                            &quot;ESTAD&Iacute;STICA Y PROBABILIDAD II&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 6&quot;,
+                                                    'title'       =&gt; &quot;Espacio muestral y eventos&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;11&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 9&quot;,
+                                                    'title'       =&gt; &quot;Espacio finito equiprobable&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl porttitor sagittis. Mauris ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;12&quot;
+                                                    )
+                                                ),
+                                            &quot;PROGRAMACI&Oacute;N MATEM&Aacute;TICA Y T&Eacute;CNICAS DE OPTIMIZACI&Oacute;N&quot; =&gt; array
+                                                (
+                                                 array(
+                                                    'name'        =&gt; &quot;Tema 6&quot;,
+                                                    'title'       =&gt; &quot;Conjuntos convexos&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;13&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Tema 8&quot;,
+                                                    'title'       =&gt; &quot;Reglas de branching para algoritmos branch-and-cut&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;,
+                                                    'id_temp'     =&gt; &quot;14&quot;
+                                                    )
+                                                )
+                                            );
+
+        $arrayCategorySubcategories = array (
+                                            &quot;1&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 1&quot;,
+                                                    'title'       =&gt; &quot;Introducci&oacute;n&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 2&quot;,
+                                                    'title'       =&gt; &quot;L&oacute;gica&quot;,
+                                                    'description' =&gt; &quot;2 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 3&quot;,
+                                                    'title'       =&gt; &quot;Conjuntos&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;2&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 1&quot;,
+                                                    'title'       =&gt; &quot;Metodos de solucion de ecuaciones&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 2&quot;,
+                                                    'title'       =&gt; &quot;Metodos de solucion de sistemas de ecuaciones&quot;,
+                                                    'description' =&gt; &quot;2 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 3&quot;,
+                                                    'title'       =&gt; &quot;Diferenciacion e integracion num&eacute;rica&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 4&quot;,
+                                                    'title'       =&gt; &quot;Soluci&oacute;n de ecuaciones diferenciales&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;3&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 2&quot;,
+                                                    'title'       =&gt; &quot;Conjuntos y t&eacute;cnicas de conteo&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 5&quot;,
+                                                    'title'       =&gt; &quot;Axiomas&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;Teoremas II&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 7&quot;,
+                                                    'title'       =&gt; &quot;Teorema de Bayes&quot;,
+                                                    'description' =&gt; &quot;5 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;4&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;Espacio muestral y eventos&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 9&quot;,
+                                                    'title'       =&gt; &quot;Espacio finito equiprobable&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl porttitor sagittis. Mauris ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;5&quot; =&gt; array
+                                                (
+                                                 array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;porttitor convexos&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 8&quot;,
+                                                    'title'       =&gt; &quot;Mauris de branching para algoritmos branch-and-cut&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;6&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 1&quot;,
+                                                    'title'       =&gt; &quot;ligula&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 2&quot;,
+                                                    'title'       =&gt; &quot;ligula 3&quot;,
+                                                    'description' =&gt; &quot;2 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 3&quot;,
+                                                    'title'       =&gt; &quot;ligula 5&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;7&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 1&quot;,
+                                                    'title'       =&gt; &quot;sagittis de solucion de ecuaciones&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 2&quot;,
+                                                    'title'       =&gt; &quot;sagittis de solucion de sistemas de ecuaciones&quot;,
+                                                    'description' =&gt; &quot;2 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 3&quot;,
+                                                    'title'       =&gt; &quot;sagittis e integracion num&eacute;rica&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 4&quot;,
+                                                    'title'       =&gt; &quot;sagittis de ecuaciones diferenciales&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;8&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 2&quot;,
+                                                    'title'       =&gt; &quot;sagittis y t&eacute;cnicas de conteo&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 5&quot;,
+                                                    'title'       =&gt; &quot;sagittis&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;sagittis II&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 7&quot;,
+                                                    'title'       =&gt; &quot;sagittis de Bayes&quot;,
+                                                    'description' =&gt; &quot;5 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;9&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;porttitor muestral y eventos&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 9&quot;,
+                                                    'title'       =&gt; &quot;porttitor finito equiprobable&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl porttitor sagittis. Mauris ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;10&quot; =&gt; array
+                                                (
+                                                 array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;nisl convexos&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 8&quot;,
+                                                    'title'       =&gt; &quot;nisl de branching para algoritmos branch-and-cut&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;11&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 1&quot;,
+                                                    'title'       =&gt; &quot;sagittis de massa de ecuaciones&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 2&quot;,
+                                                    'title'       =&gt; &quot;sagittis de massa de sistemas de ecuaciones&quot;,
+                                                    'description' =&gt; &quot;2 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 3&quot;,
+                                                    'title'       =&gt; &quot;sagittis e massa num&eacute;rica&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 4&quot;,
+                                                    'title'       =&gt; &quot;sagittis de massa diferenciales&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;12&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 2&quot;,
+                                                    'title'       =&gt; &quot;sagittis y massa de conteo&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 5&quot;,
+                                                    'title'       =&gt; &quot;sagittis massa&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;sagittis II massa&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 7&quot;,
+                                                    'title'       =&gt; &quot;sagittis de Bayes massa&quot;,
+                                                    'description' =&gt; &quot;5 porttitor nisl sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;13&quot; =&gt; array
+                                                (
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;porttitor muestral y eventos Mauris&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 9&quot;,
+                                                    'title'       =&gt; &quot;porttitor finito equiprobable Mauris&quot;,
+                                                    'description' =&gt; &quot;4 porttitor nisl porttitor sagittis. Mauris ligula&quot;
+                                                    )
+                                                ),
+                                            &quot;14&quot; =&gt; array
+                                                (
+                                                 array(
+                                                    'name'        =&gt; &quot;Subcategoria 6&quot;,
+                                                    'title'       =&gt; &quot;nisl convexos nisl&quot;,
+                                                    'description' =&gt; &quot;1 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    ),
+                                                array(
+                                                    'name'        =&gt; &quot;Subcategoria 8&quot;,
+                                                    'title'       =&gt; &quot;nisl de branching para algoritmos nisl branch-and-cut&quot;,
+                                                    'description' =&gt; &quot;3 porttitor nisl porttitor sagittis. Mauris in massa ligula&quot;
+                                                    )
+                                                )
+                                            );
+
+        if(!empty($arraySubjects)){
+            foreach ($arraySubjects as $Subject) {
+
+                // Insertamos la asignatura
+                $sub       = new Subject();
+                $sub       -&gt;setName($Subject['name']);
+                $sub       -&gt;setDescription($Subject['description']);
+
+                $manager        -&gt;persist($sub);
+                $manager        -&gt;flush();
+                $sub       = ObjectIdentity::fromDomainObject($sub);
+
+                // Obtenemos el identificador de la asignatura y el objeto completo
+                $sub       = $manager
+                                    -&gt;getRepository('ModelBundle:Subject')
+                                    -&gt;find($sub-&gt;getIdentifier());
+
+                $arrayCategory = $arraySubjectCategories[$sub-&gt;getName()];
+
+                if(!empty($arrayCategory)){
+                    foreach ($arrayCategory as $category) {
+
+                        // Insertamos la categor&iacute;a
+                        $Category    = new Category();
+                        $Category    -&gt;setName($category['name']);
+                        $Category    -&gt;setTitle($category['title']);
+                        $Category    -&gt;setDescription($category['description']);
+                        $Category    -&gt;setSubject($sub);
+
+                        $manager     -&gt;persist($Category);
+                        $manager     -&gt;flush();
+
+                        $Category   = ObjectIdentity::fromDomainObject($Category);
+
+                        $Category   = $manager
+                                        -&gt;getRepository('ModelBundle:Category')
+                                        -&gt;find($Category-&gt;getIdentifier());
+
+                        $arraySubcategory = $arrayCategorySubcategories[$category['id_temp']];
+
+                        if(!empty($arraySubcategory)){
+                             foreach ($arraySubcategory as $subcategory) {
+                                // Insertamos la subcategoria
+                                $Subcategory    = new Subcategory();
+                                $Subcategory    -&gt;setName($subcategory['name']);
+                                $Subcategory    -&gt;setTitle($subcategory['title']);
+                                $Subcategory    -&gt;setDescription($subcategory['description']);
+                                $Subcategory    -&gt;setSubject($sub);
+                                $Subcategory    -&gt;setCategory($Category);
+
+                                $manager     -&gt;persist($Subcategory);
+                                $manager     -&gt;flush();
+
+                                $Subcategory   = ObjectIdentity::fromDomainObject($Subcategory);
+
+                                $Subcategory   = $manager
+                                                -&gt;getRepository('ModelBundle:Subcategory')
+                                                -&gt;find($Subcategory-&gt;getIdentifier());
+
+
+                                $num_questions = rand(1, 15);
+                                //echo $num_questions . ' ';
+                                for ($i = 1; $i &lt;= $num_questions; $i++) {
+                                    $question = $arrayQuestions[rand(0, count($arrayQuestions) - 1)]; //Cogemos aleatoriamente una de las preguntas
+
+                                    $Question    = new Question();
+                                    $Question    -&gt;setTitle($question['title']);
+                                    $Question    -&gt;setDescription($question['description']);
+                                    $Question    -&gt;setType($question['type']);
+                                    $Question    -&gt;setSingle($question['single']);
+                                    $Question    -&gt;setPenalty($question['penalty']);
+                                    $Question    -&gt;setLevel(rand(0,10));
+                                    $Question    -&gt;setSubject($sub);
+                                    $Question    -&gt;setCategory($Category);
+                                    $Question    -&gt;setSubcategory($Subcategory);
+                                    $Question    -&gt;setNumAnswers(0);
+                                    $Question    -&gt;setNumCorrectAnswers(0);
+
+                                    $manager     -&gt;persist($Question);
+
+                                    $manager     -&gt;flush();
+
+                                    $Question    = ObjectIdentity::fromDomainObject($Question);
+
+                                    $Question   = $manager
+                                                    -&gt;getRepository('ModelBundle:Question')
+                                                    -&gt;find($Question-&gt;getIdentifier());
+
+                                    $arrayAnswers = $question['answers'];
+
+                                    if(!empty($arrayAnswers)){
+                                        foreach ($arrayAnswers as $answer) {
+                                            $Answer   = new Answer();
+                                            $Answer   -&gt;setContent($answer['content']);
+                                            $Answer   -&gt;setValue($answer['value']);
+                                            if ($Question-&gt;getType() == $question_types['numerical'])
+                                                $Answer   -&gt;setTolerance($answer['tolerance']);
+                                            else
+                                                $Answer   -&gt;setTolerance(0);
+
+                                            $Answer   -&gt;setQuestion($Question);
+
+                                            $manager  -&gt;persist($Answer);
+                                        }
+                                        $manager     -&gt;flush();
+                                    }
+                                }
+
+                             }
+                         }
+
+                    }
+
+                }
+            }
+        }
+    }
+
+    public function getOrder()
+    {
+        return 10;
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

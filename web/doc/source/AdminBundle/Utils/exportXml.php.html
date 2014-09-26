@@ -1,0 +1,192 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace PFC\AdminBundle\Utils;
+
+use PFC\AdminBundle\Entity as XMLEntities;
+use PFC\ModelBundle\Entity\Question;
+use PFC\ModelBundle\Entity\Answer;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Filesystem\Filesystem;
+use JMS\Serializer\SerializerBuilder;
+
+/**
+* &raquo; Clase que realiza el proceso de exportaci&oacute;n a moodleXML.
+*
+*/
+class exportXml {
+
+    private $xmlQuiz;
+    private $fileName;
+    public $pathDir;
+
+    /**
+    * &raquo; Recoge el contenido del objeto xmlQuiz y lo serializa. El resultado lo inserta el fichero que ser&aacute; exportado.
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @return  boolean     Devuelve verdadero si la operaci&oacute;n se ha realizado correctamente.
+    */
+	public function saveFile() {
+
+        $fs = new Filesystem();
+
+        if ($this-&gt;xmlQuiz-&gt;questions-&gt;isEmpty()) {
+
+            $this-&gt;fileName = 'emptyfile_' . time() . '.xml';
+            $fs-&gt;dumpFile($this-&gt;pathDir . $this-&gt;fileName, &quot;&lt;quiz&gt;No questions to export&lt;/quiz&gt;&quot;);
+
+        }else{
+
+            $builder = SerializerBuilder::create();
+            $serializer = $builder-&gt;build();
+
+            $xml = $serializer-&gt;serialize($this-&gt;xmlQuiz, 'xml');
+
+            $this-&gt;fileName = 'export_' . time() . '.xml';
+
+            $fs-&gt;dumpFile($this-&gt;pathDir . $this-&gt;fileName, $xml);
+        }
+        return -1;
+    }
+
+    /**
+    * &raquo; Inserta en el objeto xmlQuiz con las preguntas recibidas como par&aacute;metro.
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   manager     $em          Doctrine Manager
+    * @param   array       $questions   array de preguntas para exportar.
+    *
+    */
+    public function loadFromBd(ObjectManager $em, $questions){
+
+        $question_types = ['multichoice',
+                           'truefalse',
+                           'shortanswer',
+                           'matching',
+                           'cloze',
+                           'essay',
+                           'numerical',
+                           'description',
+                           'category'];
+
+        $questionsXml = new ArrayCollection();
+
+
+    	foreach ($questions AS $question) {
+            $questionXml = new XMLEntities\XmlQuestion();
+            $questionXml-&gt;name-&gt;text = $question-&gt;getTitle();
+            $questionXml-&gt;questiontext-&gt;text = $question-&gt;getDescription();
+            $questionXml-&gt;type = $question_types[$question-&gt;getType()];
+		    $questionXml-&gt;defaultgrade = 1;
+		    $questionXml-&gt;penalty = $question-&gt;getPenalty() / 100;
+            $questionXml-&gt;single = $question-&gt;getSingle();
+            $questionXml-&gt;hidden = 0;
+
+            $answers   = $em
+                            -&gt;getRepository('ModelBundle:Answer')
+                            -&gt;findByQuestion($question);
+
+            $answersXml = new ArrayCollection();
+            if(!empty($answers)){
+                foreach ($answers as $answer) {
+                    $answerXml = new XMLEntities\XmlAnswer();
+                    $answerXml-&gt;text = $answer-&gt;getContent();
+                    $answerXml-&gt;fraction = $answer-&gt;getValue();
+                    if ($questionXml-&gt;type == 'numerical')
+                        $answerXml-&gt;tolerance = $answer-&gt;getTolerance();
+                    $answersXml-&gt;add($answerXml);
+                }
+            }
+            $questionXml-&gt;answers = $answersXml;
+            $questionsXml-&gt;add($questionXml);
+		}
+        $this-&gt;xmlQuiz-&gt;questions = $questionsXml;
+        //var_dump($this-&gt;xmlQuiz);
+    }
+
+    public function __construct()
+    {
+        $this-&gt;xmlQuiz = new XMLEntities\XmlQuiz();
+    }
+
+    /**
+     * Get fileName
+     *
+     * @return string
+     */
+    public function getFileName()
+    {
+        return $this-&gt;fileName;
+    }
+
+    /**
+     * Set pathDir
+     *
+     * @param string $pathDir
+     * @return importXml
+     */
+    public function setPathDir($pathDir)
+    {
+        $this-&gt;pathDir = $pathDir;
+
+        return $this;
+    }
+
+    /**
+     * Get pathDir
+     *
+     * @return string
+     */
+    public function getPathDir()
+    {
+        return $this-&gt;pathDir;
+    }
+}
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

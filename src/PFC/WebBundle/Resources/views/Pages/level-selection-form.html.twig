@@ -1,0 +1,96 @@
+{% extends "WebBundle::base.html.twig" %}
+{% block template %}
+
+<!-- Content strats -->
+
+<div class="content">
+   <div class="container">
+      <div class="row">
+         <div class="span12">
+
+            <div class="process">
+               <div class="row">
+                  <div class="span12">
+
+                     <div class="row">
+                        <div class="span12">
+                          <form method="post"
+                            {% if (subCategorySlug != '' ) %}
+                                 action="{{ path('subcategoryTest', {'subjectSlug' : subject.slug, 'categorySlug' : categorySlug, 'subCategorySlug' : subCategorySlug }) }}">
+                              {% elseif (categorySlug != '' ) %}
+                                  action="{{ path('categoryTest', {'subjectSlug' : subject.slug, 'categorySlug' : categorySlug}) }}">
+                              {% else %}
+                                  action="{{ path('subjectTest', {'subjectSlug' : subject.slug}) }}">
+                              {% endif %}
+
+                            <div class="process-meta"><span> {{ 'level-selection.1.title' | trans }} </span></div>
+                            <p>{# <input  type="text" name="numMaxQuestions" value="10" /> #}
+                              <select id="numMaxQuestions" name="numMaxQuestions">
+                                  <option value="5" >5</option>
+                                  <option value="10" selected>10</option>
+                                  <option value="15">15</option>
+                                  <option value="20">20</option>
+                                  <option value="25">25</option>
+                                  <option value="50">50</option>
+                              </select>
+                            </p>
+                            <div class="process-meta"><span>{{ 'level-selection.2.title' | trans }} </span></div>
+                            <h6>{{ 'level-selection.advice' | trans }} </h6>
+                            <p>
+                              <table>
+                                {% set isLevel = false %}
+                                {% set count = 0 %}
+                                {% for level in levels %}
+                                  {% if (level > 0) %}
+                                    {% set isLevel = true %}
+                                     <tr>
+                                        <td>
+                                          <input  type="radio" name="level" value="{{ loop.index }}" />
+                                        </td>
+                                        <td>
+                                          <h5>&nbsp;{{ 'Nivel' | trans }} {{ loop.index }}:&nbsp;&nbsp;{{ level }} {{ 'questions' | trans }}</h5>
+                                          {% set count = count + level %}
+                                        </td>
+                                     </tr>
+                                  {% endif %}
+                                {% endfor %}
+                                  <tr>
+                                    {% if isLevel %}
+                                        <td>
+                                          <input  type="radio" name="level" value="0" checked/>
+                                        </td>
+                                        <td>
+                                          <h5>&nbsp;{{ 'level-selection.questionNumber.title' | trans }}:&nbsp;&nbsp;{{ count }} {{ 'questions' | trans }}</h5>
+                                        </td>
+                                    {% else %}
+                                        <td>
+                                          &nbsp;
+                                        </td>
+                                        <td>
+                                          <h5>{{ 'level-selection.questionNumber.none' | trans }} </h5>
+                                        </td>
+                                    {% endif %}
+                                 </tr>
+                             </table>
+                             {% if isLevel %}
+                                <div class="form-actions">
+                                 <!-- Buttons -->
+                                  <button type="submit" name="submitB" class="btn">{{ 'doTest' | trans}}</button>
+                                </div>
+
+                              {% endif %}
+                            </p>
+                         </form>
+                        </div>
+                     </div>
+
+                  </div>
+               </div>
+            </div>
+
+         </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

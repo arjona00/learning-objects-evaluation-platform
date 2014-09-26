@@ -1,0 +1,223 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\AdminBundle\Utils;
+
+use PFC\AdminBundle\Entity as XMLEntities;
+use JMS\Serializer\SerializerBuilder;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Finder\Finder;
+use PFC\ModelBundle\Entity\Question;
+use PFC\ModelBundle\Entity\Answer;
+use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+
+class importXml {
+
+	private $fileName;
+	public $pathDir;
+	private $xmlQuiz;
+
+    /**
+     * Importa el archivo a procesar y obtiene los datos necesarios para construir las preguntas y sus respuestas
+     *
+     * @return integer
+     */
+	public function importFile()
+    {
+		$finder = new Finder();
+        $finder-&gt;files()-&gt;in($this-&gt;pathDir)-&gt;name('*.xml');
+
+        $path = '';
+        foreach ($finder as $file) {
+            // Print the relative path to the file
+           $path = $file-&gt;getRelativePathname();
+        }
+        if ($path == '') {
+            return 0; //C&oacute;digo de error
+        }
+
+        $path =  $this-&gt;pathDir . $path;
+
+        try {
+            $xmlFile = file_get_contents($path);
+
+            $builder = SerializerBuilder::create();
+            $serializer = $builder-&gt;build();
+            $this-&gt;xmlQuiz = $serializer-&gt;deserialize($xmlFile, 'PFC\AdminBundle\Entity\XmlQuiz', 'xml');
+
+            //var_dump($this-&gt;xmlQuiz);
+            //ldd($this-&gt;xmlQuiz);
+
+            //$xml = $serializer-&gt;serialize($this-&gt;xmlQuiz, 'xml');
+            //ld($xml);
+            //$fs-&gt;dumpFile($this-&gt;pathDir . 'file.txt', $xml); //crea un fichero con el contenido del texto.
+
+        } catch (Exception $e) {
+            echo 'Error en la serializaci&oacute;n del archivo: ',  $e-&gt;getMessage(), &quot;\n&quot;;
+            return 1;
+        }
+
+        return -1;
+    }
+
+    /**
+     * Construye las entidades Question y Answer y las persiste en la base de datos
+     *
+     * @param object $em           Objeto que representa un Entity Managers de Doctrine
+     * @param object $subcategory  Objeto de la entidad Subcategory
+     */
+    public function saveFileToBd(ObjectManager $em, $subcategory)
+    {
+        $question_types = ['multichoice' =&gt; 0,
+                           'truefalse' =&gt; 1,
+                           'shortanswer' =&gt; 2,
+                           'matching' =&gt; 3,
+                           'cloze'=&gt; 4,
+                           'essay' =&gt; 5,
+                           'numerical' =&gt; 6,
+                           'description'=&gt; -1,
+                           'category' =&gt; -1];
+
+
+
+    	foreach ($this-&gt;xmlQuiz-&gt;questions AS $questionXml) {
+            if ($question_types[$questionXml-&gt;type] != -1){
+
+                //var_dump($questionXml);
+                $question = new Question();
+    		    $question-&gt;setTitle(strip_tags($questionXml-&gt;name-&gt;text)); //Elimina etiqutas html. Para ignorar algunas, escribir strip_tags($text, 'etiqueta1,etiquta2')
+    		    $question-&gt;setDescription(strip_tags($questionXml-&gt;questiontext-&gt;text));
+    		    $question-&gt;setType($question_types[$questionXml-&gt;type]);
+
+    		    $question-&gt;setLevel(5);
+    		    $question-&gt;setNumAnswers(0);
+    		    $question-&gt;setNumCorrectAnswers(0);
+                $question-&gt;setSingle( is_null($questionXml-&gt;single) ? true : $questionXml-&gt;single );
+                $question-&gt;setPenalty( is_null($questionXml-&gt;penalty) ? 0 : $questionXml-&gt;penalty * 100 );
+                $question-&gt;setCategory($subcategory-&gt;getCategory());
+                $question-&gt;setSubcategory($subcategory);
+                $question-&gt;setSubject($subcategory-&gt;getSubject());
+
+                $em -&gt;persist($question);
+                $em        -&gt;flush();
+
+                $question    = ObjectIdentity::fromDomainObject($question);
+
+                $question   = $em
+                                -&gt;getRepository('ModelBundle:Question')
+                                -&gt;find($question-&gt;getIdentifier());
+
+                $arrayAnswers = $questionXml-&gt;answers;
+                if(!empty($arrayAnswers)){
+                    foreach ($arrayAnswers as $answerXml) {
+
+                        $answer = new Answer();
+                        $answer-&gt;setContent(strip_tags($answerXml-&gt;text));
+                        $answer-&gt;setTolerance(is_null($answerXml-&gt;tolerance) ? 0 : $answerXml-&gt;tolerance );
+                        $answer-&gt;setValue($answerXml-&gt;fraction); //Hay preguntas multivaluadas por lo que este valor fluctua entre 0.0 y 100
+                        $answer-&gt;setQuestion($question);
+
+                        $em -&gt;persist($answer);
+                    }
+                    $em-&gt;flush();
+                }
+            }
+		}
+    }
+
+    public function __construct()
+    {
+        $this-&gt;xmlQuiz = new XMLEntities\XmlQuiz();
+    }
+
+    /**
+     * Set fileName
+     *
+     * @param string $fileName
+     * @return importXml
+     */
+    public function setFileName($fileName)
+    {
+        $this-&gt;fileName = $fileName;
+
+        return $this;
+    }
+
+    /**
+     * Get fileName
+     *
+     * @return string
+     */
+    public function getFileName()
+    {
+        return $this-&gt;fileName;
+    }
+
+    /**
+     * Set pathDir
+     *
+     * @param string $pathDir
+     * @return importXml
+     */
+    public function setPathDir($pathDir)
+    {
+        $this-&gt;pathDir = $pathDir;
+
+        return $this;
+    }
+
+    /**
+     * Get pathDir
+     *
+     * @return string
+     */
+    public function getPathDir()
+    {
+        return $this-&gt;pathDir;
+    }
+};</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

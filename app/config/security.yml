@@ -1,0 +1,27 @@
+security:
+    encoders:
+        Symfony\Component\Security\Core\User\User: plaintext
+
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    providers:
+        in_memory:
+            memory:
+                users:
+                    admin:  { password: admin, roles: [ 'ROLE_SUPER_ADMIN' ] }
+                    profesor: { password: profesor, roles: [ 'ROLE_ADMIN' ] }
+
+    firewalls:
+        admin_subjects:
+            pattern:    ^/adminSubjects
+            anonymous: ~
+            http_basic:
+                realm: "Subjects Admin Area"
+        main:
+            pattern: ^/
+            anonymous: true
+
+    access_control:
+        - { path: ^/adminSubjects, roles: ROLE_ADMIN }

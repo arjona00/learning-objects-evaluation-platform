@@ -1,0 +1,68 @@
+{% extends "WebBundle::base.html.twig" %}
+{% block template %}
+
+<!-- Content strats -->
+
+<div class="content">
+   <div class="container">
+      <div class="row">
+         <div class="span12">
+
+            <!-- Service starts -->
+
+            <div class="servic">
+               <div class="row">
+                  <div class="span12">
+
+                     {# Datos de la asignatura #}
+                     <div class="hero">
+                        <h3><span>{{ subject.name }}</span></h3>
+                        <p>{{ subject.description }}</p>
+                            <div class="button">
+                               <a href="{{ path('subjectTestLevelSelection', {'subjectSlug' : subject.slug}) }}">
+                                 <i class="icon-book"></i> {{ 'subjet.doTest.subjet' | trans }}
+                               </a>
+                            </div>
+                     </div>
+
+                     <div class="row">
+                           {% set i = 1 %}
+                           {% for category in subjectCategories %}
+                              <div class="main-box">
+                                <h4>{{ category.name }}: {{ category.title }}</h4>
+                                <p>{{ category.description }}</p>
+                                  <div class="button">
+                                    <a href="{{ path('categoryTestLevelSelection', {'subjectSlug' : subject.slug, 'categorySlug' : category.slug }) }}">
+                                      <i class="icon-book"></i> {{ 'subjet.doTest.category' | trans }}
+                                    </a>
+                                  </div>
+                                  <br/>
+
+                                <ul>
+                                   {% for subcategory in categorySubcategories[category.id] %}
+                                      <li>{{ subcategory.name}} - {{ subcategory.title }}: {{ category.description }}
+                                        <div class="button">
+                                          <a href="{{ path('subcategoryTestLevelSelection', {'subjectSlug' : subject.slug, 'categorySlug' : category.slug, 'subCategorySlug' : subcategory.slug }) }}">{{ 'doTest' | trans }}</a>
+                                          </div>
+                                      </li>
+                                   {% endfor %}
+                                </ul>
+
+                              </div>
+                            {% set i = i+1 %}
+                            <br/>
+                           {% endfor %}
+                     </div>
+
+                  </div>
+               </div>
+            </div>
+
+            <!-- Service ends -->
+
+
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}

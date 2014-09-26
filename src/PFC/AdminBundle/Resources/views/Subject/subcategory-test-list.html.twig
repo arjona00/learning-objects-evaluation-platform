@@ -1,0 +1,57 @@
+{% extends "WebBundle::base.html.twig" %}
+{% block template %}
+
+{% import 'AdminBundle:Utils:utilidades.html.twig' as utilidades %}
+{% include 'AdminBundle:Utils:mathjax.html.twig' %}
+
+<div class="content">
+   <div class="container">
+      <div class="row">
+         <div class="span12">
+
+
+            <div class="process">
+               <div class="row">
+                  <div class="span12">
+                     <div class="hero">
+                        <h3><span>{{ subject.name }}</span></h3>
+                        <h4><span>{{ subcategory.name }}: {{ subcategory.title }}</span></h4>
+                        <!-- para -->
+                        <p>{{ subcategory.description }}</p>
+                     </div>
+
+                  {# Solo podemos importar cuestiones de una subcategoría, ya que todas las cuestiones se clasifican a este nivel #}
+                    {# Importar/Exportar #}
+                    {{ utilidades.mostrarExportacion('subcategory', subcategory.id) }}
+                    {# Exportar Ends #}
+
+                     <div class="form">
+                       <div class="row">
+                          {#{ questions | length }#}
+                          {% for question in questions %}
+                          <div class="span12">
+                             <!-- Step 1 -->
+                             <div class="process-meta"><span>Cuestión {{ loop.index }} </span> &nbsp; - Nivel: {{ question.level | number_format(2) }}
+                                 <a itemprop="url" href="{{ path('subcategory_question_delete', {'subject' : subject.slug, 'subcategory_id' : subcategory.id , 'question_id' : question.id }) }}">
+                                  <img itemprop="image" src="{{ asset('bundles/web/img/delete.png') }}"
+                                    title="Eliminar test" alt="Eliminar test" />
+                                 </a>
+                             </div>
+
+                             {{ utilidades.mostrarCuestiones(question, questionAnswers) }}
+
+                          </div>
+                          {% endfor %}
+                       </div>
+                  </div>
+
+                </div>
+
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

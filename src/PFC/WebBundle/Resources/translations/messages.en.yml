@@ -1,0 +1,48 @@
+answer.true: 'True'
+answer.false: 'False'
+Nivel: 'Level'
+questions: 'questions'
+
+#menu
+menu.index: Home
+menu.subjets: Subjets
+menu.admin: Administration
+
+
+#index
+index.banner.1.title: Questionnaires
+index.banner.1.description: 'Select the subjet, the topic and perform a test'
+index.banner.2.title: 'Easy to use'
+index.banner.2.description: 'Complete test in the chosen levels and get results'
+index.subjets.title: 'Perform a test of your chosen subjet'
+index.subjets.subtitle: 'Each subjet has its own topics and subcategories'
+index.subjets.description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vulputate eros nec odio egestas in dictum nisi vehicula. Pellentesque habitant morbi tristique senectus et ac turpis egestas. Suspendisse porttitor luctus imperdiet. <a href="#">Praesent ultricies</a> enim ac ipsum aliquet pellentesque. Nullam justo nunc, dignissim at convallis posuere, sodales eu orci. Duis a risus sed dolor placerat semper quis in urna. Nam risus magna, fringilla sit amet blandit viverra, dignissim eget est. Ut <strong>commodo ullamcorper risus nec</strong> mattis. Aenean at massa leo. Vestibulum in varius arcu.'
+
+#level-selection
+level-selection.1.title: 'Choose the max number of question you want to perform a questionnaire'
+level-selection.2.title: 'Choose the level of questionnaire'
+level-selection.advice: '* It shows the number of questions in each level'
+level-selection.questionNumber.title: 'Random questions of any level'
+level-selection.questionNumber.none: 'There  arent questions of this element.'
+doTest: 'Perform test'
+
+#subjet
+subjet.doTest.subjet: 'Perform test of the whole subject'
+subjet.doTest.category: 'Perform test of the whole topic'
+
+#test
+test.sendAnswer: 'Send answers'
+
+#test-post
+test-post.level: 'The result of test of level '
+test-post.questions: 'Total number of questions:'
+test-post.answers: 'Number of answered questions:'
+test-post.correctAnswers: 'Number of correct answers:'
+test-post.partiallyCorrectAnswers: 'Number of partially correct answers:'
+test-post.incorrect: 'Incorrect answers:'
+test-post.result: 'The result of questionnaire is:'
+test-post.return: 'Return back to topic selection'
+
+#question
+test.question: Question
+test.penalty: Penalty

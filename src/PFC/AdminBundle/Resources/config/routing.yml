@@ -1,0 +1,166 @@
+subject_list:
+    pattern:  /adminSubjects/subject/list
+    defaults: { _controller: AdminBundle:Subject:list, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+subject_testList:
+    pattern:  /adminSubjects/{subject}/testList
+    defaults: { _controller: AdminBundle:Subject:testList, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+subject_create:
+    pattern:  /adminSubjects/subject/create
+    defaults: { _controller: AdminBundle:Subject:create, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+subject_update:
+    pattern:  /adminSubjects/subject/update/{field}
+    defaults: { _controller: AdminBundle:Subject:update, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+subject_delete:
+    pattern:  /adminSubjects/subject/delete/{subject_id}
+    defaults: { _controller: AdminBundle:Subject:delete, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+        _method:  GET|POST
+    options:
+        expose: true
+
+subject_question_delete:
+    pattern:  /adminSubjects/{subject}/testList/deleteQuestion/{question_id}
+    defaults: { _controller: AdminBundle:Subject:deleteTest, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+subject_question_export:
+    pattern:  /adminSubjects/subject/questions/export/{subject_id}
+    defaults: { _controller: AdminBundle:Subject:export, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+category_testList:
+    pattern:  /adminSubjects/{subject}/{category_id}/testList
+    defaults: { _controller: AdminBundle:Category:testList, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+category_create:
+    pattern:  /adminSubjects/category/create
+    defaults: { _controller: AdminBundle:Category:create, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+        _method:  GET|POST
+    options:
+        expose: true
+
+category_update:
+    pattern:  /adminSubjects/category/update/{field}
+    defaults: { _controller: AdminBundle:Category:update, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+category_delete:
+    pattern:  /adminSubjects/category/delete/{category_id}
+    defaults: { _controller: AdminBundle:Category:delete, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+category_question_delete:
+    pattern:  /adminSubjects/{subject}/category/{category_id}/testList/deleteQuestion/{question_id}
+    defaults: { _controller: AdminBundle:Category:deleteTest, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+category_question_export:
+    pattern:  /adminSubjects/category/questions/export/{category_id}
+    defaults: { _controller: AdminBundle:Category:export, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+subcategory_testList:
+    pattern:  /adminSubjects/{subject}/{category}/{subcategory_id}/testList
+    defaults: { _controller: AdminBundle:Subcategory:testList, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl% 
+
+subcategory_create:
+    pattern:  /adminSubjects/subcategory/create
+    defaults: { _controller: AdminBundle:Subcategory:create, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+subcategory_update:
+    pattern:  /adminSubjects/subcategory/update/{field}
+    defaults: { _controller: AdminBundle:Subcategory:update, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+subcategory_delete:
+    pattern:  /adminSubjects/subcategory/delete/{subcategory_id}
+    defaults: { _controller: AdminBundle:Subcategory:delete, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+subcategory_question_delete:
+    pattern:  /adminSubjects/{subject}/subcategory/{subcategory_id}/testList/deleteQuestion/{question_id}
+    defaults: { _controller: AdminBundle:Subcategory:deleteTest, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true
+
+subcategory_question_export:
+    pattern:  /adminSubjects/subcategory/questions/export/{subcategory_id}
+    defaults: { _controller: AdminBundle:Subcategory:export, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+subcategory_question_import:
+    pattern:  /adminSubjects/quesions/import/{subcategory_id}
+    defaults: { _controller: AdminBundle:Question:index, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+
+question_upload_result:
+    pattern:  /adminSubjects/quesions/import/{subcategory_id}/upload
+    defaults: { _controller: AdminBundle:Question:upload, _format: %formatUrl%   }
+    requirements:
+        _format: %formatUrl%
+        _method:  GET|POST
+    options:
+        expose: true

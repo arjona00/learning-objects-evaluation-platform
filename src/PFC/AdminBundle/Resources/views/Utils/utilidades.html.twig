@@ -1,0 +1,89 @@
+{# utilidades.html.twig #}
+
+{# Macro combinar el tipo de objeto a mostrar en la exportación #}
+{% macro mostrarExportacion(entity, id) %}
+    <div class="cta">
+     <div class="row">
+        <div class="span9">
+           <!-- First line -->
+           <p class="cbig">Exportar questiones<br/><br/></p>
+        </div>
+        <div class="span2">
+            {% if entity == 'subject'  %}
+                <form action="{{ path('subject_question_export', { 'subject_id': id }) }}" method="post">
+            {% elseif entity == 'category' %}
+                <form action="{{ path('category_question_export', { 'category_id': id }) }}" method="post">
+            {% else %}
+                <form action="{{ path('subcategory_question_export', { 'subcategory_id': id }) }}" method="post">
+            {% endif %}
+          <div>
+          <label>Seleccione el nivel de las preguntas: </label>
+          <select id="level" name="level">
+              <option value="0">Cualquier nivel</option>
+              {% for i in 1..10 %}
+                <option value="{{ loop.index }}">{{ loop.index }}</option>
+              {% endfor %}
+          </select>
+          <br/><br/>
+            <label>Número de preguntas: </label><input id="numQuestions"  name="numQuestions" value="" />
+            <label>* Déjelo vacio para exportar todas las preguntas</label>
+          </div>
+          <div class="button">
+             <button type="submit" class="btn btn-success" value="">Exportar</button>
+          </div>
+          </form>
+        </div>
+        {% if entity == 'subcategory'  %}
+              <div class="span9">
+                 <p class="cbig">Importar cuestiones</p>
+              </div>
+              <div class="span2">
+                 <!-- Button -->
+                 <div class="button">
+                    <a href="{{ path('subcategory_question_import', { 'subcategory_id' : id }) }}">Importar</a>
+                  </div>
+              </div>
+          {% endif %}
+     </div>
+  </div>
+{% endmacro %}
+
+{# Macro para factorizar el mostrado de las cuestiones #}
+{% macro mostrarCuestiones(question, questionAnswers) %}
+     &nbsp;Pelalización: {{ question.penalty | number_format(2) }}
+     <h5>{{ question.title | raw }}</h5>
+     <p>{{ question.description | raw }}</p>
+     <p>
+        <table>
+          {% for answer in questionAnswers[question.id] %}
+
+             <tr>
+                <td>
+                    {% if (((question.type == 0) or (question.type == 1)) and (question.single)) %}
+                      <input type="radio" name="{{ question.id }}" value="{{ answer.id }}" disabled
+                      {% if (answer.value > 0.0) %}checked{% endif %} />
+
+                    {% elseif ((question.type == 0) and not (question.single)) %}
+                      <input type="checkbox" name="{{ question.id }}" value="{{ answer.id }}" disabled
+                      {% if (answer.value > 0.0) %}checked{% endif %} />
+
+                    {% elseif (question.type == 6) %}
+                      <input type="text" name="{{ question.id }}" value="{{ answer.content }}+-{{ answer.tolerance }}" disabled />
+                    {% endif %}
+                </td>
+                <td>
+                  {% if (question.type != 6) %}
+                    <div id="taoptionAnswer{{ question.id }}{{ answer.id}}" class="block" style="display:block">{{ answer.content | raw }}</div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if (answer.value > 0) %}
+                    <div class="block" style="display:block">&nbsp;&nbsp;+&nbsp;{{ answer.value }}</div>
+                  {% endif %}
+                </td>
+             </tr>
+
+         {% endfor %}
+       </table>
+     </p>
+{% endmacro %}

@@ -1,0 +1,824 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\AdminBundle\Utils;
+
+use PFC\ModelBundle\Entity\Answer;
+use PFC\AdminBundle\Entity\AssessmentItem;
+use PFC\ModelBundle\Entity\Question;
+
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Persistence\ObjectManager;
+
+use JMS\Serializer\SerializerBuilder;
+
+/**
+ * Clase para el manejo de paquetes IMS QTI durante el procesos de importaci&oacute;n
+ *
+ * @package PFC\AdminBundle\Controller;
+ * @version 1.0
+ *
+ */
+class importQTI
+{
+    //private $fileName;
+
+    /**
+     * Atributo que contiene la ruta al paquete de IMS QTI subido al servidor
+     */
+    public $pathDir;
+
+    /**
+     * Contiene las referencias a los archivos XML que contienen los Items de IMS QTI validos para esta aplicaci&oacute;n, esto es, las URL parciales hacia esos
+     *    archivos XML partiendo desde la raiz del paquete QTI
+     */
+    private $assessmentsRef;
+
+    /**
+     * Contiene Items validos para esta aplicaci&oacute;n de IMS QTI serializados en un objeto de tipo PFC\AdminBundle\Entity\AssessmentItem
+     */
+    private $assessmentItemsXML;
+
+    /**
+     * Constructor de la clase
+     *
+     * @return PFC\AdminBundle\Entity\XmlManifest
+     */
+    public function __construct()
+    {
+        $this-&gt;assessmentItemsXML = new ArrayCollection();
+    }
+
+    /**
+     * Importa el archivo a procesar y obtiene los datos necesarios para construir las preguntas y sus respuestas
+     *
+     * @return integer
+     */
+    public function importFile()
+    {
+        $fs = new Filesystem();
+        $finder = new Finder();
+        $finder-&gt;files()-&gt;in($this-&gt;pathDir)-&gt;name('*.zip');
+
+        $path = '';
+
+        $tempPath = sys_get_temp_dir().&quot;/qti-pack/&quot;;
+        $tempPath = str_replace('\\', '/', $tempPath);
+
+        foreach ($finder as $file) {
+           // Print the relative path to the file
+           $path = $file-&gt;getRelativePathname();
+        }
+
+        if ($path == '') {
+            return 2; // C&oacute;digo de error
+        }
+
+        $path = $this-&gt;pathDir.$path;
+
+        if ($this-&gt;unzipQTI($path) === false) {
+            return 2; // C&oacute;digo de error
+        }
+
+
+        try {
+            // Se comprueba que exista un archivo de manifiesto
+            if (!$fs-&gt;exists($tempPath.&quot;imsmanifest.xml&quot;)) {
+                return 3; // C&oacute;digo de error
+            }
+
+
+            $manifestFile = file_get_contents($tempPath.&quot;imsmanifest.xml&quot;);
+
+            if ($manifestFile === false) {
+                return 4; // C&oacute;digo de error
+            }
+
+            $assessmentsRef = $this-&gt;getAssessmentsRef($manifestFile);
+
+            if (empty($assessmentsRef)) {
+                return 4; // C&oacute;digo de error
+            }
+
+            foreach ($assessmentsRef as $assessmentRef) {
+
+                if (!$fs-&gt;exists($tempPath.$assessmentRef)) {
+                    break; // Se detiene la ejecuci&oacute;n del bucle devido a que la referencia a archivo del item es incorrecta, o el archivo no existe
+                }
+
+                $xmlFile = file_get_contents($tempPath.$assessmentRef);
+
+                //ld(&quot;Ruta: &quot;, $tempPath.$assessmentRef, &quot; Contenido&quot; ,$xmlFile);
+
+                $xmlFile = strip_tags($xmlFile, AssessmentItem::TAGS); // Se elimina las etiquetas html del archivo para que no puedan perjudicar al proceso de serializado
+
+                $builder = SerializerBuilder::create();
+                $serializer = $builder-&gt;build();
+
+                $assessmentItem = $serializer-&gt;deserialize($xmlFile, 'PFC\AdminBundle\Entity\AssessmentItem', 'xml');
+                $assessmentItem-&gt;ref = $tempPath.$assessmentRef;
+
+                $this-&gt;assessmentItemsXML [] = $assessmentItem;
+            }
+
+            $afterValidator = $this-&gt;assessmentItemsXML-&gt;count(); // Se guarda el n&uacute;mero de cuestiones contenida en el array para comprobar si alguna se elimina luego de realizar la validaci&oacute;n
+            $this-&gt;assessmentItemsXML = $this-&gt;assessmentItemValidator($this-&gt;assessmentItemsXML);
+
+            if ($this-&gt;assessmentItemsXML-&gt;count() === 0) { // Si no existen preguntas contenidas en el array
+                //ld(&quot;No validado&quot;);
+                return 4; // C&oacute;digo de error
+            }
+
+
+        }
+        catch (Exception $e) {
+            echo 'Error en la serializaci&oacute;n del archivo imsmanifest.xml: ',  $e-&gt;getMessage(), PHP_EOL;
+            return 1; //C&oacute;digo de error
+        }
+
+        if ($this-&gt;assessmentItemsXML-&gt;count() &lt; $afterValidator) { // Si existen preguntas, el array es valido, pero si el validador a desechado algunas de ellas...
+            return -2; // ...se devuelve codigo de importaci&oacute;n parcial
+        }
+        return -1; // C&oacute;digo de importaci&oacute;n correcta
+    }
+
+    /**
+     * Construye las entidades Question y Answer y las persiste en la base de datos
+     *
+     * @param object $em           Objeto que representa un Entity Managers de Doctrine
+     * @param object $subcategory  Objeto de la entidad Subcategory
+     */
+    public function saveFileToBd($em, $subcategory)
+    {
+        foreach ($this-&gt;assessmentItemsXML as $assessmentItemXML) {
+            // Se obtiene un array con los valores mezclados de los array (ArrayCollection) choiceInteracion y extendeTextIteraction de un assessmentItem
+            $items = array_merge($assessmentItemXML-&gt;itemBody-&gt;choiceInteraction-&gt;getValues(), $assessmentItemXML-&gt;itemBody-&gt;extendedTextInteraction-&gt;getValues());
+
+            foreach ($items as $item) {
+                // La siguenta variable guarda un array cuyos valores son el tipo y el single de la question
+                $questionShape = $this-&gt;getQuestionShape($assessmentItemXML-&gt;responseDeclaration, $item);
+                if ($questionShape['type'] !== -1) {
+                    $question = new Question();
+
+                    $question-&gt;setTitle($this-&gt;getQuestionTitle($item));
+                    $question-&gt;setDescription($this-&gt;getQuestionDescription($assessmentItemXML-&gt;ref));
+                    $question-&gt;setType($questionShape['type']);
+                    $question-&gt;setLevel(5);
+                    $question-&gt;setNumAnswers($this-&gt;getNumAnswers($item));
+                    $question-&gt;setNumCorrectAnswers($this-&gt;getNumCorrectAnswers($assessmentItemXML-&gt;responseDeclaration, $item-&gt;responseIdentifier));
+                    $question-&gt;setSingle($questionShape['single']);
+                    $question-&gt;setPenalty($this-&gt;getQuestionPenality($assessmentItemXML-&gt;responseDeclaration, $item));
+                    $question-&gt;setCategory($subcategory-&gt;getCategory());
+                    $question-&gt;setSubcategory($subcategory);
+                    $question-&gt;setSubject($subcategory-&gt;getSubject());
+                    //ld($question);
+
+                    $em-&gt;persist($question);
+
+                    $arrayAnswers = $this-&gt;getQuestionAnswers($assessmentItemXML-&gt;responseDeclaration, $item);
+
+                    if(!empty($arrayAnswers)) {
+                        foreach ($arrayAnswers as $answerXml) {
+                            $answer = new Answer();
+                            $answer-&gt;setContent($this-&gt;getAnswerContent($answerXml, $item));
+                            $answer-&gt;setValue($this-&gt;getAnswerValue($answerXml, $assessmentItemXML-&gt;responseDeclaration, $item));
+                            $answer-&gt;setQuestion($question);
+                            $answer-&gt;setTolerance(0);
+                            //ld($answer);
+
+                            $em -&gt;persist($answer);
+                        }
+                    }
+                }
+            }
+        }
+
+        $em-&gt;flush();
+    }
+
+    /**
+     * Valida que un objeto PFC\AdminBundle\Entity\AssessmentItem sea compatible con al aplicaci&oacute;n. Su extructura es la siguiente:
+     *
+     *    AssessmentItem (title*, adactative)
+     *     \_ ResponseDeclaration (identifier, cardinality)
+     *     |   \_ CorrectResponse
+     *     |   |   \_Value
+     *     |   \_ Mapping (defaultValue)*
+     *     |       \_ MapEntry (mapKey, mappedValue)
+     *     \_ ItemBody (text*)
+     *         \_ ChoiceInteraction (responseIdentifier)
+     *         |   \_ Prompt
+     *         |   \_ SimpleChoice (identifier, value)
+     *         \_ ExtendedTextInteraction (responseIdentifier)
+     *             \_ Prompt
+     *     * No son obligatorios
+     *
+     * @param array $assessmentItems  Array de objetos de la clase 'PFC\AdminBundle\Entity\AssessmentItem', seralizados de los XML de en un paquete QTI
+     * @return array  Devuelve el array de entrada con los elementos no compatibles eliminados
+     */
+    public function assessmentItemValidator($assessmentItems)
+    {
+        foreach ($assessmentItems as $key =&gt; $assessmentItem) {
+            $thatsRight = true;
+
+            $debug = false;
+
+            // Se devolver&aacute; 'false' en los siguientes casos:
+            if (!isset($assessmentItem)) { // Si no esta definido el 'AssessmentItem'
+                $thatsRight = false;
+                if ($debug) ld(&quot;Paso 1&quot;);
+            }
+            elseif (!isset($assessmentItem-&gt;adaptive, $assessmentItem-&gt;itemBody)) { // 'AssessmentItem' no contiene las propiedades 'adaptive' o 'itemBody'
+                $thatsRight = false;
+                if ($debug) ld(&quot;Paso 2&quot;);
+            }
+
+            if ($assessmentItem-&gt;responseDeclaration-&gt;count() == 0) { // La propiedad 'responseDeclaration' de 'AssessmentItem' est&aacute; vac&iacute;a
+                $thatsRight = false;
+                if ($debug) ld(&quot;Paso 3&quot;);
+            }
+            else {
+                foreach ($assessmentItem-&gt;responseDeclaration as $responseDeclaration) {
+                    if (!isset($responseDeclaration-&gt;correctResponse)) { // La propiedad 'correctResponse' de 'responseDeclaration' est&aacute; vac&iacute;a
+                        $thatsRight = false;
+                        if ($debug) ld(&quot;Paso 4&quot;);
+                    }
+                    elseif (empty($responseDeclaration-&gt;correctResponse-&gt;value)) { // La propiedad 'value' de 'correctResponse' est&aacute; completamente vac&iacute;a
+                        $thatsRight = false;
+                        if ($debug) ld(&quot;Paso 5&quot;);
+                    }
+                    else {
+                        foreach ($responseDeclaration-&gt;correctResponse-&gt;value as $value) {
+                            if (trim($value) === &quot;&quot;) { // Alg&uacute;no de los value de 'correctResponse' est&aacute; vac&iacute;o
+                                $thatsRight = false;
+                                if ($debug) ld(&quot;Paso 6&quot;);
+                            }
+                        }
+                    }
+
+                    if (isset($responseDeclaration-&gt;mapping)) {
+                        if ($responseDeclaration-&gt;mapping-&gt;mapEntry-&gt;count() == 0) { // Si 'mapping' de 'responseDeclaraci&oacute;n' existe y este no tiene alg&uacute;n 'mapentry'
+                            $thatsRight = false;
+                            if ($debug) ld(&quot;Paso 7&quot;);
+                        }
+                        else {
+                            foreach ($responseDeclaration-&gt;mapping-&gt;mapEntry as $mapEntry) {
+                                if (!isset($mapEntry-&gt;mapKey, $mapEntry-&gt;mappedValue)) { // Si alguno de los 'mapEntry' existentes no tiene las propiedades 'mapKey' o 'mappedValue'
+                                    $thatsRight = false;
+                                    if ($debug) ld(&quot;Paso 8&quot;);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($assessmentItem-&gt;adaptive !== &quot;false&quot;) { // La propiedad 'adaptive' de 'AssessmentItem' es dintinta de 'false'
+                $thatsRight = false;
+                if ($debug) ld(&quot;Paso 8&quot;);
+            }
+
+            if ($assessmentItem-&gt;itemBody-&gt;choiceInteraction-&gt;count() == 0 &amp;&amp; $assessmentItem-&gt;itemBody-&gt;extendedTextInteraction-&gt;count() == 0) { // Si itemBody no contiene al menos un choiceInteraction o un extendedTextInteraction...
+                $thatsRight = false;
+                if ($debug) ld(&quot;Paso 9&quot;);
+            }
+            else {
+                if ($assessmentItem-&gt;itemBody-&gt;choiceInteraction-&gt;count() &gt; 0) {
+                    foreach ($assessmentItem-&gt;itemBody-&gt;choiceInteraction as $choiceInteraction) {
+                        if (!isset($choiceInteraction-&gt;responseIdentifier, $choiceInteraction-&gt;prompt)) { // Alg&uacute;n 'chioceInteraction' no tiene las propiedades 'responseIdentifier' o 'prompt'
+                            $thatsRight = false;
+                            if ($debug) ld(&quot;Paso 10&quot;);
+                        }
+                        else {
+                            if (trim($choiceInteraction-&gt;prompt) === &quot;&quot;) { // La propiedad 'prompt' de 'chioceInteraction' esta vac&iacute;a
+                                $thatsRight = false;
+                                if ($debug) ld(&quot;Paso 11&quot;);
+                            }
+
+                            if (trim($choiceInteraction-&gt;responseIdentifier) === &quot;&quot;) { // La propiedad 'responseIndentifier' de 'choiceInteraction' esta vac&iacute;a
+                                $thatsRight = false;
+                                if ($debug) ld(&quot;Paso 12&quot;);
+                            }
+                            else {
+                                $hasPair = false;
+
+                                foreach ($assessmentItem-&gt;responseDeclaration as $responseDeclaration) {
+                                    if ($choiceInteraction-&gt;responseIdentifier === $responseDeclaration-&gt;identifier) {
+                                        $hasPair = true;
+                                    }
+                                }
+
+                                if (!$hasPair) { // Alg&uacute;n 'choiceInteraction' no est&aacute; asociado a alg&uacute;no de los 'responseDeclaration' mediante sus propiedades 'responseIdentifier' e 'identifier' respectivamente
+                                    $thatsRight = false;
+                                    if ($debug) ld(&quot;Paso 14&quot;);
+                                }
+                            }
+                        }
+
+                        if ($choiceInteraction-&gt;simpleChoice-&gt;count() == 0) { // Alguno de los 'chioceInteraction' no tenga ninguna propiedad 'simpleChoice'
+                            $thatsRight = false;
+                            if ($debug) ld(&quot;Paso 15&quot;);
+                        }
+                        else {
+                            foreach ($choiceInteraction-&gt;simpleChoice as $simpleChoice) {
+                                if (!isset($simpleChoice-&gt;value, $simpleChoice-&gt;identifier)) { // Alguna propiedad 'simpleChoice' no contiene a su vez las propiedades 'value' o 'identifier'
+                                    $thatsRight = false;
+                                    if ($debug) ld(&quot;Paso 16&quot;);
+                                }
+                                else {
+                                    if (trim($simpleChoice-&gt;value) === &quot;&quot;) { // La propiedad 'value' de alg&uacute;n 'simpleChoice' este vac&iacute;a
+                                        $thatsRight = false;
+                                        if ($debug) ld(&quot;Paso 17&quot;);
+                                    }
+
+                                    if (trim($simpleChoice-&gt;identifier) === &quot;&quot;) { // La propiedad 'identifier' de alg&uacute;n 'simpleChoice' este vac&iacute;a
+                                        $thatsRight = false;
+                                        if ($debug) ld(&quot;Paso 18&quot;);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Adem&aacute;s, cada respuesta correcta, contenida en los 'responseDeclaretion' (responseDeclaration-&gt;correctResponse-&gt;value), tiene que esta asociada con alg&uacute;n valor (respuesta)
+                        //    del 'choiceDeclaration' (choiceDeclaration-&gt;simpleChoice-&gt;value):
+                        foreach ($assessmentItem-&gt;responseDeclaration as $responseDeclaration) {
+                            if ($choiceInteraction-&gt;responseIdentifier === $responseDeclaration-&gt;identifier) { // Se busca el 'responseDeclaration' que est&aacute; emparejado con el 'choiceInteraction'
+                                if(isset($responseDeclaration-&gt;correctResponse) &amp;&amp; !empty($responseDeclaration-&gt;correctResponse-&gt;value)) {
+                                    foreach ($responseDeclaration-&gt;correctResponse-&gt;value as $value) { // Para cada 'correctResponse' (respuesta correcta)...
+                                        $hasPair = false;
+                                        foreach ($choiceInteraction-&gt;simpleChoice as $simpleChoice) {
+                                            if ($value === $simpleChoice-&gt;identifier) { // ...se busca el 'simpleChoice' (respuesta) con el que empareja...
+                                                $hasPair = true;
+                                            }
+                                        }
+
+                                        if (!$hasPair) { // ...si no se consigue emparejarlas se devuelve 'false'
+                                            $thatsRight = false;
+                                            if ($debug) ld(&quot;Paso 20&quot;);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+               if ($assessmentItem-&gt;itemBody-&gt;extendedTextInteraction-&gt;count() &gt; 0) {
+                    foreach ($assessmentItem-&gt;itemBody-&gt;extendedTextInteraction as $interaction) {
+                        if (!isset($interaction-&gt;responseIdentifier, $interaction-&gt;prompt)) { // Alg&uacute;n 'extendedTextInteraction' con contiene las propiedades 'responseIdentifier' y 'prompt'
+                            $thatsRight = false;
+                            if ($debug) ld(&quot;Paso 21&quot;);
+                        }
+                        else {
+                            if (trim($interaction-&gt;prompt) === &quot;&quot;) { // La propiedad 'prompt' de 'extendedTextInteraction' esta vac&iacute;a
+                                $thatsRight = false;
+                                if ($debug) ld(&quot;Paso 22&quot;);
+                            }
+
+                            if (trim($interaction-&gt;responseIdentifier) === &quot;&quot;) { // La propiedad 'responseIdentifier' de 'extendedTextInteraction' esta vac&iacute;a
+                            }
+                            else {
+                                $hasPair = false;
+
+                                foreach ($assessmentItem-&gt;responseDeclaration as $responseDeclaration) {
+                                    if ($interaction-&gt;responseIdentifier === $responseDeclaration-&gt;identifier) {
+                                        $hasPair = true;
+                                    }
+                                }
+
+                                if (!$hasPair) { // La propiedad 'identifier' de 'extendedTextInteraction' no esta asociada a ning&uacute;n 'responseDeclaration'
+                                    $thatsRight = false;
+                                    if ($debug) ld(&quot;Paso 23&quot;);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ($thatsRight === false) {
+                unset($assessmentItems [$key]);
+            }
+        }
+
+        return $assessmentItems;
+    }
+
+    /**
+     * Set pathDir
+     *
+     * @param string $pathDir
+     *
+     * @return importQTI
+     */
+    public function setPathDir($pathDir)
+    {
+        $this-&gt;pathDir = $pathDir;
+
+        return $this;
+    }
+
+    /**
+     * Get pathDir
+     *
+     * @return string
+     */
+    public function getPathDir()
+    {
+        return $this-&gt;pathDir;
+    }
+
+    /**
+     * Obtiene cada uno de los campo 'resource' de un archivo de manifiesto (imsmanifest.xml) de IMS QTI
+     *
+     * @param object $manifest  XmlManifest deserializado del archivo 'imsmanifest.xml' con los datos de los resources
+     * @return array
+     */
+    private function getAssessmentsRef ($manifest)
+    {
+        $crawler = new Crawler ($manifest);
+
+        // Se busca los resouce del archivo de manifiesto
+        $resources = $crawler-&gt;filterXPath('//resources//resource');
+
+        $assessmentsRef = array (); // Esta variable contendr&aacute; todos los assessment de un archivo de manifiesto
+
+        // Se obtiene las referencias a los archivos QTI de los campo 'resource' del manifiesto en los siguientes casos...
+        for ($i=0; $i &lt; $resources-&gt;count(); $i++) {
+            $href = $resources-&gt;eq($i)-&gt;attr('href');
+            $type = $resources-&gt;eq($i)-&gt;attr('type');
+
+            // ...si es un item de la versi&oacute;n 2.1 de IMS QTI y es, adem&aacute;s, un archivo XML...
+            if (preg_match('/imsqti.*item.*v2p1/', $type) &amp;&amp; preg_match('/.*\.xml$/', $href)) {
+                $assessmentsRef [] = $href;
+            }
+        }
+
+        return $assessmentsRef;
+    }
+
+    /**
+     * Obtiene la descripti&oacute;n para una pregunta
+     *
+     * @param string $assessmentItemRef  Contiene la referencia a un archivo item (assessemItem) de IMS QTI
+     * @return string|boolean  Devuelve una cadenta de texto con el contenido de la description, si no devuelve false
+     */
+    private function getQuestionDescription ($assessmentItemRef)
+    {
+        $xmlTxt = file_get_contents($assessmentItemRef);
+
+        $lines = explode(PHP_EOL, $xmlTxt);
+
+        foreach ($lines as $key =&gt; $line) {
+            $lines[$key] = trim($line);
+        }
+
+        $xmlTxt = implode(&quot; &quot;, $lines);
+
+        $match = preg_replace('#.+&lt;itemBody&gt; (.*?) &lt;.+Interaction .+#', '$1', $xmlTxt);
+
+        // Si preg_replace no encuentra coincidencias devuelve todo el contenido del 'subject' ('$xmlTxt' en este caso) integro, por tanto...
+        if ($match !== $xmlTxt) { // ...si encuentra coincidencias...
+            $match = strip_tags($match, '&lt;img&gt;'); // Se elimina las etiquetas html para evitar posibles problemas posteriores
+            return trim($match);
+        }
+
+        return &quot;&quot;; // ...en el caso de que no encuentra coincidencias
+    }
+
+    /**
+     * Obtiene el valor para esta aplicaci&oacute;n del tipo de pregunta (objeto Interaction en QTI) tomando la siguiente tabla como referencia:
+     *
+     *       ┌───────────────┬───────┬───────────────────────────────────────┐
+     *       │ TIPO (MOODLE) │ VALOR │ POSIBLE EQUIVALENCIA EN IMS QTI       │
+     *       ├───────────────┼───────┼───────────────────────────────────────┤
+     *       │ multichoice   │   0   │ choiceInteraction                     │
+     *       │ truefalse     │  -1   │ choiceInteraction                     │
+     *       │ shortanswer   │   2   │ extendedTextInteraction               │
+     *       │ matching      │   3   │ matchInteraction, gapMatchInteraction │
+     *       │ cloze         │   4   │                                       │
+     *       │ essay         │   5   │ extendedTextInteraction               │
+     *       │ numerical     │   6   │ extendedTextInteraction               │
+     *       │ description   │  -1   │                                       │
+     *       │ category      │  -1   │                                       │
+     *       └───────────────┴───────┴───────────────────────────────────────┘
+     *
+     * @param object $responseDeclarations  Contiene un objeto de la clase ResponseDeclaration que contiene todas las soluciones de un AssassmentItem
+     * @param object $objectInteraction     Objeto de tipo interaction que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @return array  Devuelve un array con los valores tipo y single, utilizados para crear una entidad Question.php
+     */
+    private function getQuestionShape ($responseDeclarations, $objectInteraction)
+    {
+        $class = get_class($objectInteraction);
+
+        switch ($class) {
+            case 'PFC\AdminBundle\Entity\ChoiceInteraction':
+                foreach ($responseDeclarations as $responseDeclaration) {
+                    if ($responseDeclaration-&gt;identifier === $objectInteraction-&gt;responseIdentifier) {
+
+                        if (count($responseDeclaration-&gt;correctResponse-&gt;value) === 1) {
+                            return array(
+                                'type' =&gt; 0,
+                                'single' =&gt; 1,
+                            );
+                        }
+
+                        return array(
+                            'type' =&gt; 0,
+                            'single' =&gt; 0,
+                        );
+                    }
+                }
+                break;
+
+            case 'PFC\AdminBundle\Entity\ExtendedTextInteraction':
+                foreach ($responseDeclarations as $responseDeclaration) {
+                    if ($responseDeclaration-&gt;identifier === $objectInteraction-&gt;responseIdentifier) {
+                        $respValue = $responseDeclaration-&gt;correctResponse-&gt;value[0]; // Los objetos ExtendedTextInteraction s&oacute;lo tiene una respuesta valida
+
+                        if (count(explode(PHP_EOL, $respValue)) === 1 &amp;&amp; is_numeric($respValue)) {
+                            return array(
+                                'type' =&gt; 6,
+                                'single' =&gt; 1,
+                            );
+                        }
+                    }
+                }
+                break;
+        }
+
+        return array(
+            'type' =&gt; -1,
+            'single' =&gt; -1,
+        );
+    }
+
+    /**
+     * Obtiene el t&iacute;tulo (enunciado) de una pregunta
+     *
+     * @param object $objectInteraction  Objeto de tipo interaction que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @return string
+     */
+    private function getQuestionTitle ($objectInteraction)
+    {
+       return trim($objectInteraction-&gt;prompt);
+    }
+
+    /**
+     * Obtiene el n&uacute;mero de respuestas para una pregunta
+     *
+     * @param object $objectInteraction Objeto de tipo interaction que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @return integer
+     */
+    private function getNumAnswers ($objectInteraction)
+    {
+        $class = get_class($objectInteraction);
+
+        switch ($class) {
+            case 'PFC\AdminBundle\Entity\ChoiceInteraction':
+                return $objectInteraction-&gt;simpleChoice-&gt;count();
+                break;
+
+            case 'PFC\AdminBundle\Entity\ExtendedTextInteraction':
+                return 1;
+                break;
+        }
+    }
+
+    /**
+     * Obtiene el n&uacute;mero de respuestas correctas para una pregunta
+     *
+     * @param object $responseDeclarations  Contiene un objeto de la clase ResponseDeclaration que contiene todas las soluciones de un AssassmentItem
+     * @param string $responseIdentifier    Identificador de un Objeto de tipo interaction
+     *
+     * @return integer
+     */
+    private function getNumCorrectAnswers ($responseDeclarations, $responseIdentifier)
+    {
+        foreach ($responseDeclarations as $responseDeclaration) {
+            if ($responseDeclaration-&gt;identifier === $responseIdentifier) {
+                return count($responseDeclaration-&gt;correctResponse-&gt;value);
+            }
+        }
+    }
+
+    /**
+     * Obtiene el valor de la penalizaci&oacute;n de una pretunta
+     *
+     * @param object $responseDeclarations  Contiene un objeto de la clase ResponseDeclaration que contiene todas las soluciones de un AssassmentItem
+     * @param object $objectInteraction     Objeto de tipo interaction que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @return integer
+     */
+    private function getQuestionPenality ($responseDeclarations, $objectInteraction)
+    {
+        $totalPenality = 0;
+
+        foreach ($responseDeclarations as $responseDeclaration) {
+            if ($responseDeclaration-&gt;identifier === $objectInteraction-&gt;responseIdentifier) {
+                if (isset($responseDeclaration-&gt;mapping)) {
+                    $numAnswersWithPenality = 0;
+
+                    foreach ($responseDeclaration-&gt;mapping-&gt;mapEntry as $map) {
+                        // Si el valor de una pregunta (mappedValue) es negativo se considera palalizaci&oacute;n
+                        if ($map-&gt;mappedValue &lt; 0) {
+                            $totalPenality = $map-&gt;mappedValue;
+                            $numAnswersWithPenality++;
+                        }
+                    }
+                    //ld($totalPenality);
+
+                    // Si existe un valor default por defecto y es negativo se suma al penalty un numero de veces igual al total de
+                    //    respuestas sin valor establecido
+                    if (!empty($responseDeclaration-&gt;mapping-&gt;defaultValue) &amp;&amp; $responseDeclaration-&gt;mapping-&gt;defaultValue &lt; 0) {
+                        $defaultValue = $responseDeclaration-&gt;mapping-&gt;defaultValue;
+
+                        $numCorrectAnswers = $this-&gt;getNumCorrectAnswers($responseDeclarations, $objectInteraction-&gt;responseIdentifier);
+                        $numAnswers = $this-&gt;getNumAnswers($objectInteraction);
+
+                        $numAnswersWithoutValor = $numAnswers - $numCorrectAnswers - $numAnswersWithPenality;
+
+                        $totalPenality = ($numAnswersWithoutValor * $defaultValue);
+
+                        //ld($totalPenality);
+                    }
+                }
+            }
+        }
+
+        return abs($totalPenality);
+    }
+
+    /**
+     * Obtiene las respuestas asosiadas a una pregunta
+     *
+     * @param object $responseDeclarations  Contiene un objeto de la clase ResponseDeclaration que contiene todas las solucionesde un AssassmentItem
+     * @param object $objectInteraction     Objeto de tipo interaction que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @return array
+     */
+    private function getQuestionAnswers ($responseDeclarations, $objectInteraction)
+    {
+        $class = get_class($objectInteraction);
+
+        switch ($class) {
+            case 'PFC\AdminBundle\Entity\ChoiceInteraction':
+                return $objectInteraction-&gt;simpleChoice-&gt;getValues();
+                break;
+
+            case 'PFC\AdminBundle\Entity\ExtendedTextInteraction':
+                foreach ($responseDeclarations as $responseDeclaration) {
+                    if ($responseDeclaration-&gt;identifier === $objectInteraction-&gt;responseIdentifier) {
+                        return $responseDeclaration-&gt;correctResponse-&gt;value;
+                    }
+                }
+                break;
+        }
+    }
+
+    /**
+     * Obtiene el enunciado (content) de una respuesta
+     *
+     * @param object $answer             Objeto de la clase SimpleChoise que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @param object $objectInteraction  Objeto de tipo interaction que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @return string
+     */
+    private function getAnswerContent ($answer, $objectInteraction)
+    {
+        $class = get_class($objectInteraction);
+
+        switch ($class) {
+            case 'PFC\AdminBundle\Entity\ChoiceInteraction':
+                return trim($answer-&gt;value);
+                break;
+
+            case 'PFC\AdminBundle\Entity\ExtendedTextInteraction':
+                return trim($answer[0]); // Para los preguntas de la clase ExtendedTextInteraction s&oacute;lo hay una posible respuesta
+                break;
+        }
+    }
+
+    /**
+     * Obtiene el valor de una respuesta, esto es un n&uacute;mero comprendido entre 0 y 100, siendo normalmente la suma de todas las
+     *     respuestas correctas igual a 100
+     *
+     * @param object $answer                Objeto de la clase SimpleChoise que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @param object $responseDeclarations  Contiene un objeto de la clase ResponseDeclaration que contiene todas las soluciones de un AssassmentItem
+     * @param object $objectInteraction     Objeto de tipo interaction que contiene informaci&oacute;n sobre la estructura de una pregunta en QTI
+     * @return integer
+     */
+    private function getAnswerValue ($answer, $responseDeclarations, $objectInteraction)
+    {
+        $class = get_class($objectInteraction);
+
+        switch ($class) {
+            case 'PFC\AdminBundle\Entity\ChoiceInteraction':
+                foreach ($responseDeclarations as $responseDeclaration) {
+                    if ($responseDeclaration-&gt;identifier === $objectInteraction-&gt;responseIdentifier) {
+                        if (isset($responseDeclaration-&gt;mapping)) {
+                            foreach ($responseDeclaration-&gt;mapping-&gt;mapEntry as $map) {
+                                if ($map-&gt;mapKey === $answer-&gt;identifier &amp;&amp; $map-&gt;mappedValue &gt;= 0) {
+                                    return (int) $map-&gt;mappedValue;
+                                }
+                            }
+                        }
+                        else {
+                            $numCorrectAnswers = $this-&gt;getNumCorrectAnswers($responseDeclarations, $objectInteraction-&gt;responseIdentifier);
+
+                            $fraction = (int) floor(100 / $numCorrectAnswers);
+                            $numAdjustment = 100 - ($fraction * $numCorrectAnswers);
+
+                            foreach ($responseDeclaration-&gt;correctResponse-&gt;value as $value) {
+                                if ($value === $answer-&gt;identifier) {
+                                    if ($numCorrectAnswers &lt;= $numAdjustment) {
+                                        return $fraction + 1;
+                                    }
+
+                                    return $fraction;
+                                }
+                                $numCorrectAnswers--;
+                            }
+                        }
+                    }
+                }
+
+                return 0; // Llegados a este punto la respuesta es incorrecta;
+                break;
+
+            case 'PFC\AdminBundle\Entity\ExtendedTextInteraction':
+                return 100;
+                break;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private function unzipQTI ($path)
+    {
+        $zip = new \ZipArchive();
+        $openingResult = $zip-&gt;open($path);
+
+        if ($openingResult === TRUE) {
+            $tempDir = sys_get_temp_dir().&quot;/qti-pack/&quot;;
+            $tempDir = str_replace(&quot;\\&quot;, &quot;/&quot;, $tempDir);
+
+            $fs = new Filesystem();
+            if ($fs-&gt;exists($tempDir)) {
+                $fs-&gt;remove($tempDir);
+            }
+
+            $zip-&gt;extractTo($tempDir);
+
+            $zip-&gt;close();
+        }
+
+        return $openingResult;
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

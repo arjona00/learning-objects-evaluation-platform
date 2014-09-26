@@ -1,0 +1,270 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\ModelBundle\DataFixtures\ORM;
+
+use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+use Gedmo\Sluggable\Util\Urlizer;
+
+use PFC\ModelBundle\Entity\Page;
+use PFC\ModelBundle\Entity\PageUrl;
+
+
+/**
+*  &raquo; Data Fixtures que crea las p&aacute;ginas y las guarda en la base de datos
+*
+*/
+class LoadPageData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+{
+    private     $container;
+    protected   $priority = 1;
+
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this-&gt;container = $container;
+    }
+
+    /**
+    *  &raquo; M&eacute;todo que establece el orden de la carga todos los datos de prueba y de las p&aacute;ginas.
+    *
+    * @package PFC\ModelBundle\DataFixtures\ORM;
+    * @version 1.0
+    *
+    * @param    ObjectManager    $em                 Doctine manager.
+    * @return   void
+    */
+    public function load(ObjectManager $manager)
+    {
+
+        $this-&gt;updateDefaultPages($manager);
+        $this-&gt;updateSubjectPages($manager);
+        $this-&gt;updateCategoryPages($manager);
+    }
+
+    /**
+    *  &raquo; Inserta las p&aacute;ginas por defecto.
+    *
+    * @package PFC\ModelBundle\DataFixtures\ORM;
+    * @version 1.0
+    *
+    * @param    ObjectManager    $em                 Doctine manager.
+    * @return   void
+    */
+    private function updateDefaultPages($manager)
+    {
+        $urlizer            = new Urlizer();
+
+
+        //Lista de p&aacute;ginas por defecto en el men&uacute;
+        $arrayDefaultPages  = array (
+                                        &quot;Index&quot;       =&gt; &quot;index&quot;
+                                    );
+
+        $arrayDataDefaultPages  = array (
+                                        &quot;Index&quot;                           =&gt; array(&quot;type&quot; =&gt; 0, &quot;priority&quot; =&gt; 1)
+                                    );
+
+        if(!empty($arrayDefaultPages)){
+            foreach($arrayDefaultPages as $url =&gt; $slug){
+
+                // Insertamos la p&aacute;gina
+                $page       = new Page();
+                $page       -&gt;setTitle($url);
+                $page       -&gt;setSlug($slug);
+                $page       -&gt;setActive(true);
+                $page       -&gt;setType($arrayDataDefaultPages[$url]['type']);
+                $page       -&gt;setPriority($arrayDataDefaultPages[$url]['priority']);
+                $manager    -&gt;persist($page);
+                $manager    -&gt;flush();
+                $page       = ObjectIdentity::fromDomainObject($page);
+
+
+                // Obtenemos el identificador de la p&aacute;gina
+                $page       = $manager-&gt;getRepository('ModelBundle:Page')-&gt;find($page-&gt;getIdentifier());
+
+                // Insertamos la Url de la p&aacute;gina en espa&ntilde;ol
+                $pageUrl    = new PageUrl();
+                $pageUrl    -&gt;setLang(&quot;es&quot;);
+                $pageUrl    -&gt;setPage($page);
+                $pageUrl    -&gt;setUrl( ($url == 'Index')?&quot;/&quot;:$urlizer-&gt;urlize($url));
+                $manager    -&gt;persist($pageUrl);
+
+                $manager    -&gt;flush();
+            }
+        }
+    }
+
+    /**
+    *  &raquo; Inserta las p&aacute;ginas de cada asignatura cargada de prueba
+    *
+    * @package PFC\ModelBundle\DataFixtures\ORM;
+    * @version 1.0
+    *
+    * @param    ObjectManager    $em                 Doctine manager.
+    * @return   void
+    */
+    private function updateSubjectPages($manager)
+    {
+        $urlizer            = new Urlizer();
+
+
+        //Recopilamos todas las asignaturas
+        $repo           = $manager-&gt;getRepository('ModelBundle:Subject');
+        $routes         = $repo-&gt;findAll();
+
+        if(!empty($routes)){
+
+            foreach($routes as $subject){
+
+                // Insertamos la p&aacute;gina de la asignatura
+                $page       = new Page();
+                $page       -&gt;setTitle($subject-&gt;getName());
+                $page       -&gt;setActive(true);
+                $page       -&gt;setType(1);
+                $page       -&gt;setPriority($this-&gt;priority++);
+                $manager    -&gt;persist($page);
+                $manager    -&gt;flush();
+                $page       = ObjectIdentity::fromDomainObject($page);
+
+                // Obtenemos el identificador de la p&aacute;gina
+                $page       = $manager
+                        -&gt;getRepository('ModelBundle:Page')
+                        -&gt;find($page-&gt;getIdentifier());
+
+                // Actualizamos la asignatura con la p&aacute;gina a la que pertenece
+                $subject-&gt;setPage($page);
+                $manager-&gt;persist($subject);
+                $manager-&gt;flush();
+
+                // Insertamos la Url de la p&aacute;gina
+                $pageUrl    = new PageUrl();
+                $pageUrl    -&gt;setLang(&quot;es&quot;);
+                $pageUrl    -&gt;setPage($page);
+                //$pageUrl    -&gt;setUrl( ($url)?$urlizer-&gt;urlize($subject-&gt;slug):&quot;es&quot;);
+                $pageUrl    -&gt;setUrl( $urlizer-&gt;urlize($subject-&gt;getName()));
+                $manager    -&gt;persist($pageUrl);
+
+                $manager    -&gt;flush();
+            }
+
+        }
+    }
+
+    /**
+    *  &raquo; Inserta las p&aacute;ginas de cada categor&iacute;a de las asignaturas
+    *
+    * @package PFC\ModelBundle\DataFixtures\ORM;
+    * @version 1.0
+    *
+    * @param    ObjectManager    $em                 Doctine manager.
+    * @return   void
+    */
+    private function updateCategoryPages($manager)
+    {
+        $urlizer            = new Urlizer();
+
+
+        //Recopilamos todas las asignaturas
+        $repo           = $manager-&gt;getRepository('ModelBundle:Category');
+        $routes         = $repo-&gt;findAll();
+
+        if(!empty($routes)){
+
+            $repoSubject           = $manager-&gt;getRepository('ModelBundle:Subject');
+
+            foreach($routes as $category){
+
+                // Insertamos la p&aacute;gina de la asignatura
+                $page       = new Page();
+                $page       -&gt;setTitle($category-&gt;getName() . ': ' . $category-&gt;getTitle());
+                $page       -&gt;setActive(true);
+                $page       -&gt;setType(2);
+                $page       -&gt;setPriority($this-&gt;priority++);
+                $manager    -&gt;persist($page);
+                $manager    -&gt;flush();
+                $page       = ObjectIdentity::fromDomainObject($page);
+
+                // Obtenemos el identificador de la p&aacute;gina
+                $page       = $manager
+                        -&gt;getRepository('ModelBundle:Page')
+                        -&gt;find($page-&gt;getIdentifier());
+
+                // Actualizamos la asignatura con la p&aacute;gina a la que pertenece
+                $category-&gt;setPage($page);
+                $manager-&gt;persist($category);
+                $manager-&gt;flush();
+
+                // Insertamos la Url de la p&aacute;gina
+                $pageUrl    = new PageUrl();
+                $pageUrl    -&gt;setLang(&quot;es&quot;);
+                $pageUrl    -&gt;setPage($page);
+
+                $subject    = $repoSubject-&gt;find($category-&gt;getSubject()-&gt;getId());
+
+                $pageUrl    -&gt;setUrl(
+                            $urlizer-&gt;urlize($subject-&gt;getName()) . &quot;/&quot; .
+                            $urlizer-&gt;urlize($category-&gt;getName()) . &quot;-&quot; .
+                            $urlizer-&gt;urlize($category-&gt;getTitle())
+                                    );
+                $manager    -&gt;persist($pageUrl);
+
+                $manager    -&gt;flush();
+            }
+
+        }
+    }
+
+    public function getOrder()
+    {
+        return 50;
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

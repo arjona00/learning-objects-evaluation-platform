@@ -1,0 +1,271 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\AdminBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
+use PFC\ModelBundle\Entity\Category;
+use PFC\ModelBundle\Entity\Subcategory;
+use PFC\ModelBundle\Entity\Subject;
+use PFC\AdminBundle\Utils\factoryActions;
+
+/**
+* Clase controlador que implementa el CRUD de las subcategor&iacute;as
+*
+* @package PFC\AdminBundle\Controller;
+* @version 1.0
+*
+*/
+class SubcategoryController extends Controller
+{
+
+    /**
+    * &raquo; M&eacute;todo para que muestra un listado de las subcategor&iacute;as
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   Null 
+    * @return  Render      Devuelve la vista AdminBundle:Subject:list.html.twig, que se encuentra factorizada en la clase factoryActions-&gt;subjectComponentsList
+    */
+    public function listAction()
+    {
+        $fa     = new factoryActions();
+        $em     = $this-&gt;getDoctrine()-&gt;getManager();
+
+        return $this-&gt;render('AdminBundle:Subject:list.html.twig', $fa-&gt;subjectComponentsList($em));
+    }
+
+    /**
+    *  &raquo; M&eacute;todo para que muestra un listado de cuestiones de la subcategor&iacute;a
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   string       $subject           slug &uacute;nico de la asignatura
+    * @param   integer      $subcategory_id    id de la subcategor&iacute;a seleccionada
+    * @return  Render       Devuelve la vista Subject:subcategory-test-list.html.twig, que se encuentra factorizada en la clase factoryActions-&gt;testList
+    *
+    */
+    public function testListAction($subject, $subcategory_id)
+    {
+        $em     = $this-&gt;getDoctrine()-&gt;getManager();
+        $fa     = new factoryActions();
+
+        $subject   = $em-&gt;getRepository(&quot;ModelBundle:Subject&quot;)-&gt;findOneBySlug($subject);
+
+        return $this-&gt;render('AdminBundle:Subject:subcategory-test-list.html.twig', $fa-&gt;testList($em, $subject, 'Subcategory', $subcategory_id));
+    }
+
+    /**
+    *  &raquo; Actualiza los datos de las subcategor&iacute;as
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   string       $field              Campo de la subcategor&iacute;a a actualizar
+    * @return  Response     Devuelve el control a la vista actual
+    *
+    */
+    public function updateAction($field)
+    {
+        $request     = $this-&gt;container-&gt;get('request');
+        $subcategory_id = $request-&gt;get('pk');
+
+        if(isset($subcategory_id)){
+
+            // Obtenemos el objeto a actualizar
+            $em         = $this-&gt;getDoctrine()-&gt;getManager();
+            $subcategory   = $em-&gt;getRepository('ModelBundle:Subcategory')-&gt;findOneById($subcategory_id);
+            $value      = $request-&gt;get('value');
+
+            switch ($field) {
+                case 'name':
+                        $subcategory-&gt;setName($value);
+                    break;
+                case 'title':
+                        $subcategory-&gt;setTitle($value);
+                    break;
+                case 'description':
+                        $subcategory-&gt;setDescription($value);
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+
+            // Actualizamos los datos de la asignatura
+            $em-&gt;persist($subcategory);
+            $em-&gt;flush();
+        }
+
+        return new Response();
+    }
+
+    /**
+    *  &raquo; Crea una subcategor&iacute;a, asoci&aacute;ndole la asignatura y categor&iacute;a actual, y guardando solo el nombre introducido
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   null
+    * 
+    * @return  Function  $this-&gt;listAction()
+    */
+    public function createAction()
+    {
+        $request     = $this-&gt;container-&gt;get('request');
+        $category_id = $request-&gt;get('pk');
+
+        if(isset($category_id)){
+
+            // Creamos el nuevo objeto
+            $em         = $this-&gt;getDoctrine()-&gt;getManager();
+
+            $subcategory    = new Subcategory();
+            $value      = $request-&gt;get('value');
+
+            $category = new Category();
+            $category = $em-&gt;getRepository('ModelBundle:Category')-&gt;findOneById($category_id);
+
+            $subcategory-&gt;setSubject($category-&gt;getSubject());
+            $subcategory-&gt;setCategory($category);
+            $subcategory-&gt;setName($value);
+            $subcategory-&gt;setTitle('T&iacute;tulo');
+            $subcategory-&gt;setDescription('Descripci&oacute;n');
+
+            // Actualizamos los datos de la categor&iacute;a
+            $em-&gt;persist($subcategory);
+            $em-&gt;flush();
+        }
+
+        return $this-&gt;listAction();
+    }
+
+    /**
+    *  &raquo; Elimina la subcategor&iacute;a seleccionada, y todas sus cuestiones asociadas
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   Integer  $subcategory_id    Id de la subcategor&iacute;a a eliminar
+    * 
+    * @return  Function  $this-&gt;listAction()
+    */
+    public function deleteAction($subcategory_id)
+    {
+        if(isset($subcategory_id)){
+
+            // Obtenemos el objeto a actualizar
+            $em          = $this-&gt;getDoctrine()-&gt;getManager();
+            $subcategory    = $em-&gt;getRepository('ModelBundle:Subcategory')-&gt;findOneById($subcategory_id);
+
+            //Eliminamos las preguntas de la subcategor&iacute;a
+            $questions = $em-&gt;getRepository('ModelBundle:Question')-&gt;findBySubcategory($subcategory_id);
+            if(!empty($questions)){
+                $fa = new factoryActions();
+                $fa-&gt;deleteQuestions($em, $questions);
+            }
+
+            // Eliminamos la subcategor&iacute;a
+            $em-&gt;remove($subcategory);
+            $em-&gt;flush();
+        }
+
+        return $this-&gt;listAction();
+    }
+
+    /**
+    *  &raquo; Elimina una pregunta especifica seleccionada
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   String   $subject            Slug de la asignatura seleccionada
+    * @param   Integer  $subcategory_id     Id de la subcategor&iacute;a seleccionada
+    * @param   Integer  $question_id        Id de la pregunta a eliminar
+    * 
+    * @return  Function  $this-&gt;testListAction($subject, $subcategory_id)
+    */
+    public function deleteTestAction($subject, $subcategory_id, $question_id)
+    {
+        $em         = $this-&gt;getDoctrine()-&gt;getManager();
+        $questions = $em-&gt;getRepository('ModelBundle:Question')-&gt;findById($question_id);
+        if(!empty($questions)){
+            $fa = new factoryActions();
+            $fa-&gt;deleteQuestions($em, $questions);
+        }
+
+        return $this-&gt;testListAction($subject, $subcategory_id);
+    }
+
+    /**
+    *  &raquo; M&eacute;todo para que exporta a un fichero moodelXml, una bater&iacute;a de preguntas pertenecientes a la subcategor&iacute;a pasada como par&aacute;metro
+    *
+    * @package PFC\AdminBundle\Controller;
+    * @version 1.0
+    *
+    * @param   Integer  $subcategory_id    Id de la subcategor&iacute;a seleccionada
+    * 
+    * @return  Function  $fa-&gt;exportTest($em, $path, 'Subcategory', $subcategory_id)
+    */
+    public function exportAction($subcategory_id)
+    {
+
+        $em     = $this-&gt;getDoctrine()-&gt;getManager();
+        $fa     = new factoryActions();
+        $path   = $this-&gt;get('kernel')-&gt;getRootDir() . '/../web/downloads/';
+
+        $request     = $this-&gt;container-&gt;get('request');
+        $level = $request-&gt;get('level'); 
+        $numQuestions = $request-&gt;get('numQuestions'); 
+
+        return ($fa-&gt;exportTest($em, $path, 'Subcategory', $subcategory_id, $level, $numQuestions));
+
+    }
+}
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

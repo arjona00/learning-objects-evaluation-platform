@@ -1,0 +1,205 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+/**
+*  &raquo; Entidad Subject
+*    ┌─────────────────────────────────────────────────────────────────────────┐
+*      - @version 1.0 @date 2013-10-30
+*    └─────────────────────────────────────────────────────────────────────────┘
+*/
+
+namespace PFC\ModelBundle\Entity;
+
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+/**
+ * Subject
+ *
+ * @ORM\Table(name=&quot;Subjects&quot;)
+ * @ORM\Entity
+ * @UniqueEntity(&quot;slug&quot;)
+ */
+class Subject
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name=&quot;id&quot;, type=&quot;integer&quot;)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy=&quot;AUTO&quot;)
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @ORM\Column(name=&quot;name&quot;, type=&quot;string&quot;, length=150)
+     */
+    private $name;
+
+    /**
+     * @var string
+     * @ORM\Column(name=&quot;description&quot;, type=&quot;text&quot;)
+     */
+    private $description;
+
+    /**
+     * @var string
+     * @Gedmo\Slug(fields={&quot;name&quot;}, updatable=false)
+     * @ORM\Column(name=&quot;slug&quot;, type=&quot;string&quot;, length=100, unique=true)
+     */
+    private $slug;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=&quot;PFC\ModelBundle\Entity\Page&quot;)
+     * @ORM\JoinColumn(name=&quot;page_id&quot;, referencedColumnName=&quot;id&quot;)
+     */
+    protected $page;
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this-&gt;id;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return Subject
+     */
+    public function setName($name)
+    {
+        $this-&gt;name = $name;
+    
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string 
+     */
+    public function getName()
+    {
+        return $this-&gt;name;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     * @return Subject
+     */
+    public function setSlug($slug)
+    {
+        $this-&gt;slug = $slug;
+    
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string 
+     */
+    public function getSlug()
+    {
+        return $this-&gt;slug;
+    }
+
+    /**
+     * Set page
+     *
+     * @param \PFC\ModelBundle\Entity\Page $page
+     * @return Subject
+     */
+    public function setPage(\PFC\ModelBundle\Entity\Page $page = null)
+    {
+        $this-&gt;page = $page;
+    
+        return $this;
+    }
+
+    /**
+     * Get page
+     *
+     * @return \PFC\ModelBundle\Entity\Page 
+     */
+    public function getPage()
+    {
+        return $this-&gt;page;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return Subject
+     */
+    public function setDescription($description)
+    {
+        $this-&gt;description = $description;
+    
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string 
+     */
+    public function getDescription()
+    {
+        return $this-&gt;description;
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,68 @@
+
+{% extends "WebBundle::base.html.twig" %}
+{% block template %}
+
+<div class="content">
+   <div class="container">
+      <div class="row">
+         <div class="span12">
+
+            <div id="da-slider" class="da-slider">
+
+              {% for i in 1..2 %}
+      				<div class="da-slide">
+      					<h2>{{ "#{'index.banner.' ~ loop.index ~ '.title'}" | trans }}</h2>
+      					<p>{{ "#{'index.banner.' ~ loop.index ~ '.description'}" | trans | raw }}</p>
+      					<div class="da-img"><img src="{{ asset('bundles/web/img/parallax/' ~ loop.index ~ '.png') }}" alt="image{{ loop.index }}" /></div>
+      				</div>
+            {% endfor %}
+
+
+				<nav class="da-arrows">
+					<span class="da-arrows-prev"></span>
+					<span class="da-arrows-next"></span>
+				</nav>
+			</div>
+
+            <!-- Slider ends -->
+
+            <div class="bor"></div>
+
+            <div class="main-content">
+              <div class="row">
+                <div class="span16">
+                  <h2> {{ 'index.subjets.title' | trans }} </h2>
+                  <p class="main-meta">{{ 'index.subjets.subtitle' | trans }} </p>
+                  <p>
+                    {{ 'index.subjets.description' | trans | raw }}
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="row">
+               {% for subjet in subjects %}
+               <div class="span3">
+                  <a href="{{  path('subjects', {'subjectSlug' : subjet.slug  }) }}">
+                     <div class="afeature">
+                        <div class="afmatter">
+                           <!--i class="icon-cloud"></i-->
+                           <h4>{{ subjet.name }}</h4>
+                           <p>{{ subjet.description [:50] ~ ' ...'}}</p>
+                        </div>
+                     </div>
+                  </a>
+               </div>
+               {% endfor %}
+            </div>
+
+            <div class="bor"></div>
+
+
+         </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

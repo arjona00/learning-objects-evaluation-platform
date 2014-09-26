@@ -1,0 +1,102 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\WebBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+*  &raquo; BaseController es la clase de la que deben heredar todos los controladores.
+*    Define comportamientos y m&eacute;todos comunes para todos ellos
+**/
+abstract class BaseController extends Controller
+{
+
+    protected $container     = null;
+    protected $subjects      = null;
+    protected $lang          = null;
+    protected $url           = null;
+
+    /**
+     *  &raquo; M&eacute;todo para dar valor a las propiedades de la clase. Nos evita repetir este
+     *    c&oacute;digo en cada controlador que lo necesite
+     *
+     *  @param  ContainerInterface $container
+     *
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        parent::setContainer($container);
+
+        $this-&gt;container    = $container;
+
+        // Obtenemos la sesion y el request para poder trabajar en este controlador
+        $request            = $container-&gt;get('request');
+        $session            = $request-&gt;getSession();
+
+        // Obtenemos el entorno en el que estamos y lo guardamos en sesi&oacute;n
+        $session            -&gt;set('environment', $container-&gt;get('kernel')-&gt;getEnvironment());
+
+        // Obtenemos los par&aacute;metros del routing
+        $paramRoutes        = $request-&gt;attributes-&gt;get('_route_params');
+
+        $em             = $this-&gt;getDoctrine()-&gt;getManager();
+
+        // Cargamos la lista de asignaturas
+        $this-&gt;subjects       = $em-&gt;getRepository('ModelBundle:Subject')
+                                -&gt;findAll();
+
+        // LANG
+        $this-&gt;lang         = isset($paramRoutes[&quot;_locale&quot;])?$paramRoutes[&quot;_locale&quot;]:$this-&gt;container-&gt;getParameter(&quot;locale&quot;);
+
+        // URL
+        $urlRequest         = substr($this-&gt;getRequest()-&gt;getPathInfo(),1);
+        $this-&gt;url          = $urlRequest?$urlRequest:$this-&gt;container-&gt;getParameter(&quot;locale&quot;);
+    }
+}
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,48 @@
+answer.true: 'Verdadero'
+answer.false: 'Falso'
+Nivel: 'Nivel'
+questions: 'preguntas'
+
+#menu
+menu.index: Inicio
+menu.subjets: Asignaturas
+menu.admin: Administración
+
+#index
+index.banner.1.title: Cuestionarios
+index.banner.1.description: 'Seleccione la asignatura, el tema a tratar y realice los cuestionarios'
+index.banner.2.title: 'Fácil manejar'
+index.banner.2.description: 'Complete los test en los niveles elegidos y obtenga sus resultados'
+index.subjets.title: 'Realize los tests de sus asignaturas'
+index.subjets.subtitle: 'Cada asignatura contiene su propio temario individualizado'
+index.subjets.description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vulputate eros nec odio egestas in dictum nisi vehicula. Pellentesque habitant morbi tristique senectus et ac turpis egestas. Suspendisse porttitor luctus imperdiet. <a href="#">Praesent ultricies</a> enim ac ipsum aliquet pellentesque. Nullam justo nunc, dignissim at convallis posuere, sodales eu orci. Duis a risus sed dolor placerat semper quis in urna. Nam risus magna, fringilla sit amet blandit viverra, dignissim eget est. Ut <strong>commodo ullamcorper risus nec</strong> mattis. Aenean at massa leo. Vestibulum in varius arcu.'
+
+#level-selection
+level-selection.1.title: 'Seleccione el número de preguntas máximo para realizar el test'
+level-selection.2.title: 'Seleccione nivel del cuestionario'
+level-selection.advice: '* Se indica el número de preguntas que contiene cada nivel'
+level-selection.questionNumber.title: 'Preguntas aleatorias de cualquier nivel'
+level-selection.questionNumber.none: 'No existen preguntas para este elemento.'
+doTest: 'Realizar test'
+
+#subjet
+subjet.doTest.subjet: 'Realizar test asignatura completa'
+subjet.doTest.category: 'Realizar test tema completo'
+
+#test
+test.sendAnswer: 'Enviar respuestas'
+
+#test-post
+test-post.level: 'Resultado del test de nivel '
+test-post.questions: 'Número total de preguntas:'
+test-post.answers: 'Preguntas respondidas:'
+test-post.correctAnswers: 'Respuestas correctas:'
+test-post.partiallyCorrectAnswers: 'Respuestas parcialmente correctas:'
+test-post.incorrect: 'Respuestas incorrectas:'
+test-post.result: 'El resultado de su test es:'
+test-post.return: 'Volver a la selección de temas'
+
+
+#question
+test.question: Cuestión
+test.penalty: Penalización

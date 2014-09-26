@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        {# Definición de los metas #}
+        {% block meta %}
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport"           content="width=device-width, initial-scale=1.0" />
+        <meta name="description"        content="" />
+        <meta name="keywords"           content="" />
+        <meta name="author"             content="" />
+        {% endblock %}
+
+        {# Título de la página #}
+        {% block title %}BASE{% endblock %}
+
+        {# Hojas de Estilo - CSS - #}
+        {% block stylesheets %}{% endblock %}
+
+        {# Javascripts - JS - #}
+        {% block javascripts %}{% endblock %}
+
+        {# Favicon #}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>

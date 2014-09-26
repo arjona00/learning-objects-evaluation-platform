@@ -1,0 +1,1692 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cómo es el cielo de marte?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[verde]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[rojo]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[azul]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[amarillo]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cómo es el cielo de marte?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[verde]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[rojo]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[azul]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[amarillo]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación con seleccionando las respuestas que considere correctas]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cuál es la composición del aire?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Oxígeno]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Nitrógeno]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Dióxido de carbono]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Gases inertes como argón y neón]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Cloro]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Azufre]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Zinc]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cómo es el cielo de marte?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[verde]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[rojo]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[azul]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[amarillo]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cómo es el cielo de marte?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[verde]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[rojo]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[azul]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[amarillo]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación con seleccionando las respuestas que considere correctas]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cuál es la composición del aire?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Oxígeno]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Nitrógeno]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Dióxido de carbono]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Gases inertes como argón y neón]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Cloro]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Azufre]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Zinc]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula  ]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cómo es el cielo de marte?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[verde]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[rojo]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[azul]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[amarillo]]></text>
+    </answer>
+  </question>
+  <question type="truefalse">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación ]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[true]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[false]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Responda a la siguiente afirmación ]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[<p>Fabricantes de móviles con sistema android</p>]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[<p>Samsung</p>]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[<p>Nokia</p>]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[<p>LG</p>]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[<p>Google]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[<p>Iphone</p>]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[<p>Xaomi</p>]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[<p>$$ \sqrt[4]{16} $$</p>]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[<p>$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$</p><br /><p>$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$</p><br /><p>Indica los posibles valores de X para Y = 2</p>]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[<p>$$ \sqrt{16} $$</p>]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[<p>La tierra es redonda?</p>]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[Verdadero]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Falso]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$Indica los posibles valores de X para Y = 2]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[Verdadero]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Falso]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$Indica los posibles valores de X para Y = 2]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[Verdadero]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Falso]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google Nexus]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$
+$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$
+Indica los posibles valores de X para Y = 2]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+  </question>
+  <question type="truefalse">
+    <name>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[true]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[false]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>-0.5</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.5</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$Indica los posibles valores de X para Y = 2]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[6]]></text>
+      <tolerance>0.05</tolerance>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[True]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[False]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.25</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.15</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$Indica los posibles valores de X para Y = 2]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[6]]></text>
+      <tolerance>0.05</tolerance>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[True]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[False]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google Nexus]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$
+$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$
+Indica los posibles valores de X para Y = 2]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[6]]></text>
+      <tolerance>0.05</tolerance>
+    </answer>
+  </question>
+  <question type="truefalse">
+    <name>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[true]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[false]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google Nexus]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$
+$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$
+Indica los posibles valores de X para Y = 2]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[6]]></text>
+      <tolerance>0.05</tolerance>
+    </answer>
+  </question>
+  <question type="truefalse">
+    <name>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[true]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[false]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google Nexus]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$
+$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$
+Indica los posibles valores de X para Y = 2]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[6]]></text>
+      <tolerance>0.05</tolerance>
+    </answer>
+  </question>
+  <question type="truefalse">
+    <name>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[true]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[false]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Contesta a la siguiente pregunta]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="0">
+      <text><![CDATA[32]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[25]]></text>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[36]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[Fabricantes de móviles con sistema android]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="25">
+      <text><![CDATA[Samsung]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Nokia]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[LG]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Google Nexus]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Iphone]]></text>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[Xaomi]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula el resultado de la siguiente formula]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt[4]{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.5</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente ecuación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$
+$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$
+Indica los posibles valores de X para Y = 2]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[3]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Resuelve la siguiente operación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[$$ \sqrt{16} $$]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50">
+      <text><![CDATA[5]]></text>
+      <tolerance>0.2</tolerance>
+    </answer>
+    <answer fraction="25">
+      <text><![CDATA[6]]></text>
+      <tolerance>0.05</tolerance>
+    </answer>
+  </question>
+  <question type="truefalse">
+    <name>
+      <text><![CDATA[Contesta con verdadero o falso la siguiente afirmación]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[La tierra es redonda?]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>1</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[true]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[false]]></text>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[¿Cual de las siguientes marcas fabrica coches?]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.25</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="33">
+      <text><![CDATA[Ford]]></text>
+    </answer>
+    <answer fraction="33">
+      <text><![CDATA[Mercedes]]></text>
+    </answer>
+    <answer fraction="33">
+      <text><![CDATA[Honda]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Boeing]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula la siguiente expresión]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+  <question type="multichoice">
+    <name>
+      <text><![CDATA[¿Cual de las siguientes marcas fabrica coches?]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0.25</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <answer fraction="33">
+      <text><![CDATA[Ford]]></text>
+    </answer>
+    <answer fraction="33">
+      <text><![CDATA[Mercedes]]></text>
+    </answer>
+    <answer fraction="33">
+      <text><![CDATA[Honda]]></text>
+    </answer>
+    <answer fraction="0">
+      <text><![CDATA[Boeing]]></text>
+    </answer>
+  </question>
+  <question type="numerical">
+    <name>
+      <text><![CDATA[Calcula la siguiente expresión$$ \sqrt{16} $$]]></text>
+    </name>
+    <questiontext>
+      <text><![CDATA[]]></text>
+    </questiontext>
+    <defaultgrade>1</defaultgrade>
+    <penalty>0</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <answer fraction="100">
+      <text><![CDATA[4]]></text>
+      <tolerance>0</tolerance>
+    </answer>
+  </question>
+</quiz>

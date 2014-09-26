@@ -1,0 +1,406 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace PFC\ModelBundle\Entity;
+
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+/**
+ * &raquo; Entidad Question
+ *
+ * @ORM\Table(name=&quot;Questions&quot;)
+ * @ORM\Entity
+ * @UniqueEntity(&quot;id&quot;)
+ * @ORM\Entity(repositoryClass=&quot;PFC\ModelBundle\Repositories\QuestionRepository&quot;)
+ */
+class Question
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name=&quot;id&quot;, type=&quot;integer&quot;)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy=&quot;AUTO&quot;)
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @ORM\Column(name=&quot;title&quot;, type=&quot;string&quot;, length=255)
+     */
+    private $title;
+
+    /**
+     * @var string
+     * @ORM\Column(name=&quot;description&quot;, type=&quot;text&quot;)
+     */
+    private $description;
+
+    /**
+     * Tipo de la pregunta.
+     * @var integer
+     * @ORM\Column(name=&quot;type&quot;, type=&quot;integer&quot;)
+     */
+    private $type;
+
+    /**
+     * Indica si la respuesta es sencilla o no
+     * @var boolean
+     * @ORM\Column(name=&quot;single&quot;, type=&quot;boolean&quot;)
+     */
+    private $single;
+
+    /**
+     * Penalizaci&oacute;n por respuesta incorrecta.
+     * @var float
+     * @ORM\Column(name=&quot;penalty&quot;, type=&quot;float&quot;, options={&quot;default&quot; = 0})
+     */
+    private $penalty;
+
+    /**
+     * Indica el nivel de la pregunta de 0 a 10
+     * @var float
+     * @ORM\Column(name=&quot;level&quot;, type=&quot;float&quot;)
+     */
+    private $level;
+
+    /**
+     * N&uacute;mero de veces respondida.
+     * @var integer
+     * @ORM\Column(name=&quot;numAnswers&quot;, type=&quot;integer&quot;, nullable=true, options={&quot;default&quot; = 0})
+     */
+    private $numAnswers;
+
+    /**
+     * N&uacute;mero de veces correctamente respondida.
+     * @var integer
+     * @ORM\Column(name=&quot;numCorrectAnswers&quot;, type=&quot;integer&quot;, nullable=true, options={&quot;default&quot; = 0})
+     */
+    private $numCorrectAnswers;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=&quot;PFC\ModelBundle\Entity\Subject&quot;)
+     * @ORM\JoinColumn(name=&quot;subject_id&quot;, referencedColumnName=&quot;id&quot;)
+     */
+    protected $subject;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=&quot;PFC\ModelBundle\Entity\Category&quot;)
+     * @ORM\JoinColumn(name=&quot;category_id&quot;, referencedColumnName=&quot;id&quot;)
+     */
+    protected $category;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=&quot;PFC\ModelBundle\Entity\Subcategory&quot;)
+     * @ORM\JoinColumn(name=&quot;subcategory_id&quot;, referencedColumnName=&quot;id&quot;)
+     */
+    protected $subcategory;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this-&gt;id;
+    }
+
+    /**
+     * Set title
+     *
+     * @param string $title
+     * @return Question
+     */
+    public function setTitle($title)
+    {
+        $this-&gt;title = $title;
+
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this-&gt;title;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return Question
+     */
+    public function setDescription($description)
+    {
+        $this-&gt;description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this-&gt;description;
+    }
+
+    /**
+     * Set type
+     *
+     * @param integer $type
+     * @return Question
+     */
+    public function setType($type)
+    {
+        $this-&gt;type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return integer
+     */
+    public function getType()
+    {
+        return $this-&gt;type;
+    }
+
+    /**
+     * Set subject
+     *
+     * @param \PFC\ModelBundle\Entity\Subject $subject
+     * @return Question
+     */
+    public function setSubject(\PFC\ModelBundle\Entity\Subject $subject = null)
+    {
+        $this-&gt;subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     * Get subject
+     *
+     * @return \PFC\ModelBundle\Entity\Subject
+     */
+    public function getSubject()
+    {
+        return $this-&gt;subject;
+    }
+
+    /**
+     * Set category
+     *
+     * @param \PFC\ModelBundle\Entity\Category $category
+     * @return Question
+     */
+    public function setCategory(\PFC\ModelBundle\Entity\Category $category = null)
+    {
+        $this-&gt;category = $category;
+
+        return $this;
+    }
+
+    /**
+     * Get category
+     *
+     * @return \PFC\ModelBundle\Entity\Category
+     */
+    public function getCategory()
+    {
+        return $this-&gt;category;
+    }
+
+    /**
+     * Set level
+     *
+     * @param float $level
+     * @return Question
+     */
+    public function setLevel($level)
+    {
+        $this-&gt;level = $level;
+
+        return $this;
+    }
+
+    /**
+     * Get level
+     *
+     * @return float
+     */
+    public function getLevel()
+    {
+        return $this-&gt;level;
+    }
+
+    /**
+     * Set numAnswers
+     *
+     * @param integer $numAnswers
+     * @return Question
+     */
+    public function setNumAnswers($numAnswers)
+    {
+        $this-&gt;numAnswers = $numAnswers;
+
+        return $this;
+    }
+
+    /**
+     * Get numAnswers
+     *
+     * @return integer
+     */
+    public function getNumAnswers()
+    {
+        return $this-&gt;numAnswers;
+    }
+
+    /**
+     * Set numCorrectAnswers
+     *
+     * @param integer $numCorrectAnswers
+     * @return Question
+     */
+    public function setNumCorrectAnswers($numCorrectAnswers)
+    {
+        $this-&gt;numCorrectAnswers = $numCorrectAnswers;
+
+        return $this;
+    }
+
+    /**
+     * Get numCorrectAnswers
+     *
+     * @return integer
+     */
+    public function getNumCorrectAnswers()
+    {
+        return $this-&gt;numCorrectAnswers;
+    }
+
+    /**
+     * Set subcategory
+     *
+     * @param \PFC\ModelBundle\Entity\Subcategory $subcategory
+     * @return Question
+     */
+    public function setSubcategory(\PFC\ModelBundle\Entity\Subcategory $subcategory = null)
+    {
+        $this-&gt;subcategory = $subcategory;
+
+        return $this;
+    }
+
+    /**
+     * Get subcategory
+     *
+     * @return \PFC\ModelBundle\Entity\Subcategory
+     */
+    public function getSubcategory()
+    {
+        return $this-&gt;subcategory;
+    }
+
+    /**
+     * Set single
+     *
+     * @param boolean $single
+     * @return Question
+     */
+    public function setSingle($single)
+    {
+        $this-&gt;single = $single;
+
+        return $this;
+    }
+
+    /**
+     * Get single
+     *
+     * @return boolean
+     */
+    public function getSingle()
+    {
+        return $this-&gt;single;
+    }
+
+    /**
+     * Set penalty
+     *
+     * @param float $penalty
+     * @return Question
+     */
+    public function setPenalty($penalty)
+    {
+        $this-&gt;penalty = $penalty;
+
+        return $this;
+    }
+
+    /**
+     * Get penalty
+     *
+     * @return float
+     */
+    public function getPenalty()
+    {
+        return $this-&gt;penalty;
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

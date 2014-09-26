@@ -1,0 +1,217 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+/**
+*  &raquo; Entidad XmlQuiz, que es utilizado como objeto intermedio en la serializaci&oacute;n/deserializaci&oacute;n de los ficheros, en la importaci&oacute;n y exportaci&oacute;n
+*
+* @package PFC\AdminBundle\Entity;
+*/
+
+namespace PFC\AdminBundle\Entity;
+use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as JMS;
+
+/** @JMS\XmlRoot(&quot;quiz&quot;) */
+class XmlQuiz
+{
+
+	/**
+     * @JMS\SerializedName(&quot;text&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+	public $text;
+
+    /**
+     * ArrayCollection de preguntas
+     * @JMS\Type(&quot;ArrayCollection&lt;PFC\AdminBundle\Entity\XmlQuestion&gt;&quot;)
+     * @JMS\XmlList(inline = true, entry=&quot;question&quot;)  //Inline, solo categoriza, no incluye questions como nodo
+     */
+    public $questions;
+
+    public function __construct()
+    {
+        $this-&gt;questions = new ArrayCollection();
+    }
+}
+
+class XmlQuestion
+{
+
+    /**
+     * Categor&iacute;a de la pregunta si la tuviera
+     * @JMS\SerializedName(&quot;category&quot;)
+     * @JMS\Type(&quot;PFC\AdminBundle\Entity\StringClass&quot;)
+     */
+    public $category;
+
+    /**
+     * Tipo de la prengunta
+     * @JMS\XmlAttribute
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $type;
+
+    /**
+     * @JMS\SerializedName(&quot;name&quot;)
+     * @JMS\Type(&quot;PFC\AdminBundle\Entity\StringClass&quot;)
+     */
+    public $name;
+
+    /**
+     * Texto descriptivo de la pregunta
+     * @JMS\SerializedName(&quot;questiontext&quot;)
+     * @JMS\Type(&quot;PFC\AdminBundle\Entity\StringClass&quot;)
+     */
+    public $questiontext;
+
+    /**
+     * Texto de la retroalimentacion
+     * @JMS\SerializedName(&quot;generalfeedback&quot;)
+     * @JMS\Type(&quot;PFC\AdminBundle\Entity\StringClass&quot;)
+     */
+    public $generalfeedback;
+
+    /**
+     * Puntuaci&oacute;n por defecto
+     * @JMS\SerializedName(&quot;defaultgrade&quot;)
+     * @JMS\Type(&quot;double&quot;)
+     */
+    public $defaultgrade;
+
+    /**
+     * Penalizacion por respuesta erronea
+     * @JMS\SerializedName(&quot;penalty&quot;)
+     * @JMS\Type(&quot;double&quot;)
+     */
+    public $penalty;
+
+    /**
+     * Oculta
+     * @JMS\SerializedName(&quot;hidden&quot;)
+     * @JMS\Type(&quot;integer&quot;)
+     */
+    public $hidden;
+
+    /**
+     * Tipo de respuesta, sencilla o m&uacute;ltiple
+     * @JMS\SerializedName(&quot;single&quot;)
+     * @JMS\Type(&quot;boolean&quot;)
+     */
+    public $single;
+
+    /**
+     * ArrayCollection de las respuestas
+     * @JMS\Type(&quot;ArrayCollection&lt;PFC\AdminBundle\Entity\XmlAnswer&gt;&quot;)
+     * @JMS\XmlList(inline = true, entry=&quot;answer&quot;)  //Inline, solo categoriza, no incluye answers como nodo
+     */
+    public $answers;
+
+    public function __construct()
+    {
+        $this-&gt;category = new StringClass();
+        $this-&gt;name = new StringClass();
+        $this-&gt;questiontext = new StringClass();
+        $this-&gt;generalfeedback = new StringClass();
+        $this-&gt;answers = new ArrayCollection();
+    }
+}
+
+
+class StringClass
+{
+    /**
+     * @JMS\SerializedName(&quot;text&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $text;
+
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $format;
+}
+
+class XmlAnswer
+{
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\Type(&quot;integer&quot;)
+     */
+    public $fraction;
+
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $format;
+
+    /**
+     * Texto redacci&oacute;n de la respuestas
+     * @JMS\SerializedName(&quot;text&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $text;
+
+    /**
+     * Tolerancia
+     * @JMS\SerializedName(&quot;tolerance&quot;)
+     * @JMS\Type(&quot;double&quot;)
+     */
+    public $tolerance;
+
+    /**
+     * Texto de la retroalimentaci&oacute;n
+     * @JMS\SerializedName(&quot;feedback&quot;)
+     * @JMS\Type(&quot;PFC\AdminBundle\Entity\StringClass&quot;)
+     */
+    public $feedback;
+
+    public function __construct()
+    {
+        $this-&gt;feedback = new StringClass();
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,95 @@
+{% extends "WebBundle::base.html.twig" %}
+{% block template %}
+
+{% include 'AdminBundle:Utils:mathjax.html.twig' %}
+<!-- Content strats -->
+
+<div class="content">
+   <div class="container">
+      <div class="row">
+         <div class="span12">
+
+            <!-- testing starts -->
+
+            <div class="process">
+               <div class="row">
+                  <div class="span12">
+
+                     <div class="form">
+                      <!-- Register form (not working)-->
+                        <form name="quizForm" id="quizForm" class="form-horizontal"  method="post"
+                            {% if (subCategorySlug != '' ) %}
+                               action="{{ path('subcategoryTestPost', {'subjectSlug' : subject.slug, 'categorySlug' : categorySlug, 'subCategorySlug' : subCategorySlug,  'level' : level})  }}">
+                            {% elseif (categorySlug != '' ) %}
+                                action="{{ path('categoryTestPost', {'subjectSlug' : subject.slug, 'categorySlug' : categorySlug, 'level' : level})  }}">
+                            {% else %}
+                                action="{{ path('subjectTestPost', {'subjectSlug' : subject.slug, 'level' : level})  }}">
+                            {% endif %}
+                           <div class="row">
+                              {% set questionsIds = '' %}
+                              {% for question in questions %}
+                              <div class="span12">
+                                 <br/>
+                                 <div class="process-meta"><span> {{ 'test.question' | trans }} {{ loop.index }}</span> - {{ 'test.penalty' | trans }}: {{ question.penalty | number_format(2)}}
+                                  {#- {{ question.level }}#}
+                                </div>
+                                 <h5>{{ question.title | raw }}</h5>
+                                 <p>{{ question.description | trans | raw }}</p>
+                                 {% if questionsIds == '' %}
+                                    {% set questionsIds = question.id %}
+                                 {% else %}
+                                    {% set questionsIds = questionsIds ~ ',' ~ question.id %}
+                                 {% endif %}
+                                 <p>
+                                    <table>
+                                      {% for answer in questionAnswers[question.id] %}
+                                         <tr>
+                                            <td>
+                                            {#
+                                              'multichoice' => 0,'truefalse' => 1, 'shortanswer' => 2,'matching' => 3,'cloze'=> 4, 'essay' => 5,'numerical' => 6
+                                            #}
+                                                {% if (((question.type == 0) or (question.type == 1)) and (question.single)) %}
+                                                  <input  type="radio" name="q,{{ question.id }}" value="{{ answer.id }}" />
+                                                {% elseif ((question.type == 0) and not (question.single)) %}
+                                                  <input  type="checkbox" name="a,{{ answer.id }}" value="{{ question.id }}" />
+                                                {% elseif (question.type == 6) %}
+                                                  {% if loop.index < 2 %} {# Las respuestas numéricas pueden tener varias respuestas, pero solo un inputbox #}
+                                                    <input  type="text" name="q,{{ question.id }}" />
+                                                  {% endif %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                              <div id="taoptionAnswer{{ question.id }}{{ answer.id}}" class="block" style="display:block">
+                                                {% if (question.type != 6) %}
+                                                  {% if ((answer.content == 'true') or (answer.content == 'True')) %}
+                                                    &nbsp;{{ 'answer.true' | trans  }}</div>
+                                                  {% elseif ((answer.content == 'false') or (answer.content == 'False'))  %}
+                                                    &nbsp;{{ 'answer.false' | trans  }}</div>
+                                                  {% else %}
+                                                    &nbsp;{{ "#{ answer.content }" | raw }}</div>
+                                                  {% endif %}
+                                                {% endif %}
+                                            </td>
+                                         </tr>
+                                     {% endfor %}
+                                   </table>
+                                 </p>
+                              </div>
+                              {% endfor %}
+                           </div>
+                          <!-- Buttons -->
+                          <div class="form-actions">
+                             <!-- Buttons -->
+                            <button type="submit" name="submitB" class="btn" value="{{ questionsIds }}">{{ 'test.sendAnswer' | trans }}</button>
+                          </div>
+                        </form>
+                  </div>
+                </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,297 @@
+{% extends "WebBundle::base.html.twig" %}
+{% block template %}
+
+{# Content strats #}
+
+<div class="content">
+   <div class="container">
+
+{# Events starts #}
+
+            <div class="events">
+               <div class="row">
+                  <div class="span12">
+
+                     {# Events hero #}
+                     <div class="hero">
+                        {# Title. Don't forget the <span> tag #}
+                        <h3><span>Asignaturas</span></h3>
+                        {# para #}
+                        <p>En esta sección podrás crear, modificar los datos básicos de las asignaturas, o borrarlas, además de acceder a sus test asociados
+                        </p>
+                     </div>
+                     {# Events #}
+
+                     <div class="accordion" id="accordion2">
+                        {# Each item should be enclosed inside the class "accordion-group". Note down the below markup. #}
+
+                        {# First Accordion #}
+                        <table class="table table-striped table-hover table-bordered tableditable" id="sample_editable_1">
+	                        {% for subject in subjects %}
+                            <tr>
+                              <th colspan="4">
+                                  <h4>
+                                    <a href="#" data-type   = "textarea"
+                                                    data-pk     = "{{ subject.id }}"
+                                                    data-params = "{'id' : '{{ subject.id }}'}"
+                                                    class       = "input_text_editable"
+                                                    data-url    = "{{ path('subject_update', {'field' : 'name' }) }}">
+                                        {{ subject.name }}
+                                    </a>
+                                  </h4>
+                              </th>
+                              <th colspan="1" width="40px" style="vertical-align: middle;">
+                                {{ questions['subject'][subject.id] }}
+                              </th>
+                              <th colspan="1" width="40px">
+                                  <a itemprop="url" class="deleteElement" href="#" data-url="{{ path('subject_delete', {'subject_id' : subject.id }) }}">
+                                  <img itemprop="image" src="{{ asset('bundles/web/img/delete.png') }}"
+                                    title="Eliminar asignatura" alt="Eliminar asignatura" />
+                                 </a>
+                                 <a itemprop="url" href="{{ path('subject_testList', {'subject' : subject.slug }) }}"> {# Ir a edición de tests #}
+                                      <img itemprop="image" src="{{ asset('bundles/web/img/list-b.png') }}"
+                                        title="Ir a edición de tests" alt="Ir a edición de tests" />
+                                  </a>
+                              </th>
+                            </tr>
+                            <tr>
+                              <td colspan="6">
+                             	    <a href="#" data-type   = "textarea"
+				                                        data-pk     = "{{ subject.id }}"
+				                                        data-params = "{'id' : '{{ subject.id }}'}"
+				                                        class       = "input_text_editable"
+				                                        data-url    = "{{ path('subject_update', {'field' : 'description' }) }}">
+				                 	          {{ subject.description}}
+				                          </a>
+						            	     </td>
+						                </tr>
+                            {% for category in subjectCategories[subject.id] %}
+                            <tr>
+                              <td colspan="2">
+                                  <a href="#" data-type   = "textarea"
+                                                data-pk     = "{{ category.id }}"
+                                                data-params = "{'id' : '{{ category.id }}'}"
+                                                class       = "input_text_editable"
+                                                data-url    = "{{ path('category_update', {'field' : 'name' }) }}">
+                                    {{ category.name }}
+                                  </a>
+                               </td>
+                               <td colspan="1">
+                                  <a href="#" data-type   = "textarea"
+                                                data-pk     = "{{ category.id }}"
+                                                data-params = "{'id' : '{{ category.id }}'}"
+                                                class       = "input_text_editable"
+                                                data-url    = "{{ path('category_update', {'field' : 'title' }) }}">
+                                    {{ category.title }}
+                                  </a>
+                               </td>
+                               <td colspan="1">
+                                  <a href="#" data-type   = "textarea"
+                                                data-pk     = "{{ category.id }}"
+                                                data-params = "{'id' : '{{ category.id }}'}"
+                                                class       = "input_text_editable"
+                                                data-url    = "{{ path('category_update', {'field' : 'description' }) }}">
+                                    {{ category.description }}
+                                  </a>
+                               </td>
+                                <td colspan="1">
+                                  {{ questions['category'][category.id] }}
+                                </td>
+                                <td colspan="1">
+                                 <a itemprop="url" class="deleteElement" href="#" data-url="{{ path('category_delete', {'category_id' : category.id }) }}">
+                                 {# Eliminar categoria #}
+
+                                  <img itemprop="image" src="{{ asset('bundles/web/img/delete.png') }}"
+                                    title="Eliminar categoría" alt="Eliminar categoría" />
+                                 </a>
+                                 <a itemprop="url" href="{{ path('category_testList', {'subject' : subject.slug, 'category_id' : category.id  }) }}"> {# Ir a edición de tests #}
+                                  <img itemprop="image" src="{{ asset('bundles/web/img/list-b.png') }}"
+                                    title="Ir a edición de tests" alt="Ir a edición de tests" />
+                                 </a>
+                                </td>
+                            </tr>
+                            {% for subcategory in categorySubcategories[category.id] %}
+                              <tr>
+                                <td colspan="1">
+                                </td>
+                                <td colspan="1">
+                                  <a href="#" data-type   = "textarea"
+                                                data-pk     = "{{ subcategory.id }}"
+                                                data-params = "{'id' : '{{ subcategory.id }}'}"
+                                                class       = "input_text_editable"
+                                                data-url    = "{{ path('subcategory_update', {'field' : 'name' }) }}">
+                                    {{ subcategory.name }}
+                                  </a>
+                               </td>
+                               <td colspan="1">
+                                  <a href="#" data-type   = "textarea"
+                                                data-pk     = "{{ subcategory.id }}"
+                                                data-params = "{'id' : '{{ subcategory.id }}'}"
+                                                class       = "input_text_editable"
+                                                data-url    = "{{ path('subcategory_update', {'field' : 'title' }) }}">
+                                    {{ subcategory.title }}
+                                  </a>
+                               </td>
+                               <td colspan="1">
+                                  <a href="#" data-type   = "textarea"
+                                                data-pk     = "{{ subcategory.id }}"
+                                                data-params = "{'id' : '{{ subcategory.id }}'}"
+                                                class       = "input_text_editable"
+                                                data-url    = "{{ path('subcategory_update', {'field' : 'description' }) }}">
+                                    {{ subcategory.description }}
+                                  </a>
+                               </td>
+                               <td colspan="1">
+                                {{ questions['subcategory'][subcategory.id] }}
+                              </td>
+                                  <td colspan="1" >
+                                      <a itemprop="url" class="deleteElement" href="#" data-url="{{ path('subcategory_delete', {'subcategory_id' : subcategory.id }) }}">
+                                      {# Eliminar subcategoria #}
+                                      <img itemprop="image" src="{{ asset('bundles/web/img/delete.png') }}"
+                                        title="Eliminar categoría" alt="Eliminar subcategoría" />
+                                     </a>
+                                     <a itemprop="url" href="{{ path('subcategory_testList', {'subject' : subject.slug, 'category': category.slug, 'subcategory_id' : subcategory.id  }) }}"> {# Ir a edición de tests #}
+                                      <img itemprop="image" src="{{ asset('bundles/web/img/list-b.png') }}"
+                                        title="Ir a edición de tests" alt="Ir a edición de tests" />
+                                     </a>
+                                   </td>
+                              </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="1">
+                                </td>
+                                <td colspan="4">
+                                  <a   href="#" style="color: crimson;"
+                                                data-type   = "textarea"
+                                                data-pk     = "{{category.id}}"
+                                                data-params = "{'id' : {{category.id}} }"
+                                                class       = "input_text_editable"
+                                                data-url    = "{{ path('subcategory_create') }}">
+                                    {{ 'Nueva subcategoría' }}
+                                  </a>
+                                </td>
+                                <td colspan="1">
+                                   <a itemprop="url" href="{{ path('subject_list') }}">
+                                    <img itemprop="image" src="{{ asset('bundles/web/img/refresh.png') }}"
+                                      title="Actualizar" alt="Actualizar" />
+                                   </a>
+                                </td>
+                              </tr>
+                            <tr>
+                                <td colspan="6"  class="subcategory"></td>
+                            </tr>
+
+                            {% endfor %}
+                            <tr>
+                              <td colspan="5">
+                                <a href="#" style="color: crimson;"
+                                              data-type   = "textarea"
+                                              data-pk     = "{{subject.id}}"
+                                              data-params = "{'id' : {{subject.id}} }"
+                                              class       = "input_text_editable"
+                                              data-url    = "{{ path('category_create') }}">
+                                  {{ 'Nuevo Tema' }}
+                                </a>
+                              </td>
+                              <td colspan="1">
+                                 <a itemprop="url" href="{{ path('subject_list') }}">
+                                  <img itemprop="image" src="{{ asset('bundles/web/img/refresh.png') }}"
+                                    title="Actualizar" alt="Actualizar" />
+                                 </a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                              <td colspan="6">
+                                &nbsp;
+                              </td>
+                            </tr>
+	                       {% endfor %}
+                         {# Nuevo registo #}
+                         </table>
+
+                      <div class="hero">
+                        {# Title. Don't forget the <span> tag #}
+                        <h3><span>Nueva asignatura</span></h3>
+                      </div>
+                        <table class="table table-striped table-hover table-bordered tableditable" id="sample_editable_2">
+                            <tr>
+                              <td colspan="5">
+                                <a href="#" style="color: crimson;"
+                                              data-type   = "textarea"
+                                              data-pk     = "0"
+                                              data-params = "{'id' : '0'}"
+                                              class       = "input_text_editable"
+                                              data-url    = "{{ path('subject_create') }}">
+                                  {{ 'Nombre de la asignatura' }}
+                                </a>
+                              </td>
+                              <td colspan="1" width="40px">
+                                 <a itemprop="url" href="{{ path('subject_list') }}">
+                                  <img itemprop="image" src="{{ asset('bundles/web/img/refresh.png') }}"
+                                    title="Actualizar" alt="Actualizar" />
+                                 </a>
+                                </td>
+                            </tr>
+                        </table>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+
+            {# Events ends #}
+
+
+   </div>
+</div>
+
+<script>
+        var loading     = '<img src="{{ asset("bundles/admin/assets/img/loading.gif") }}" align="absmiddle">';
+
+        $(document).ready(function() {
+
+            $('.input_text_editable').editable({showbuttons: 'bottom',rows: 15, inputclass: 'input-medium'});
+
+            //Confirmación de la eliminación de elementos
+            $('.deleteElement').click(function(){
+              var answer = confirm("¿Desea eliminar el objeto seleccionado?");
+              var url = $(this).attr("data-url");
+              if (!answer){
+                  $(this).attr("href","#");
+                  return false;
+              }else{
+                $(this).attr("href",url);
+                  return true;
+              }
+            });
+
+            $('.tableditable').dataTable( {
+
+                "iDisplayLength": 25,
+                //"sDom": "t<'row-fluid'<'span6'i><'span6'p>>",
+                "aoColumnDefs": [
+                      { "bSearchable": false, "aTargets": [ 2 ] }
+                    ],
+                      "oLanguage": {
+                          "sLengthMenu": "{{ 'table_showing' | trans }} _MENU_ {{ 'table_records' | trans }}",
+                          "sSearch": "{{ 'table_search' | trans }}",
+                          "sInfo": "{{ 'table_info' | trans | raw }}",
+                          "oPaginate": {
+                            "sPrevious": "{{'previous'|trans}}",
+                            "sNext": "{{'next'|trans}}"
+                        }
+                      }
+
+
+                  });
+
+            App.init();
+
+            jQuery('#sample_editable_1_wrapper .dataTables_length select').addClass("m-wrap xsmall"); // modify table per page dropdown
+            jQuery('#sample_editable_1_wrapper .dataTables_filter input').addClass("m-wrap medium"); // modify table search input
+
+        });
+
+    </script>
+{% endblock %}

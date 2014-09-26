@@ -1,0 +1,488 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\WebBundle\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use PFC\ModelBundle\Entity\Question;
+use PFC\ModelBundle\Entity\Answer;
+
+/**
+*  &raquo; Controlador para la renderizaci&oacute;n de p&aacute;ginas y la ejecuci&oacute;n de los cuestionarios para el usuario.
+**/
+class PagesController  extends BaseController
+{
+    public function indexAction()
+    {
+        return $this-&gt;render('WebBundle:Pages:index.html.twig',
+                                                            array('subjects'    =&gt;    $this-&gt;subjects));
+    }
+
+    /**
+    * &raquo; M&eacute;todo que realiza las tareas del controlador despu&eacute;s de seleccionar una aisgnatura.
+    *
+    * @package PFC\WebBundle\Controller;
+    * @version 1.0
+    *
+    * @param   string     $subjectSlug    slug de la subcategor&iacute;a
+    *
+    * @return  Render     Devuelve la vista WebBundle:Pages:subject.html.twig que muestra la asignatura, sus categor&iacute;as y sus subcategor&iacute;as, con los cuestionarios a realizar.
+    */
+    public function subjectAction($subjectSlug)
+    {
+
+    	$em             = $this-&gt;getDoctrine()-&gt;getManager();
+
+        $subject       = $em-&gt;getRepository('ModelBundle:Subject')
+                                -&gt;findOneBySlug($subjectSlug);
+
+        $subjectCategories    = $em-&gt;getRepository('ModelBundle:Category')
+                                      -&gt;findBySubject($subject-&gt;getId());
+
+        $categorySubcategories = array();
+
+        if (isset($subjectCategories)){
+            foreach ($subjectCategories as $category){
+
+                $subcategories = $em-&gt;getRepository('ModelBundle:Subcategory')
+                                          -&gt;findByCategory($category-&gt;getId());
+
+                $categorySubcategories [$category-&gt;getId()] = $subcategories;
+
+            }
+        }
+        return $this-&gt;render('WebBundle:Pages:subject.html.twig',
+        														array( 'subject'               =&gt;    $subject,
+                                                                       'subjects'              =&gt;    $this-&gt;subjects,
+                                                                       'subjectCategories'     =&gt;    $subjectCategories,
+                                                                       'categorySubcategories' =&gt;    $categorySubcategories));
+    }
+
+
+    /**
+    * &raquo; Renderizaci&oacute;n de la p&aacute;gina con la selecci&oacute;n de nivel del cuestionario.
+    *
+    * @package PFC\WebBundle\Controller;
+    * @version 1.0
+    *
+    * @param   string     $subjectSlug      slug de la asignatura
+    * @param   string     $categorySlug     opcional, slug de la categor&iacute;a
+    * @param   string     $subCategorySlug  opcional, slug de la subcategor&iacute;a
+    *
+    * @return  Render     Devuelve la vista WebBundle:Pages:level-selection.html.twig
+    */
+     public function levelSelectionAction($subjectSlug, $categorySlug = '', $subCategorySlug = '')
+    {
+
+        $em             = $this-&gt;getDoctrine()-&gt;getManager();
+
+        $subject        = $em-&gt;getRepository('ModelBundle:Subject')
+                            -&gt;findOneBySlug($subjectSlug);
+
+        $conditionSql   = '';
+        $condition_id   = '';
+        $conditionSlug  = '';
+        $conditionIndex = '';
+
+        if ($subCategorySlug != ''){
+
+            $subcategory       = $em-&gt;getRepository('ModelBundle:Subcategory')
+                                -&gt;findOneBySlug($subCategorySlug);
+            $conditionSql   = 'q.subcategory = :subcategory AND ';
+            $condition_id   = $subcategory-&gt;getId();
+            $conditionSlug  = $subcategory-&gt;getSlug();
+            $conditionIndex = 'subcategory';
+
+        }elseif ($categorySlug != ''){
+
+            $category       = $em-&gt;getRepository('ModelBundle:Category')
+                                -&gt;findOneBySlug($categorySlug);
+            $conditionSql   = 'q.category = :category AND ';
+            $condition_id   = $category-&gt;getId();
+            $conditionSlug  = $category-&gt;getSlug();
+            $conditionIndex = 'category';
+        }
+
+
+        $levels = array();
+
+        for ($i = 0; $i &lt;= 9; $i++){
+
+            $arrayParameters = array();
+            $arrayParameters['subject']  =  $subject-&gt;getId();
+            $arrayParameters['minlevel'] =  $i;
+            $arrayParameters['maxlevel'] =  $i + 1;
+
+            if ($i == 0){
+                $conditionLevel = ' q.level &gt;= :minlevel AND q.level &lt;= :maxlevel '; //[0..1]
+            }else{
+                $conditionLevel = ' q.level &gt; :minlevel AND q.level &lt;= :maxlevel ';  //(1..2](2..3]...(9..10]
+            }
+
+            if ($conditionSlug != ''){
+                $arrayParameters[$conditionIndex] =  $condition_id;
+            }
+
+            //var_dump($arrayParameters);
+
+            $query = $em-&gt;createQuery(
+                'SELECT q
+                FROM ModelBundle:Question q
+                WHERE q.subject = :subject AND ' . $conditionSql . $conditionLevel . ' ORDER BY q.level ASC'
+            )-&gt;setParameters($arrayParameters);
+            //ldd($query);
+            $questions = $query-&gt;getResult();
+            $levels[$i] = count($questions);
+            //ld($i . ' ' . count($questions));
+        }
+        return $this-&gt;render('WebBundle:Pages:level-selection-form.html.twig',
+                                                                array( 'subject'            =&gt;    $subject,
+                                                                       'subjects'           =&gt;    $this-&gt;subjects,
+                                                                       'categorySlug'       =&gt;    $categorySlug,
+                                                                       'subCategorySlug'    =&gt;    $subCategorySlug,
+                                                                       'levels'             =&gt;    $levels));
+    }
+
+
+    /**
+    * &raquo; Renderizaci&oacute;n de la p&aacute;gina con la lista de preguntas del nivel, asignatura, categor&iacute;a o subcategor&iacute;a seleccionadas
+    *
+    * @package PFC\WebBundle\Controller;
+    * @version 1.0
+    *
+    * @param   string     $subjectSlug      slug de la asignatura
+    * @param   integer    $level            nivel del cuestionario. 0 indica aleatorio de cualquier nivel
+    * @param   string     $categorySlug     opcional, slug de la categor&iacute;a
+    * @param   string     $subCategorySlug  opcional, slug de la subcategor&iacute;a
+    *
+    * @return  Render     Devuelve la vista WebBundle:Pages:test.html.twig
+    */
+    public function testAction(Request $request, $subjectSlug, $categorySlug = '', $subCategorySlug = '' ) //$level = 0, preguntas de cualquier nivel.
+    {
+        $testRequest = $request-&gt;request;
+
+        //var_dump($testRequest);
+
+        $level = $testRequest-&gt;get('level');
+
+        $maxQuestions = $testRequest-&gt;get('numMaxQuestions');
+
+        if (!is_numeric($maxQuestions)) $maxQuestions = 10;
+
+        //ld($subjectSlug . ' - ' . $categorySlug . ' - ' . $subCategorySlug . ': Level ' . $level . ' : maxQuestions ' . $maxQuestions);
+
+        $em             = $this-&gt;getDoctrine()-&gt;getManager();
+
+        $subject        = $em-&gt;getRepository('ModelBundle:Subject')
+                            -&gt;findOneBySlug($subjectSlug);
+
+        $conditionSql   = '';
+        $condition_id   = '';
+        $conditionSlug  = '';
+        $conditionIndex = '';
+        $conditionLevel = '';
+
+        if ($subCategorySlug != ''){
+
+            $subcategory       = $em-&gt;getRepository('ModelBundle:Subcategory')
+                                -&gt;findOneBySlug($subCategorySlug);
+            $conditionSql   = 'AND q.subcategory = :subcategory ';
+            $condition_id   = $subcategory-&gt;getId();
+            $conditionSlug  = $subcategory-&gt;getSlug();
+            $conditionIndex = 'subcategory';
+
+        }elseif ($categorySlug != ''){
+
+            $category       = $em-&gt;getRepository('ModelBundle:Category')
+                                -&gt;findOneBySlug($categorySlug);
+            $conditionSql   = 'AND  q.category = :category ';
+            $condition_id   = $category-&gt;getId();
+            $conditionSlug  = $category-&gt;getSlug();
+            $conditionIndex = 'category';
+        }
+
+        //Parametros para la consulta
+        $arrayParameters = array();
+        $arrayParameters['subject']  =  $subject-&gt;getId();
+
+        if ( $level != 0){
+            $arrayParameters['minlevel'] =  $level - 1;
+            $arrayParameters['maxlevel'] =  $level;
+            if ($level == 1){
+                $conditionLevel   = ' AND q.level &gt;= :minlevel AND q.level &lt;= :maxlevel ';
+            }else{
+                $conditionLevel   = ' AND q.level &gt; :minlevel AND q.level &lt;= :maxlevel ';
+            }
+        }
+
+        if ($conditionSlug != ''){
+            $arrayParameters[$conditionIndex] =  $condition_id;
+        }
+        //var_dump($conditionSql);
+
+        $query = $em-&gt;createQuery(
+            'SELECT q
+            FROM ModelBundle:Question q
+            WHERE q.subject = :subject ' . $conditionSql . $conditionLevel
+        )-&gt;setParameters($arrayParameters);
+
+        $questions = $query-&gt;getResult();
+
+        //Barajamos las cuestiones y seleccionamos a lo sumo 10
+        srand (time());
+        shuffle ($questions);
+
+        $questionAnswers        = array();
+        $limitQuestions         = array();
+        $i = 0;
+        foreach ($questions as $question){
+            $limitQuestions [] = $question;
+            $answers    = $em-&gt;getRepository('ModelBundle:Answer')
+                            -&gt;findByQuestion($question-&gt;getId());
+            shuffle ($answers);
+            $questionAnswers [$question-&gt;getId()] = $answers;
+
+            if (++$i == $maxQuestions ) {break;} //N&ordm; de preguntas por test
+        }
+
+        //var_dump($questions);
+        return $this-&gt;render('WebBundle:Pages:test.html.twig',
+                                                                array( 'subject'            =&gt;    $subject,
+                                                                       'subjects'           =&gt;    $this-&gt;subjects,
+                                                                       'categorySlug'       =&gt;    $categorySlug,
+                                                                       'subCategorySlug'    =&gt;    $subCategorySlug,
+                                                                       'questions'          =&gt;    $limitQuestions,
+                                                                       'questionAnswers'    =&gt;    $questionAnswers,
+                                                                       'level'              =&gt;    $level));
+    }
+
+
+    /**
+    * &raquo; Env&iacute;o de los resultados de un cuestionario, y almacenamiento de las evaluaciones de las preguntas.
+    *
+    * @package PFC\WebBundle\Controller;
+    * @version 1.0
+    *
+    * @param   string     $subjectSlug      slug de la asignatura
+    * @param   integer    $level            Nivel del cuestionario. 0 indica aleatorio de cualquier nivel
+    * @param   Request    $request          Objeto que contiene el formulario enviado
+    *
+    * @return  Render     Devuelve la vista WebBundle:Pages:test-post.html.twig con el resultado del cuestionario.
+    */
+    public function TestPostAction($subjectSlug, $level, Request $request)
+    {
+
+        $em             = $this-&gt;getDoctrine()-&gt;getManager();
+
+        $subject        = $em-&gt;getRepository('ModelBundle:Subject')
+                            -&gt;findOneBySlug($subjectSlug);
+
+        $testRequest = $request-&gt;request;
+
+        $questionIds = array();
+        $answers = array();
+
+        $feedback = array();
+
+        foreach ($testRequest as $asnwerId =&gt; $value) { //Hemos guadado la lista de ids de las preguntas en un array
+            if ($asnwerId == 'submitB'){
+                $questionIds = explode(',', $value);
+            }
+            else{
+                $answers[$asnwerId] =  $value;
+            }
+        }
+
+        $questions = array();
+        foreach ($questionIds as $key =&gt; $value){ //reorganizamos los &iacute;ndices para que sea el id de la pregunta
+            $questions[$value] = '';
+            $questions[$value]['score'] = 0;
+            $questions[$value]['answered'] = false;
+        }
+
+
+        $answerObj = new Answer();
+        $questionObj = new Question();
+
+        $countNumericBlankQuestions = 0;
+
+        foreach ($answers as $answer =&gt; $value){ //Recorremos las respuestas
+            list($QA, $id) = preg_split('[,]', $answer); //$QA almacena q o a, si el id es de una pregunta o una respuesta
+
+            if ($QA == 'a'){ //preguntas Multichoice de respuesta m&uacute;ltiple (checkboxs)
+                //Cargamos el objeto respuesta
+                $answerObj = $em-&gt;getRepository('ModelBundle:Answer')
+                                -&gt;findOneById($id);
+
+                //Cargamos el objeto pregunta de esa respuesta
+                $questionObj = $answerObj-&gt;getQuestion();
+
+                //Almacenamos el resultado de la pregunta, y le restamos la penalizaci&oacute;n en su caso
+                $questions[$questionObj-&gt;getId()]['score'] =
+                        $questions[$questionObj-&gt;getId()]['score'] +
+                            (($answerObj-&gt;getValue() &gt; 0) ? ($answerObj-&gt;getValue()) : (-1 * ($questionObj-&gt;getPenalty())));
+
+                $questions[$questionObj-&gt;getId()]['answered'] = true;
+
+            }else{ // Multichice de respuesta simple, o num&eacute;ricas
+
+                $questionObj = $em-&gt;getRepository('ModelBundle:Question')
+                                -&gt;findOneById($id);
+
+                $questions[$questionObj-&gt;getId()]['answered'] = true;
+
+                switch ($questionObj-&gt;getType()) {
+                    case 0: //Multichoice
+
+                        if ($questionObj-&gt;getSingle()){ //Confirmamos que sean de respuesta simple
+                            $answerObj = $em-&gt;getRepository('ModelBundle:Answer')
+                                -&gt;findOneById($value);
+                            $questions[$questionObj-&gt;getId()]['score'] =
+                                (($answerObj-&gt;getValue() &gt; 0) ? ($answerObj-&gt;getValue()) : (-1 * ($questionObj-&gt;getPenalty())));
+                        }
+                        break;
+
+                    case 1: //trueFalse
+                            $answerObj = $em-&gt;getRepository('ModelBundle:Answer')
+                                -&gt;findOneById($value);
+
+                            $questions[$questionObj-&gt;getId()]['score'] =
+                                    (($answerObj-&gt;getValue() &gt; 0) ? ($answerObj-&gt;getValue()) : (-1 * ($questionObj-&gt;getPenalty())));
+                        break;
+
+                    case 6: //numerical
+
+                        if ($value == '') {
+                            $countNumericBlankQuestions++;
+                            break;
+                        }
+
+                        $answerObjs = $em-&gt;getRepository('ModelBundle:Answer')
+                                -&gt;findByQuestion($id);
+
+                        $value = trim(str_replace(&quot;,&quot;, &quot;.&quot;, $value)); //Solo punto decimal
+
+
+
+                        foreach ($answerObjs as $answerObj){
+
+                            $questionValue = trim(str_replace(&quot;,&quot;, &quot;.&quot;,$answerObj-&gt;getContent())); //Punto decimal
+
+                            $tolerance = $answerObj-&gt;getTolerance();
+
+                            $minValue = $questionValue - abs($tolerance);
+                            $maxValue = $questionValue + abs($tolerance);
+
+                            //ld($minValue . ' - ' . $maxValue . '  value = ' . $value);
+
+                            if ( $value &gt;= $minValue and $value &lt;= $maxValue ) { //comparamos la respuesta dada. Incluimos la tolerancia a la respuesta
+                                $questions[$questionObj-&gt;getId()]['score'] = $answerObj-&gt;getValue();
+                            }
+
+                        }
+                        if ($questions[$questionObj-&gt;getId()]['score'] == 0){
+                            $questions[$questionObj-&gt;getId()]['score'] = -1 * ($questionObj-&gt;getPenalty());
+                        }
+                        break;
+
+                    default:
+                        # code...
+                        break;
+                }
+            }
+        }
+
+        $result = 0;
+        $questionObj = new Question();
+
+        $feedback['questions'] = count($questions);
+        $feedback['answered'] = 0;
+        $feedback['right'] = 0;
+
+
+        foreach ($questions as $id =&gt; $question) {
+            $result = $result +  $question['score'];
+
+            $questionObj = $em-&gt;getRepository('ModelBundle:Question')
+                                -&gt;findOneById($id);
+
+            if ($question['answered'] == true)
+                $feedback['answered'] = $feedback['answered'] + 1;
+
+
+            $questionObj-&gt;setNumAnswers($questionObj-&gt;getNumAnswers() + 1);
+            if ($question['score'] == 100){
+                $questionObj-&gt;setNumCorrectAnswers($questionObj-&gt;getNumCorrectAnswers() + 1);
+                $feedback['right'] = $feedback['right'] + 1;
+            }
+            $questionObj-&gt;setLevel((1-($questionObj-&gt;getNumCorrectAnswers() / $questionObj-&gt;getNumAnswers())) * 10);
+
+            $em-&gt;persist($questionObj);
+        }
+        $em     -&gt;flush();
+
+        $result = ($result / count($questions) );
+
+        //ld($feedback);
+
+        //Correcci&oacute;n por preguntas num&eacute;ricas en blanco
+        if ($countNumericBlankQuestions != 0){
+            $feedback['answered'] = $feedback['answered'] - $countNumericBlankQuestions;
+        }
+
+        if ($level == 0) {
+            (($this-&gt;lang == 'en') ? ($level = ': random') : ($level = ': aleatorio'));
+        }
+        return $this-&gt;render('WebBundle:Pages:test-post.html.twig',
+                                                                array( 'subject'            =&gt;    $subject,
+                                                                       'subjects'           =&gt;    $this-&gt;subjects,
+                                                                       'level'              =&gt;    $level,
+                                                                       'result'             =&gt;    $result,
+                                                                       'feedback'           =&gt;    $feedback));
+    }
+}
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,110 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+// Make the page validate
+ini_set('session.use_trans_sid', '0');
+
+// Include the random string file
+require 'rand.php';
+
+// Begin the session
+session_start();
+
+// Set the session contents
+$_SESSION['captcha_id'] = $str;
+
+?&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+ &lt;title&gt;AJAX CAPTCHA&lt;/title&gt;
+ &lt;meta http-equiv=&quot;Content-type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;
+ &lt;meta name=&quot;keywords&quot; content=&quot;AJAX,JHR,PHP,CAPTCHA,download,PHP CAPTCHA,AJAX CAPTCHA,AJAX PHP CAPTCHA,download AJAX CAPTCHA,download AJAX PHP CAPTCHA&quot; /&gt;
+ &lt;meta name=&quot;description&quot; content=&quot;An AJAX CAPTCHA script, written in PHP&quot; /&gt;
+ 
+ &lt;script type=&quot;text/javascript&quot; src=&quot;../../lib/jquery.js&quot;&gt;&lt;/script&gt;
+ &lt;script type=&quot;text/javascript&quot; src=&quot;../../jquery.validate.js&quot;&gt;&lt;/script&gt;
+ &lt;script type=&quot;text/javascript&quot; src=&quot;captcha.js&quot;&gt;&lt;/script&gt;
+ 
+ &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;style.css&quot; /&gt;
+ &lt;style type=&quot;text/css&quot;&gt;
+  img { border: 1px solid #eee; }
+  p#statusgreen { font-size: 1.2em; background-color: #fff; color: #0a0; }
+  p#statusred { font-size: 1.2em; background-color: #fff; color: #a00; }
+  fieldset label { display: block; }
+  fieldset div#captchaimage { float: left; margin-right: 15px; }
+  fieldset input#captcha { width: 25%; border: 1px solid #ddd; padding: 2px; }
+  fieldset input#submit { display: block; margin: 2% 0% 0% 0%; }
+  #captcha.success {
+  	border: 1px solid #49c24f;
+	background: #bcffbf;
+  }
+  #captcha.error {
+  	border: 1px solid #c24949;
+	background: #ffbcbc;
+  }
+ &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;h1&gt;&lt;acronym title=&quot;Asynchronous JavaScript And XML&quot;&gt;AJAX&lt;/acronym&gt; &lt;acronym title=&quot;Completely Automated Public Turing test to tell Computers and Humans Apart&quot;&gt;CAPTCHA&lt;/acronym&gt;, based on &lt;a href=&quot;http://psyrens.com/captcha/&quot;&gt;http://psyrens.com/captcha/&lt;/a&gt;&lt;/h1&gt;
+
+&lt;form id=&quot;captchaform&quot; action=&quot;&quot;&gt;
+&lt;fieldset&gt;
+ &lt;div id=&quot;captchaimage&quot;&gt;&lt;a href=&quot;&lt;?php echo $_SERVER['PHP_SELF']; ?&gt;&quot; id=&quot;refreshimg&quot; title=&quot;Click to refresh image&quot;&gt;&lt;img src=&quot;images/image.php?&lt;?php echo time(); ?&gt;&quot; width=&quot;132&quot; height=&quot;46&quot; alt=&quot;Captcha image&quot; /&gt;&lt;/a&gt;&lt;/div&gt;
+ &lt;label for=&quot;captcha&quot;&gt;Enter the characters as seen on the image above (case insensitive):&lt;/label&gt;
+ &lt;input type=&quot;text&quot; maxlength=&quot;6&quot; name=&quot;captcha&quot; id=&quot;captcha&quot; /&gt;
+ &lt;input type=&quot;submit&quot; name=&quot;submit&quot; id=&quot;submit&quot; value=&quot;Check&quot; /&gt;
+&lt;/fieldset&gt;
+&lt;/form&gt;
+
+&lt;p&gt;If you can&amp;#39;t decipher the text on the image, click it to dynamically generate a new one.&lt;/p&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

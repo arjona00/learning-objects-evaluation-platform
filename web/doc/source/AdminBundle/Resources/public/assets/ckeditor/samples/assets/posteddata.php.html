@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../../../../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../../../../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;!DOCTYPE html&gt;
+&lt;?php
+/*
+Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
+?&gt;
+&lt;html&gt;
+&lt;head&gt;
+	&lt;meta charset=&quot;utf-8&quot;&gt;
+	&lt;title&gt;Sample &amp;mdash; CKEditor&lt;/title&gt;
+	&lt;link rel=&quot;stylesheet&quot; href=&quot;sample.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;h1 class=&quot;samples&quot;&gt;
+		CKEditor &amp;mdash; Posted Data
+	&lt;/h1&gt;
+	&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; id=&quot;outputSample&quot;&gt;
+		&lt;colgroup&gt;&lt;col width=&quot;120&quot;&gt;&lt;/colgroup&gt;
+		&lt;thead&gt;
+			&lt;tr&gt;
+				&lt;th&gt;Field&amp;nbsp;Name&lt;/th&gt;
+				&lt;th&gt;Value&lt;/th&gt;
+			&lt;/tr&gt;
+		&lt;/thead&gt;
+&lt;?php
+
+if ( isset( $_POST ) )
+	$postArray = &amp;$_POST ;			// 4.1.0 or later, use $_POST
+else
+	$postArray = &amp;$HTTP_POST_VARS ;	// prior to 4.1.0, use HTTP_POST_VARS
+
+foreach ( $postArray as $sForm =&gt; $value )
+{
+	if ( get_magic_quotes_gpc() )
+		$postedValue = htmlspecialchars( stripslashes( $value ) ) ;
+	else
+		$postedValue = htmlspecialchars( $value ) ;
+
+?&gt;
+		&lt;tr&gt;
+			&lt;th style=&quot;vertical-align: top&quot;&gt;&lt;?php echo $sForm?&gt;&lt;/th&gt;
+			&lt;td&gt;&lt;pre class=&quot;samples&quot;&gt;&lt;?php echo $postedValue?&gt;&lt;/pre&gt;&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;?php
+}
+?&gt;
+	&lt;/table&gt;
+	&lt;div id=&quot;footer&quot;&gt;
+		&lt;hr&gt;
+		&lt;p&gt;
+			CKEditor - The text editor for the Internet - &lt;a class=&quot;samples&quot; href=&quot;http://ckeditor.com/&quot;&gt;http://ckeditor.com&lt;/a&gt;
+		&lt;/p&gt;
+		&lt;p id=&quot;copy&quot;&gt;
+			Copyright &amp;copy; 2003-2013, &lt;a class=&quot;samples&quot; href=&quot;http://cksource.com/&quot;&gt;CKSource&lt;/a&gt; - Frederico Knabben. All rights reserved.
+		&lt;/p&gt;
+	&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

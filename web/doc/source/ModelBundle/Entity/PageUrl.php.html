@@ -1,0 +1,157 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace PFC\ModelBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+
+/**
+ * &raquo; Entidad PageUrl
+ *
+ * @ORM\Table(name=&quot;PagesUrl&quot;, indexes = {@ORM\Index(name=&quot;IDX_LANG&quot;, columns={&quot;lang&quot;})})
+ * @ORM\Entity
+ */
+class PageUrl
+{
+    /**
+     * @var string
+     * @ORM\Id
+     * @ORM\Column(name=&quot;url&quot;, type=&quot;string&quot;, length=255)
+     */
+    private $url;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name=&quot;lang&quot;, type=&quot;string&quot;, length=2)
+     */
+    private $lang;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=&quot;PFC\ModelBundle\Entity\Page&quot;)
+     * @ORM\JoinColumn(name=&quot;page_id&quot;, referencedColumnName=&quot;id&quot;)
+     */
+    protected $page;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this-&gt;id;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     * @return PageUrl
+     */
+    public function setUrl($url)
+    {
+        $this-&gt;url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this-&gt;url;
+    }
+
+    /**
+     * Set lang
+     *
+     * @param string $lang
+     * @return PageUrl
+     */
+    public function setLang($lang)
+    {
+        $this-&gt;lang = $lang;
+
+        return $this;
+    }
+
+    /**
+     * Get lang
+     *
+     * @return string
+     */
+    public function getLang()
+    {
+        return $this-&gt;lang;
+    }
+
+    /**
+     * Set page
+     *
+     * @param \PFC\ModelBundle\Entity\Page $page
+     * @return PageUrl
+     */
+    public function setPage(\PFC\ModelBundle\Entity\Page $page = null)
+    {
+        $this-&gt;page = $page;
+
+        return $this;
+    }
+
+    /**
+     * Get page
+     *
+     * @return \PFC\ModelBundle\Entity\Page
+     */
+    public function getPage()
+    {
+        return $this-&gt;page;
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

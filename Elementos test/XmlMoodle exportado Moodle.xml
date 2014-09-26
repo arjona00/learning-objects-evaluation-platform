@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 132  -->
+  <question type="multichoice">
+    <name>
+      <text>Contesta a la siguiente pregunta</text>
+    </name>
+    <questiontext format="html">
+      <text>¿Cúal es la puntuación máxima que puedes conseguir tirando seis dados normales?</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <single>true</single>
+    <shuffleanswers>false</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <correctfeedback format="html">
+      <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text></text>
+    </incorrectfeedback>
+    <answer fraction="0" format="html">
+      <text>32</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text>25</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="100" format="html">
+      <text>36</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>
+
+<!-- question: 133  -->
+  <question type="multichoice">
+    <name>
+      <text>Fabricantes de móviles con sistema android</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>Fabricantes de móviles con sistema android</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <single>false</single>
+    <shuffleanswers>false</shuffleanswers>
+    <answernumbering>abc</answernumbering>
+    <correctfeedback format="html">
+      <text></text>
+    </correctfeedback>
+    <partiallycorrectfeedback format="html">
+      <text></text>
+    </partiallycorrectfeedback>
+    <incorrectfeedback format="html">
+      <text></text>
+    </incorrectfeedback>
+    <answer fraction="25" format="html">
+      <text><![CDATA[<p>Samsung</p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>Nokia</p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="25" format="html">
+      <text><![CDATA[<p>LG</p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="25" format="html">
+      <text><![CDATA[<p>Google Nexus</p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="html">
+      <text><![CDATA[<p>Iphone</p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="25" format="html">
+      <text><![CDATA[<p>Xaomi</p>]]></text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>
+
+<!-- question: 125  -->
+  <question type="numerical">
+    <name>
+      <text>Calcula el resultado de la siguiente formula</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>$$ \sqrt[4]{16} $$</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>4</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>5</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.5</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+
+<!-- question: 131  -->
+  <question type="numerical">
+    <name>
+      <text>Resuelve la siguiente ecuación</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>$$x^{2}+3 \cdot y^{2}+x-3 \cdot y=8$$</p>
+<p>$$3 \cdot x^{2}-2 \cdot y^{2}+y=2$$</p>
+<p>Indica los posibles valores de X para Y = 2</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>3</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>5</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="75" format="moodle_auto_format">
+      <text>4</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+
+<!-- question: 7  -->
+  <question type="numerical">
+    <name>
+      <text>Resuelve la siguiente operación</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>$$ \sqrt{16} $$</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>4</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.1</tolerance>
+    </answer>
+    <answer fraction="50" format="moodle_auto_format">
+      <text>5</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.2</tolerance>
+    </answer>
+    <answer fraction="25" format="moodle_auto_format">
+      <text>6</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+      <tolerance>0.05</tolerance>
+    </answer>
+    <unitgradingtype>0</unitgradingtype>
+    <unitpenalty>0.1000000</unitpenalty>
+    <showunits>3</showunits>
+    <unitsleft>0</unitsleft>
+  </question>
+
+<!-- question: 129  -->
+  <question type="truefalse">
+    <name>
+      <text>Contesta con verdadero o falso la siguiente afirmación</text>
+    </name>
+    <questiontext format="html">
+      <text><![CDATA[<p>La tierra es redonda?</p>]]></text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>1.0000000</penalty>
+    <hidden>0</hidden>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>true</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>false</text>
+      <feedback format="html">
+        <text></text>
+      </feedback>
+    </answer>
+  </question>
+
+</quiz>

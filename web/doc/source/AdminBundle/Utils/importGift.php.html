@@ -1,0 +1,782 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+namespace PFC\AdminBundle\Utils;
+
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+
+use Doctrine\Common\Persistence\ObjectManager;
+
+use PFC\ModelBundle\Entity\Question;
+use PFC\ModelBundle\Entity\Answer;
+
+class importGift
+{
+    private $fileName;
+    public $pathDir;
+    private $arrayQuestions;
+
+    /**
+     * Importa el archivo a procesar y obtiene los datos necesarios para construir las preguntas y sus respuestas
+     *
+     * @return integer
+     */
+    public function importFile() {
+
+        $finder = new Finder();
+        $finder-&gt;files()-&gt;in($this-&gt;pathDir)-&gt;name('*.txt');
+
+        $path = '';
+        foreach ($finder as $file) {
+            // Print the relative path to the file
+            $path = $file-&gt;getRelativePathname();
+        }
+
+        if ($path == '') {
+            return 0; // C&oacute;digo de error
+        }
+
+        $path = $this-&gt;pathDir.$path;
+
+        $text = file_get_contents($path);
+
+        //ld($text);
+
+        $this-&gt;arrayQuestions = array();
+        $this-&gt;arrayQuestions = $this-&gt;getQuestionsArray($text);
+
+        //ld($this-&gt;arrayQuestions);
+
+        $afterValidator = count($this-&gt;arrayQuestions); // Se guarda el n&uacute;mero de cuestiones contenida en el array para comprobar si alguna se elimina luego de realizar la validaci&oacute;n
+        $this-&gt;arrayQuestions = $this-&gt;arrayQuestionsValidator($this-&gt;arrayQuestions); // Se verifica si todas las preguntas son correctas
+
+        //ld($this-&gt;arrayQuestions);
+
+        if (empty($this-&gt;arrayQuestions)) { // Si no existen preguntas contenidas en el array
+            return 4; // C&oacute;digo de error11
+        }
+
+        if (count($this-&gt;arrayQuestions) &lt; $afterValidator) { // Si existen preguntas, el array es valido, pero el validador a desechado algunas de ellas...
+            return -2; // ...se devuelve codigo de importaci&oacute;n parcial
+        }
+
+        return -1; // C&oacute;digo de importaci&oacute;n correcta
+    }
+
+    /**
+     * Construye las entidades Question y Answer y las persiste en la base de datos
+     *
+     * @param object $em           Objeto que representa un Entity Managers de Doctrine
+     * @param object $subcategory  Objeto de la entidad Subcategory
+     */
+    public function saveFileToBd(ObjectManager $em, $subcategory)
+    {
+        foreach ($this-&gt;arrayQuestions as $singleQuestion) {
+            $question = new Question();
+
+            $question-&gt;setTitle(strip_tags($singleQuestion['title']));
+            $question-&gt;setDescription(strip_tags($singleQuestion['description']));
+            $question-&gt;setType($singleQuestion['type']);
+            $question-&gt;setLevel(5);
+            $question-&gt;setNumAnswers($singleQuestion['numAnswers']);
+            $question-&gt;setNumCorrectAnswers($singleQuestion['numCorrectAnswers']);
+            $question-&gt;setSingle($singleQuestion['single']);
+            $question-&gt;setPenalty($singleQuestion['penality']);
+            $question-&gt;setCategory($subcategory-&gt;getCategory());
+            $question-&gt;setSubcategory($subcategory);
+            $question-&gt;setSubject($subcategory-&gt;getSubject());
+            //ld($question);
+
+            $em-&gt;persist($question);
+
+            foreach ($singleQuestion['answers'] as $answers) {
+                $answer = new Answer();
+                $answer-&gt;setContent(strip_tags($answers['content']));
+                $answer-&gt;setValue($answers['value']);
+                $answer-&gt;setTolerance($answers['tolerance']);
+                $answer-&gt;setQuestion($question);
+                //ld($answer);
+
+                $em-&gt;persist($answer);
+            }
+        }
+
+        $em-&gt;flush();
+    }
+
+    /**
+     * Set fileName
+     *
+     * @param string $fileName
+     * @return importXml
+     */
+    public function setFileName($fileName)
+    {
+        $this-&gt;fileName = $fileName;
+
+        return $this;
+    }
+
+    /**
+     * Get fileName
+     *
+     * @return string
+     */
+    public function getFileName()
+    {
+        return $this-&gt;fileName;
+    }
+
+    /**
+     * Set pathDir
+     *
+     * @param string $pathDir
+     * @return importXml
+     */
+    public function setPathDir($pathDir)
+    {
+        $this-&gt;pathDir = $pathDir;
+
+        return $this;
+    }
+
+    /**
+     * Get pathDir
+     *
+     * @return string
+     */
+    public function getPathDir()
+    {
+        return $this-&gt;pathDir;
+    }
+
+    /**
+     * Construye un array con preguntas y respuestas, extraidas del texto del archivo GIFT importado.
+     *
+     * El formato de Gift es el siguiente:
+     *
+     *    // text                    -&gt; Comentario hasta el fin de la linea (opcional).
+     *    ::title::                  -&gt; T&iacute;tulo de la pregunta (opcional). En esta aplicaci&oacute;n se le denom&iacute;na 'description'.
+     *    text                       -&gt; Texto de la pregunta (el enunciado).
+     *    [...format...]             -&gt; El formato de los siguientes bit de texto. pueden ser [html], [plain], [markdown] y [moodle], se encuentra siempre delante del texto.
+     *    {                          -&gt; Inicio de la(s) respuesta(s) de una pregunta.
+     *    {T} o {F}                  -&gt; Verdadoro of falso para las respuestas de este tipo (tamb&iacute;en puede ser {TRUE} o {FALSE}).
+     *    { ... =right ... }         -&gt; Respuesta correcta para preguntas de tipo multiple-choice (de una s&oacute;la respuesta) y Short-Answer.
+     *    { ... ~wrong ... }         -&gt; Respuesta incorrecta para multiple-choice (de una s&oacute;la respuesta) o simplemente una respesta para las multi-evaluados.
+     *    { ... =item -&gt; match ... } -&gt; Respuesta para preguntas de tipo Matching.
+     *    #feedback text             -&gt; Feedback de las preguntas. Se coloca inmediatamente despu&eacute;s del texto de una respuesta. Ej.: =Ulysses S. Grant#Correct, Gratz!!!.
+     *    ~%n%answer                 -&gt; n porcentaje de acierto/penality (dependiendo si n es positivo o negativo) para una respuesta Multi-Chioce.
+     *    {#                         -&gt; Inicio de la(s) respuesta(s) de una pregunta de tipo numeric.
+     *    answer:tolerance           -&gt; Respuesta correcta para una pregunta de tipo numeric dentro de una ragon de &plusmn; tolerancia.
+     *    low..high                  -&gt; Valores de menor y mayor, respectivamente, para un rango en una respuesta Numeric.
+     *    =%n%answer:tolerance       -&gt; n porcentaje de acierto/penality (dependiendo si n es positivo o negativo) para una una respuesta Numeric multi-evaluada.
+     *    }                          -&gt; Fin de la(s) respuesta(s) para un pregunta.
+     *    \character                 -&gt; Car&aacute;cter de escape para aquellos con significado especial en Gift: '~', '=', '#,'' '{', '}' y ':'.
+     *    \n                         -&gt; Car&aacute;ctar que representa un salto de linea para el texto ('text') de una pregunta.
+     *
+     * @param  string $text  Texto extraido del archivo Gift subido al servidor
+     * @return array
+     */
+    private function getQuestionsArray($text)
+    {
+        $questions = array();
+
+        // Se separa el texto en un array linea por linea
+        $lines = explode(&quot;\n&quot; , $text); //PHP_EOL
+
+        // Se agrupan las lineas que conforman el texto en bruto de cada pregunta por separado y se elimina resto de lineas (comentarios y vac&iacute;as)
+        $index = 0;
+        $questionsGift = array();
+
+        foreach ($lines as $line) {
+            $line = trim($line); // Primero se le quita los espacios en blanco y otros caracteres no deseados (como tabuladores o saltos de linea)...
+            $line = $this-&gt;giftScapeChars2PlaceHolders($line); // ...luego se sustituye los caracteres de escape de Gift por los marcadores de esta aplicaci&oacute;n
+
+            // Si es un comentario o una linea vac&iacute;a se ignora
+            if (substr($line, 0, 2) !== &quot;//&quot; &amp;&amp; $line !== &quot;&quot;) {
+                if (isset($questionsGift[$index])) {
+                    $questionsGift[$index] .= $line;
+                }
+                else {
+                    $questionsGift[$index] = $line;
+                }
+            }
+            elseif ($line === &quot;&quot;) {
+                $index++; // Para agrupar todas las lineas de una misma pregunta se sumara +1 al indice del array s&oacute;lo cuando encuentre una linea en blanco
+            }
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Se extraer los distintos elementos de las preguntas (enunciado, tipo, respuestas, etc) Pasa guardarlos de forma ordenada en  //
+        //    otro array (que ser&aacute; devuelto por el m&eacute;todo), para ello se recorre el array extrayendo el texto de la pregunta para as&iacute;   //
+        //    calcular los distintos elementos.                                                                                         //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        foreach ($questionsGift as $key =&gt; $questionGift) {
+            // Para que tenga un formato v&aacute;lido debe tener un s&oacute;lo corchete de apertura '{' y otro de cierre '}' para delimitar la(s) respuesta(s)
+            if (substr_count($questionGift, '{') !== 1 || substr_count($questionGift, '}') !== 1) {
+                $type = -2; // Error de formato
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Si extrae la respuesta, delimitada entre corchetes, del resto del texto para procesarlo, luego de obtener la respuesta   //
+            //    lo primero que se hace es obtener el tipo de la misma:                                                                //
+            //                                                                                                                          //
+            //     ┌───────────────┬───────┐                                                                                            //
+            //     │ TIPO (MOODLE) │ VALOR │                                                                                            //
+            //     ├───────────────┼───────┤                                                                                            //
+            //     │ multi-choice  │   0   │                                                                                            //
+            //     │ true-false    │   1   │                                                                                            //
+            //     │ shortanswer   │   2   │                                                                                            //
+            //     │ matching      │  -1   │                                                                                            //
+            //     │ cloze         │  -1   │                                                                                            //
+            //     │ essay         │  -1   │                                                                                            //
+            //     │ numerical     │   6   │                                                                                            //
+            //     │ description   │  -1   │                                                                                            //
+            //     │ category      │  -1   │                                                                                            //
+            //     │ sigle-choice* │  9(0) │                                                                                            //
+            //     └───────────────┴───────┘                                                                                            //
+            //     * El tipo single-choice tiene el valor 9 para esta clase, para el resto de la aplicaci&oacute;n tiene un type = 0 con       //
+            //          single = 1                                                                                                      //
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            // Se extrae el texto de la(s) respuesta(s) en formato Gift
+            $answerGift = trim(preg_replace('/.+({.*}).*/', '$1', $questionGift));
+
+            // Si encuentra alguna cadena de texto detr&aacute;s de la &uacute;ltima llave (si no encuentra nada devolver&iacute;a la cadena
+            //    pasada como argumento intacta) y esa cadena no es un punto se trata de una respuesta de tipo cloze
+            if (preg_replace('/.+\{.+\}(.+)/','$1', $questionGift) !== $questionGift &amp;&amp; preg_replace('/.+\{.+\}(.+)/','$1', $questionGift) !== '.') { // Cloze, siempre incluye texto detr&aacute;s de la respuesta (no se tiene encuenta esta regla si ese texto es solo un punto)
+                $type = -1;
+            }
+            elseif (!preg_match('/\{(.+)\}/', $answerGift)) { // Essay, no contiene texto entre los corchetes
+                $type = -1;
+            }
+            elseif (preg_match('/-&gt;/', $answerGift)) { // Matching, asocia los elementos medienta la cadena '-&gt;'
+                $type = -1;
+            }
+            elseif (substr($answerGift, 1, 1) === '#') { // Numerical, empieza en '{#'
+                $type = 6;
+            }
+            elseif (preg_match('/^{(T|TRUE|F|FALSE)(#\w+|})/', $answerGift)) { // True-False, s&oacute;lo incluye el texto 'T', 'TRUE', 'F', 'FALSE' y un posible feedback
+                $type = 1;
+            }
+            elseif (preg_match('/~/', $answerGift) &amp;&amp; preg_match('/=/', $answerGift)) { // Single-Choice (al descartar matching, numerical y Cloze), incluye '=' para la respueta correcta y '~' para las incorrectas
+                $type = 9;
+            }
+            elseif (preg_match('/~/', $answerGift)) { // Multi-Choice (al descartar single-choice, matching, numerical y Cloze), marca todas las respuestas con '~' al principio
+                $type = 0;
+            }
+            elseif (preg_match('/=/', $answerGift)) { // Short-Answer (al descartar matching, missing-word, numerical y multichoice), marca todas las respuestas con '=' al principio
+                $type = -1;
+            }
+            else { // Desconocido, se llegar&iacute;a a este punto si la respuesta tiene errores o no se trata de un formato v&aacute;lido de Gift
+                $type = -2; // Error de formato
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Una vez obtenido el tipo y verificado de que se trata de un formato v&aacute;lido, se procede a extraer el texto no             //
+            //    correspospondiente a la(s) respuesta(s), cerrado entre corchetes, para obtener de &eacute;l enunciado y la descripci&oacute;n       //
+            //    de la misma                                                                                                           //
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            // Se ignora aquellas respuestas cuyo type sea -1 por ser incorrecta o no v&aacute;lidas
+            if ($type &gt;= 0) {
+
+                // Se a&ntilde;ade el tipo al array
+                $questions[$key]['type'] = $type;
+
+                // Se extrae la parte de texto de la pregunta en formato Gift correspondiente al enunciado y el titulo (en caso de que exista)
+                $titleGift = trim(preg_replace('/(.+){.+}.*/', '$1', $questionGift));
+
+                // Se extrae el comentario del t&iacute;tulo y se asigna a description, en caso de que exista, y se incluye el resto del texto como enunciado
+                if (substr($titleGift, 0, 2) === '::') {
+                    $endTitle = strpos($titleGift, '::', 2);
+
+                    $title = substr($titleGift, 2, $endTitle - 2);
+                    $description = substr($titleGift, $endTitle + 2);
+
+                    $questions[$key]['title'] = $this-&gt;placeHolders2Char($title); // Se sustituye los marcadores antes de asignar
+                    $questions[$key]['description'] = $this-&gt;placeHolders2Char($description); // Se sustituye los marcadores antes de asignar
+                }
+                else { // En saco contrario, todo el texto se asiga al enunciado y se deja vac&iacute;a la descripci&oacute;n
+                    $questions[$key]['title'] = $this-&gt;placeHolders2Char($titleGift); // Se sustituye los marcadores antes de asignar
+                    $questions[$key]['description'] = &quot;&quot;;
+                }
+
+                // Se elimina la etiqueta format, en caso de que exista, del enunciado (nota: normalmente se encuentra en la parte extraida para al title, pero por motivos de compatibilidad se buscar&aacute; tambi&eacute;n en la parte correspondiente al description)
+                if (substr($questions[$key]['title'], 0, 1) === '[') {
+                    $endFormat = strpos($questions[$key]['title'], ']');
+
+                    $questions[$key]['title'] = substr($questions[$key]['title'], $endFormat + 1);
+                }
+                if (substr($questions[$key]['description'], 0, 1) === '[') {
+                   $endFormat = strpos($questions[$key]['description'], ']');
+
+                    $questions[$key]['description'] = substr($questions[$key]['description'], $endFormat + 1);
+                }
+
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // Se obtiene las respuestas del texto en formato Gift, a partir de ellas se establece el n&uacute;mero de respuesta, el n&uacute;mero de //
+                //    respuestas correctas, el single, el enunciado y el valor y penalizaci&oacute;n de cada respuestas. El proceso depender&aacute; del  //
+                //    tipo de la pregunta                                                                                                   //
+                //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                // Primero se quitan los corchetes de inicio y final
+                $answerGift = substr($answerGift, 1, -1);
+
+                switch ($questions[$key]['type']) {
+                    case 0: // MultiChoice
+                        $answerGift = str_replace(array('~', '#'), array(' ~', ' #'), $answerGift); // Se a&ntilde;ade un espacio en blanco delante de los caracteres especiales  '=', ' ~' y ' #'
+
+                        $answerGiftFragments = explode(' ', $answerGift); // Se separa la respuesta en un array con el espacio como delimitador
+
+                        $index = 0; // &Iacute;ndice para el array de respuestas, en cada vuelta comenzar&aacute; en cero
+                        $lastPart = &quot;&quot;; // Contendr&aacute; el tipo (respuesta correcta, incorrecta o feedback) de la &uacute;ltima comprobaci&oacute;n
+                        $correctAnswers = 0; // Aumentar&aacute; en uno por porcentaje positivo
+                        $penality = 0; // Aumentar&aacute; con los porcentajes negativos si los hubiera
+
+                        // Se recorre el array de las respuesta en Gift para extraer los fragmentos texto y formar las respuestas
+                        foreach ($answerGiftFragments as $answerGiftFragment) {
+                            $firstChar = substr(trim($answerGiftFragment), 0, 1);
+
+                            if ($firstChar === '~') { // Si se trata de una respuesta
+                                $index++; // Se crea un nuevo &iacute;ndice para la nueva respuesta, su valor en si no es importante
+                                $lastPart = 'answer'; // Se establece la variable lastPart como 'answer'
+
+                                // Se comprueba si tiene un porcentaje el texto
+                                if (substr($answerGiftFragment, 1, 1) === '%') { // Tiene porcentaje
+                                    $endPercent = strpos($answerGiftFragment, '%', 2);
+
+                                    $percent = (int) substr($answerGiftFragment, 2, $endPercent-1); // Se extrae su valor
+
+                                    if ($percent &gt; 0) { // Si el porcentaje es positivo se asigna como el valor de la respuesta
+                                        $questions[$key]['answers'][$index]['value'] = $percent;
+                                        $correctAnswers++; // Con el porcentaje positivo se considera la respuesta como correcta
+                                    }
+                                    else { // Si es negativo &oacute; 0 el porcentaje se considera penalizaci&oacute;n y su valor se asigna a 0
+                                        $questions[$key]['answers'][$index]['value'] = 0;
+                                        $penality = abs($percent); // Se suma la nueva penalizaci&oacute;n a la ya existente
+                                    }
+
+                                    // Luego se asigna el contenido de la respuesta quitando el porcentaje y el s&iacute;mbolo '~'
+                                    $content = substr($answerGiftFragment, $endPercent+1, strlen($answerGiftFragment) - $endPercent);
+
+                                    // Se asigna el valor del contenido y la tolerancia, que se asigna a 0
+                                    $questions[$key]['answers'][$index]['content'] = $this-&gt;placeHolders2Char($content);
+                                    $questions[$key]['answers'][$index]['tolerance'] = 0;
+                                }
+                                else { // En caso de que no tenga porcentaje:
+                                    // Se asigna un valor = 0 y todo el contenido como texto (menos el simbolo '~') al contenido de la pregunta
+                                    $questions[$key]['answers'][$index]['value'] = 0;
+                                    $content = substr($answerGiftFragment, 1);
+
+                                    // Se asigna el valor del contenido y la tolerancia, que se asigna a 0
+                                    $questions[$key]['answers'][$index]['content'] = $this-&gt;placeHolders2Char($content);
+                                    $questions[$key]['answers'][$index]['tolerance'] = 0;
+                                }
+                            }
+                            elseif (substr($answerGiftFragment, 0, 1) === '#') { // Feedback, que es ignorado...
+                                $lastPart = 'feed'; // ...pero se establecer&aacute; la variable lastPart
+                            }
+                            // Al separa el texto en un array con el espacio en blanco como delimitador las respuestas y el feedback pueden quedar fragmentados, por tanto
+                            //    si se trata de una cadena no vac&iacute;a que no comienza por '~' o '#' formar&aacute; parte del texto anterior, ya sea respesta o feedback, as&iacute; que
+                            //    se une a &eacute;l (s&oacute;lo en caso de que se trate de una respuesta)
+                            elseif ($answerGiftFragment !== &quot;&quot; &amp;&amp; $lastPart === &quot;answer&quot;) {
+                                $content = $content . ' ' . $answerGiftFragment;
+                                $content = $this-&gt;placeHolders2Char($content);
+                            }
+                        }
+
+                        // Finalmente se asigna los valores para numAnswers, numCorrectAnswers, single y penality
+                        $questions[$key]['numAnswers'] = count($questions[$key]['answers']);
+                        $questions[$key]['numCorrectAnswers'] = $correctAnswers;
+                        $questions[$key]['penality'] = $penality;
+                        $questions[$key]['single'] = 0;
+                        break;
+
+                    case 1: // True-False
+                        // Este tipo de pregunta se interpreta como una sigle-choice con dos respuestas: verdarero y false, as&iacute; que primero se asigna el contenido de esas dos respuestas
+                        $questions[$key]['answers'][0]['content'] = 'True';
+                        $questions[$key]['answers'][1]['content'] = 'False';
+
+                        $firstChar = substr($answerGift, 0, 1);
+
+                        // Si la respuesta es T o TRUE el valor 100 se asigna a la respuesta 'Verdadero'
+                        if ($firstChar === 'T') {
+                            $questions[$key]['answers'][0]['value'] = 100;
+                            $questions[$key]['answers'][1]['value'] = 0;
+                        }
+                        else { // En caso contrario (Respuesta F o FALSE), el valor 100 se asigna a la respuesta 'Falso'
+                            $questions[$key]['answers'][0]['value'] = 0;
+                            $questions[$key]['answers'][1]['value'] = 100;
+                        }
+
+                        // Se asigna la tolerancia, que ser&iacute;a igual a 0 ya que no se trata de una respuesta n&uacute;merica
+                        $questions[$key]['answers'][0]['tolerance'] = 0;
+                        $questions[$key]['answers'][1]['tolerance'] = 0;
+
+                        // Finalmente se asigna los valores para tolerance, numAnswers, numCorrectAnswers, single y penality
+                        $questions[$key]['numAnswers'] = 2;
+                        $questions[$key]['numCorrectAnswers'] = 1;
+                        $questions[$key]['penality'] = 0;
+                        // Para esta aplicaci&oacute;n el typo True-False se considera Multi-Choice con single igual a 1
+                        $questions[$key]['type'] = 0;
+                        $questions[$key]['single'] = 1;
+                        break;
+
+                    case 6: // Numeric
+                        // El proceso ser&aacute; distinto si las respuestas son precedidas de un simbolo '=', indicativo de pregunta numerica multi-evaluada
+                        if (preg_match('/=/', $answerGift)) {
+                            $answerGift = str_replace(array('=', '#'), array(' =', ' #'), $answerGift); // Se a&ntilde;ade un espacio en blanco delante de los caracteres especiales  '=' y ' #'
+
+                            $answerGiftFragments = explode(' ', $answerGift); // Se separa en un array con el espacio en blanco como delimitador
+
+                            $index = 0; // &Iacute;ndice para el array de respuestas, en cada vuelta comenzar&aacute; en cero
+                            $correctAnswers = 0; // Aumentar&aacute; en uno por porcentaje positivo
+
+                            // Se recorre el array de las respuesta en Gift para extraer los fragmentos texto y formar las respuestas
+                            foreach ($answerGiftFragments as $answerGiftFragment) {
+                                $firstChar = substr(trim($answerGiftFragment), 0, 1);
+
+                                if ($firstChar === '=') { // Si se trata de una respuesta
+                                    $index++; // Se crea un nuevo indice para la nueva respuesta
+
+                                    // Se comprueba si tiene un porcentaje
+                                    if (substr($answerGiftFragment, 1, 1) === '%') { // Si existe un porcentaje
+                                        $endPercent = strpos($answerGiftFragment, '%', 2);
+
+                                        // Se extrae y se asigna como valor de la respuesta
+                                        $value = (int) substr($answerGiftFragment, 2, $endPercent-1);
+
+                                        // Se extrae el contenido de la respuesta quitando el porcentaje y el s&iacute;mbolo '='
+                                        $content = substr($answerGiftFragment, $endPercent+1, strlen($answerGiftFragment) - $endPercent);
+                                    }
+                                    else {
+                                        $value = 100;
+
+                                        // Se extrae del contenido de la respuesta el s&iacute;mbolo '='
+                                        $content = substr($answerGiftFragment, 1, strlen($answerGiftFragment) - 1);
+                                    }
+
+                                    // Se comprueva si existe rango o tolerancia en el contenido
+                                    if (preg_match('/\.\./', $content)) { // Si existe rango
+                                        // Se estrae los valores primero y ultimo del rango
+                                        $lastNum = strstr($content, '..');
+                                        $lastNum = substr($lastNum, 2, strlen($lastNum) - 2); // Al &uacute;ltimo hay que quitarle los puntos
+                                        $firstNum = strstr($content, '..', true);
+
+                                        // El contente ser&aacute; igual a la media de ambas y la tolerancia a su diferencia entre 2
+                                        $content = ($lastNum + $firstNum) / 2;
+                                        $tolerance = ($lastNum - $firstNum) / 2;
+                                    }
+                                    elseif (preg_match('/:/', $content)) { // Si existe tolerancia
+                                        // Se separa el contenido de la respuesta de la tolerancia
+                                        $tolerance = strstr($content, ':');
+                                        $content = strstr($content, ':', true);
+                                        // Se le quita los dos puntos del principio a la tolerancia
+                                        $tolerance = substr($tolerance, 1, strlen($tolerance) - 1);
+
+                                    }
+                                    else {
+                                        $tolerance = 0;
+                                    }
+
+                                    // Se asigna el valor del contenido, el value y la tolerancia
+                                    $questions[$key]['answers'][$index]['content'] = $this-&gt;placeHolders2Char($content);
+                                    $questions[$key]['answers'][$index]['value'] = $value;
+                                    $questions[$key]['answers'][$index]['tolerance'] = $tolerance;
+                                }
+                            }
+                        }
+                        else { // Las preguntas numeric sin el s&iacute;mbolo '=' indica una s&oacute;la respuesta
+                            // Se le quita el simbolo '#' del principio de la respuesta
+                            $content = substr($answerGift, 1, strlen($answerGift) - 1);
+
+                            // Se comprueba de que tengo feedback, en caso afirmativo quita tambi&eacute;n
+                            if (preg_match('/#/', $content)) {
+                                $content = strstr($content, '#', true);
+                            }
+
+                            // Se comprueva si existe rango o tolerancia en el contenido
+                            if (preg_match('/\.\./', $content)) { // Si existe rango
+                                // Se estrae los valores primero y ultimo del rango
+                                $lastNum = strstr($content, '..');
+                                $lastNum = substr($lastNum, 2, strlen($lastNum) - 2); // Al &uacute;ltimo hay que quitarle los puntos
+                                $firstNum = strstr($content, '..', true);
+
+                                // El contente ser&aacute; igual a la media de ambas y la tolerancia a su diferencia entre 2
+                                $tolerance = ($lastNum - $firstNum) / 2;
+                                $content = ($lastNum + $firstNum) / 2;
+                            }
+                            elseif (preg_match('/:/', $content)) { // Si existe tolerancia
+                                // Se separa el contenido de la respuesta de la tolerancia
+                                $tolerance = strstr($content, ':');
+                                $content = strstr($content, ':', true);
+                                // Se le quita los dos puntos del principio a la tolerancia
+                                $tolerance = substr($tolerance, 1, strlen($tolerance) - 1);
+
+                            }
+                            else {
+                                $tolerance = 0;
+                            }
+
+                            // Se asigna el valor del contenido, el value y la tolerancia
+                            $questions[$key]['answers'][$index]['content'] = $this-&gt;placeHolders2Char($content);
+                            $questions[$key]['answers'][$index]['value'] = 100;
+                            $questions[$key]['answers'][$index]['tolerance'] = $tolerance;
+                        }
+
+                        $questions[$key]['numAnswers'] = count($questions[$key]['answers']);
+                        $questions[$key]['numCorrectAnswers'] = count($questions[$key]['answers']);
+                        $questions[$key]['penality'] = 0;
+                        $questions[$key]['single'] = 1;
+                        break;
+
+                    case 9: // Single-Choice (para el resto de la aplicaci&oacute;n multi-choice (type = 0) con single = 1)
+                        $answerGift = str_replace(array('=', '~', '#'), array(' =', ' ~', ' #'), $answerGift); // Se a&ntilde;ade un espacio en blanco delante de los caracteres especiales  '=', ' ~' y ' #'
+
+                        $answerGiftFragments = explode(' ', $answerGift); // Se separa en un array con el espacio como delimitador
+
+                        $index = 0; // &Iacute;ndice para el array de respuestas, en cada vuelta comenzar&aacute; en cero
+                        $lastPart = &quot;&quot;; // Contendr&aacute; el tipo (respuesta correcta, incorrecta o feedback) de la &uacute;ltima comprobaci&oacute;n
+                        $penality = 0; // Aumentar&aacute; con los porcentajes negativos si los hubiera
+
+                        foreach ($answerGiftFragments as $answerGiftFragment) {
+                            $firstChar = substr($answerGiftFragment, 0, 1);
+
+                            if ($firstChar === '~') { // Respuesta incorrecta
+                                $index++; // Se crea un nuevo &iacute;ndice para la nueva respuesta, su valor en si no es importante
+                                $lastPart = 'answer'; // Se establece la variable lastPart como 'answer'
+
+                                // Se comprueba si existe porcentaje
+                                if (substr($answerGiftFragment, 1, 1) === '%') { // En el caso de que lo tenga:
+                                    $endPercent = strpos($answerGiftFragment, '%', 2);
+
+                                    // Se extrae el valor del porcentaje
+                                    $percent = (int) substr($answerGiftFragment, 2, $endPercent-1);
+
+                                    // Se suma la nueva penalizaci&oacute;n a la ya existente
+                                    $penality = abs($percent);
+
+                                    // Al contenido de la respuesta se le quita la parte que corresponde con el porcentaje
+                                    $content = substr($answerGiftFragment, $endPercent+1, strlen($answerGiftFragment) - $endPercent);
+                                }
+                                else { // En caso de que no tenga porcentaje:
+                                    // Se asigna todo el contenido como texto (quitando el simbolo '~') al contenido de la pregunta
+                                    $content = substr($answerGiftFragment, 1);
+                                }
+
+                                // Se asigna el contenido de la respuesta, quitando el porcentaje y el s&iacute;mbolo '~'
+                                $questions[$key]['answers'][$index]['content'] = $this-&gt;placeHolders2Char($content);
+
+                                // Para la respuesta incorrect de single-choice se asigna 0 al value
+                                $questions[$key]['answers'][$index]['value'] = 0;
+
+                                // La tolerancia se asigna con valor igual a 0
+                                $questions[$key]['answers'][$index]['tolerance'] = 0;
+                            }
+                            elseif ($firstChar === '=') { // Respuesta correcta
+                                $index++; // Se crea un nuevo &iacute;ndice para la nueva respuesta, su valor en si no es importante
+                                $lastPart = 'answer'; // Se establece la variable lastPart como 'answer'
+
+                                // Se asigna el contenido, quitando el s&iacute;mbolo '='
+                                $content = substr($answerGiftFragment, 1, strlen($answerGiftFragment) -1);
+                                $questions[$key]['answers'][$index]['content'] = $this-&gt;placeHolders2Char($content);
+
+                                // Para la respuesta correcta de single-choice se asigna 100 al value
+                                $questions[$key]['answers'][$index]['value'] = 100;
+
+                                // La tolerancia se asigna con valor igual a 0
+                                $questions[$key]['answers'][$index]['tolerance'] = 0;
+                            }
+                            elseif (substr($answerGiftFragment, 0, 1) === '#') { // Feedback, que es ignorado...
+                                $lastPart = 'feed'; // ...pero se establece la variable lastPart como 'feed'
+                            }
+                            elseif ($answerGiftFragment !== &quot;&quot; &amp;&amp; $lastPart === &quot;answer&quot;) { // Si se trata de un texto no vac&iacute;o y que no comienza por '=', '~' o '#'; forma parte del texto de la anterior respesta o feedback, por tanto se une a &eacute;l en el primer caso
+                                $content = $questions[$key]['answers'][$index]['content'] . ' ' . $answerGiftFragment;
+                                $questions[$key]['answers'][$index]['content'] = $this-&gt;placeHolders2Char($content);
+                            }
+
+                        }
+
+                        // Finalmente se asigna los valores para numAnswers, numCorrectAnswers, single y penality
+                        $questions[$key]['numAnswers'] = count($questions[$key]['answers']);
+                        $questions[$key]['numCorrectAnswers'] = 1;
+                        $questions[$key]['penality'] = $penality;
+                        $questions[$key]['single'] = 1;
+                        $questions[$key]['type'] = 0; // Aunque para esta aplicaci&oacute;n su valor es 9 para el resto de la aplicaci&oacute;n es 0
+                        break;
+                }
+            }
+        }
+
+        return $questions;
+    }
+
+    /**
+     * Valida el array de preguntas obtenido del archivo Gift y elimina aquellas entradas que no sean v&aacute;lidas.
+     *    El Array tiene la siguiente estructura:
+     *
+     *    arrayQuestions
+     *     \_ type (string)
+     *     \_ title (string)
+     *     \_ description (string)
+     *     \_ answers (array)
+     *     |   \_ Content (string)
+     *     |   \_ Value (integer)
+     *     |   \_ Tolerance (integer)
+     *     \_ numAnswers (integer)
+     *     \_ numCorrectAnswers (integer)
+     *     \_ penality (integer)
+     *     \_ single (integer)
+     *
+     *
+     * @param  array $questions  Array de preguntas y respuestas extraido de un archivo en formato Gift subido al servidor
+     * @return array
+     */
+    private function arrayQuestionsValidator ($questions)
+    {
+        // Un elemento del array questions estar&aacute; mal si se cumple los siguientes casos:
+        foreach ($questions as $key =&gt; $question) {
+            $thatsRight = true;
+
+            // Si no existe alguno de los elementos del array (a excepci&oacute;n de 'type' que llegados a este punto tiene que estar)
+            if (!isset($question['title'], $question['description'],  $question['answers'], $question['numAnswers'], $question['numCorrectAnswers'], $question['penality'], $question['single'])) {
+                $thatsRight = false;
+            }
+            else {
+                // Si 'title' est&aacute; vac&iacute;o
+                if (empty($question['title'])) {
+                    $thatsRight = false;
+                }
+
+                // Si 'answers' no contiene elementos
+                if (count($question['answers']) === 0) {
+                    $thatsRight = false;
+                }
+                else {
+                    foreach ($question['answers'] as $answer) {
+                        // Si alguna 'answer' no tiene los elementos 'content', 'value' o 'tolerance'
+                        if (!isset($answer['content'], $answer['value'], $answer['tolerance'])) {
+                            $thatsRight = false;
+                        }
+                        else {
+                            // Si el elemento 'content' de alguna 'answer' esta vac&iacute;o
+                            if (empty($answer['content'])) {
+                                $thatsRight = false;
+                            }
+
+                            // Si value o content no son n&uacute;mericos
+                            if (!is_numeric($answer['value']) || !is_numeric($answer['tolerance'])) {
+                                $thatsRight = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Si la pregunta tiene alg&uacute;n fallo se elimina del resto del array
+            if ($thatsRight === false) {
+                unset($questions[$key]);
+            }
+        }
+
+        return $questions;
+    }
+
+    /**
+     * Reemplaza los caracteres de escape de Gift por unos marcadores de posici&oacute;n expecificos de esta aplicaci&oacute;n, este cambio se realiza antes
+     *   d el precesado del texto en formato Gift, para que as&iacute; no intefiera en el mismo.
+     *    Las sustituciones son las siguientes:
+     *
+     *    \~ -&gt; @tilde;
+     *    \= -&gt; @equal;
+     *    \# -&gt; @sharp;
+     *    \{ -&gt; @lbracket;
+     *    \} -&gt; @rbracket;
+     *    \: -&gt; @colon;
+     *    \\ -&gt; @backslash;
+     *    \n -&gt; &lt;br /&gt;
+     *
+     * @param  string $text  Texto extraido pero no procesado de un archivo en formato Gift
+     * @return string
+     */
+    private function giftScapeChars2PlaceHolders ($text)
+    {
+        $giftScapeChars = array ('\\~',     '\\=',     '\\#',     '\\{',        '\\}',        '\\:',     '\\\\',        '\\n');
+        $placeHolders   = array ('@tilde;', '@equal;', '@sharp;', '@lbracket;', '@rbracket;', '@colon;', '@backslash;', '&lt;br /&gt;');
+
+        $textReplaced = str_replace($giftScapeChars, $placeHolders, $text);
+
+        return $textReplaced;
+    }
+
+    /**
+     * Reemplaza los marcadores de posici&oacute;n, incluidos por esta aplicaci&oacute;n para sustituir los caracteres de escape de Gift, por el texto
+     *    que representan dichos marcadores, este cambio se realiza una vez ha terminado el procesado del texto en formato Gift.
+     *    Las sustituciones son las siguientes:
+     *
+     *    @tilde;     -&gt; ~
+     *    @equal;     -&gt; =
+     *    @sharp;     -&gt; #
+     *    @lbracket;  -&gt; {
+     *    @rbracket;  -&gt; }
+     *    @colon;     -&gt; :
+     *    @backslash; -&gt; \
+     *
+     * @param  string $text  Texto extraido y procesado de un archivo en formato Gift
+     * @return string
+     */
+    private function placeHolders2Char ($text)
+    {
+        $placeHolders = array ('@tilde;', '@equal;', '@sharp;', '@lbracket;', '@rbracket;', '@colon;', '@backslash;');
+        $chars        = array ('~',        '=',      '#',       '{',          '}',          ':',       '\\');
+
+        $textReplaced = str_replace($placeHolders, $chars, $text);
+
+        return $textReplaced;
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

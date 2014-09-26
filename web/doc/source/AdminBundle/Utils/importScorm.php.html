@@ -1,0 +1,334 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace PFC\AdminBundle\Utils;
+
+use PFC\AdminBundle\Entity\XmlManifest;
+use JMS\Serializer\SerializerBuilder;
+
+use Symfony\Component\Filesystem\Filesystem;
+//use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Finder\Finder;
+
+use Symfony\Component\DomCrawler\Crawler;
+
+use PFC\ModelBundle\Entity\Question;
+use PFC\ModelBundle\Entity\Answer;
+
+//use Doctrine\Common\Persistence\ObjectManager;
+//use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
+
+
+/**
+ * Clase mara el manejo de paquetes Scorm durante el procesos de importaci&oacute;n
+ *
+ * @package PFC\AdminBundle\Controller;
+ * @version 1.0
+ *
+ */
+class importScorm {
+
+    //private $fileName;
+    public $pathDir;
+    private $xmlScormManifest;
+
+    /**
+     * Constructor de la clase
+     *
+     * @return PFC\AdminBundle\Entity\XmlManifest
+     */
+    public function __construct()
+    {
+        $this-&gt;xmlScormManifest = new XmlManifest();
+    }
+
+
+    /**
+     * Importa el archivo a procesar y obtiene los datos necesarios para construir las preguntas y sus respuestas
+     *
+     * @return integer
+     */
+    public function importFile() {
+        $finder = new Finder();
+        $finder-&gt;files()-&gt;in($this-&gt;pathDir)-&gt;name('*.zip');
+
+        $path = '';
+
+        foreach ($finder as $file) {
+           // Print the relative path to the file
+           $path = $file-&gt;getRelativePathname();
+        }
+
+        if ($path == '') {
+            return 2; // C&oacute;digo de error
+        }
+
+        $path = $this-&gt;pathDir.$path;
+
+        if ($this-&gt;unzipScorm($path) === false) {
+            return 2; // C&oacute;digo de error
+        }
+
+        try {
+            $manifestFile = file_get_contents(sys_get_temp_dir().&quot;/scorm-pack/&quot;.&quot;imsmanifest.xml&quot;);
+
+            $builder = SerializerBuilder::create();
+            $serializer = $builder-&gt;build();
+            // Obtenemos s&oacute;lo los campos Resoruces y Resoruce (hijos de Resoruces), asi como algunos de sus atributos, estos
+            //     ultimos contienen un atribugo href que referencian varios archivos html los cuales contienen las preguntas
+            //     y respuestas de las questions
+            $this-&gt;xmlScormManifest = $serializer-&gt;deserialize($manifestFile, 'PFC\AdminBundle\Entity\XmlManifest', 'xml');
+
+        }
+        catch (Exception $e) {
+            echo 'Error en la serializaci&oacute;n del archivo imsmanifest.xml: ',  $e-&gt;getMessage(), &quot;\n&quot;;
+            return 1;
+        }
+
+        return -1;
+    }
+
+    /**
+     * Guarda
+     *
+     * @param
+     * @param
+     * @return
+     */
+    public function saveFileToBd($em, $subcategory){
+        $question_types = ['multichoice' =&gt; 0,
+                           'truefalse' =&gt; 1,
+                           'shortanswer' =&gt; 2,
+                           'matching' =&gt; 3,
+                           'cloze'=&gt; 4,
+                           'essay' =&gt; 5,
+                           'numerical' =&gt; 6,
+                           'description'=&gt; -1,
+                           'category' =&gt; -1];
+
+        $manifestResources = $this-&gt;getResources($this-&gt;xmlScormManifest);
+
+        $html = file_get_contents(sys_get_temp_dir().&quot;/scorm-pack/&quot;.$manifestResources[1]-&gt;href);
+
+        $crawler = new Crawler($html);
+        $questionsHtml = $crawler-&gt;filter('div.question');
+
+        for ($i=0; $i &lt; $questionsHtml-&gt;count(); $i++) {
+            $questionHtml = $questionsHtml-&gt;eq($i);
+
+            $types = $this-&gt;getQuestionTypes($questionHtml, $question_types); // Buscarle un nombre mas intuitivo que 'types'
+
+            if ($types ['type'] != -1) {
+                $question = new Question();
+                $question-&gt;setTitle(rtrim($questionHtml-&gt;filterXPath('//div//div')-&gt;text()));
+                $question-&gt;setDescription('');
+                $question-&gt;setType($types ['type']);
+                $question-&gt;setLevel(5);
+                $question-&gt;setNumAnswers(0);
+                $question-&gt;setNumCorrectAnswers($this-&gt;getCorrectAnswers($crawler, $i));
+                $question-&gt;setSingle($types ['single']);
+                $question-&gt;setPenalty( is_null($questionXml-&gt;penalty) ? 0 : $questionXml-&gt;penalty );
+                $question-&gt;setCategory($subcategory-&gt;getCategory());
+                $question-&gt;setSubcategory($subcategory);
+                $question-&gt;setSubject($subcategory-&gt;getSubject());
+
+                //$em-&gt;persist($question);
+                //$em-&gt;flush();
+
+                $answersHtml = $questionHtml-&gt;filterXPath('//table//div');
+                for ($j=0; $j &lt; $answersHtml-&gt;count(); $j++) {
+                    $answerHtml = $answersHtml-&gt;eq($j);
+
+                    $answer = new Answer();
+                    $answer-&gt;setContent($answerHtml-&gt;text());
+                    //$answer-&gt;setValue(); //Hay preguntas multivaluadas por lo que este valor fluctua entre 0.0 y 100
+                    $answer-&gt;setQuestion($question);
+
+                    //$em -&gt;persist($answer);
+                    ld($answer);
+                }
+                //$em-&gt;flush();
+            }
+        }
+
+    }
+
+    /**
+     * Set fileName
+     *
+     * @param string $fileName
+     * @return imporScorm
+     */
+    public function setFileName($fileName)
+    {
+        $this-&gt;fileName = $fileName;
+
+        return $this;
+    }
+
+    /**
+     * Get fileName
+     *
+     * @return string
+     */
+    public function getFileName()
+    {
+        return $this-&gt;fileName;
+    }
+
+    /**
+     * Set pathDir
+     *
+     * @param string $pathDir
+     * @return importXml
+     */
+    public function setPathDir($pathDir)
+    {
+        $this-&gt;pathDir = $pathDir;
+
+        return $this;
+    }
+
+    /**
+     * Get pathDir
+     *
+     * @return string
+     */
+    public function getPathDir()
+    {
+        return $this-&gt;pathDir;
+    }
+
+    /**
+     * Obtiene cada uno de los resources del campo 'resource' del 'imsmanifest.xml' de Scorm y los devuelve en un array
+     *
+     * @param $manifest objeto XmlManifest deserializado del archivo 'imsmanifest.xml' con los datos de los resources
+     * @return array
+     */
+    private function getResources ($manifest) {
+        foreach ($manifest as $arrayXmlResources) {
+            foreach ($arrayXmlResources as $xmlResources) {
+                foreach ($xmlResources as $arrayXmlResource) {
+                    foreach ($arrayXmlResource as $xmlResource) {
+                        $resources [] = $xmlResource;
+                    }
+                }
+            }
+        } // Habr&iacute;a que mejorarlo para que quedara m&aacute;s limpio
+
+        return $resources;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private function unzipScorm ($path) {
+        $zip = new \ZipArchive();
+        $openingResult = $zip-&gt;open($path);
+
+        if ($openingResult === TRUE) {
+            $tempDir = sys_get_temp_dir().&quot;/scorm-pack/&quot;;
+
+            $fs = new Filesystem();
+            if ($fs-&gt;exists($tempDir)) {
+                $fs-&gt;remove($tempDir);
+            }
+
+            $zip-&gt;extractTo($tempDir);
+
+            $zip-&gt;close();
+        }
+
+        return $openingResult;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private function getQuestionTypes ($questionHtml, $question_types) {
+        $typeHtml = $questionHtml-&gt;filterXPath('//table//input')-&gt;attr('type');
+
+        $types = array ();
+
+        switch ($typeHtml) { // Habr&iacute;a que revisarlo
+            case 'radio':
+                $types ['type'] =  $question_types ['multichoice'];
+                $types ['single'] = 1;
+                break;
+            case 'checkbox':
+                $types ['type'] =  $question_types ['multichoice'];
+                $types ['single'] = 0;
+                break;
+            case 'text':
+            case 'number':
+                $types ['type'] = $question_types ['numerical'];
+                $types ['single'] = 1;
+                break;
+            default:
+                $types ['type'] =  -1;
+                break;
+        }
+
+        return $types;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private function getCorrectAnswers($crawler, $numAnswer) {
+        // Se extrae las etiquetas script del Html que tiene Scorm para las respuestas
+        $scriptHtml = $crawler-&gt;filterXPath('//script');
+
+        for ($i=0; $i &lt; $scriptHtml-&gt;count(); $i++) {
+            $scriptTxt = $scriptHtml-&gt;eq($i)-&gt;text();
+
+            // Mientras se recorren los scripts se comprueba que alguno tenga el patr&oacute;n como el siguiente &quot;var key0 = 2&quot;,
+            //    en el que corresponde el primer n&uacute;mero con la pregunta y el segundo el n&uacute;mero de la respuesta valida.
+            if (preg_match_all (&quot;/var key\d = \d/&quot;, $scriptTxt, $matches)) {
+                return substr($matches[0][$numAnswer], -1);
+            }
+        }
+    }
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

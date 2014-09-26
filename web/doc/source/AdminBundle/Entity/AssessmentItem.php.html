@@ -1,0 +1,298 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+
+/**
+*  &raquo; Entidad AssessmentItem
+*    ┌─────────────────────────────────────────────────────────────────────────┐
+*      - @version 1.0 @date 2014-7-22
+*    └─────────────────────────────────────────────────────────────────────────┘
+*/
+
+namespace PFC\AdminBundle\Entity;
+use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as JMS;
+
+/*    
+ *    ┌─────────────────────────────────────────────────────────────────────────┐
+ *      Jerarqu&iacute;a de un AssessmentItem XML de IMS QTI:
+ *
+ *         AssessmentItem*
+ *          \_ ResponseDeclaration (Maybe several)
+ *          |   \_ CorrectResponse
+ *          |   |   \_Value (Maybe several)
+ *          |   \_ Mapping
+ *          |       \_ MapEntry (Maybe several)
+ *          \_ ItemBody
+ *              \_ ChoiceInteraction (Maybe several)
+ *              |   \_ Prompt
+ *              |   \_ SimpleChoice (Maybe several)
+ *              \_ ExtendedTextInteraction (Maybe several)
+ *                  \_ Prompt
+ *
+ *      * contiene otros elementos y subelementos no usados en esta aplicaci&oacute;n  
+ *    └─────────────────────────────────────────────────────────────────────────┘
+ */
+
+/** @JMS\XmlRoot(&quot;assessmentItem&quot;) */
+class AssessmentItem
+{
+
+    /*
+     * Constante con todas las etiquetas del XML
+     */
+    const TAGS = '&lt;assessmentItem&gt;&lt;responseDeclaration&gt;&lt;correctResponse&gt;&lt;value&gt;&lt;mapping&gt;&lt;mapEntry&gt;&lt;itemBody&gt;&lt;choiceInteraction&gt;&lt;extendedTextInteraction&gt;&lt;prompt&gt;&lt;simpleChoice&gt;&lt;feedbackInline&gt;';
+
+    /**
+     * Referencia al fichero XML que es serializado en esta clase
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $ref;
+
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;title&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $title;
+
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;adaptive&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $adaptive;
+
+    /**
+     * @JMS\Type(&quot;ArrayCollection&lt;PFC\AdminBundle\Entity\ResponseDeclaration&gt;&quot;)
+     * @JMS\XmlList(inline = true, entry=&quot;responseDeclaration&quot;) //Inline, solo categoriza, no incluye items como nodo
+     */
+    public $responseDeclaration;
+
+    /**
+     * @JMS\SerializedName(&quot;itemBody&quot;)
+     * @JMS\Type(&quot;PFC\AdminBundle\Entity\ItemBody&quot;)
+     */
+    public $itemBody;
+
+    public function __construct()
+    {
+        $this-&gt;responseDeclaration = new ArrayCollection();
+        $this-&gt;itemBody = new ItemBody();
+    }
+}
+
+class ResponseDeclaration
+{
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;identifier&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $identifier;
+
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;cardinality&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $cardinality;
+
+    /**
+     * @JMS\SerializedName(&quot;correctResponse&quot;)
+     * @JMS\Type(&quot;PFC\AdminBundle\Entity\CorrectResponse&quot;)
+     */
+    public $correctResponse;
+
+    /**
+     * @JMS\SerializedName(&quot;mapping&quot;)
+     * @JMS\Type(&quot;PFC\AdminBundle\Entity\Mapping&quot;)
+     */
+    public $mapping;
+
+    public function __construct()
+    {
+        $this-&gt;correctResponse = new correctResponse();
+        $this-&gt;mapping = new Mapping();
+    }
+}
+
+class CorrectResponse
+{
+    /**
+     * @JMS\Type(&quot;array&lt;string&gt;&quot;)
+     * @JMS\XmlList(inline = true, entry=&quot;value&quot;)
+     */
+    public $value;
+}
+
+class Mapping
+{
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;defaultValue&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $defaultValue;
+
+    /**
+     * @JMS\Type(&quot;ArrayCollection&lt;PFC\AdminBundle\Entity\MapEntry&gt;&quot;)
+     * @JMS\XmlList(inline = true, entry=&quot;mapEntry&quot;)
+     */
+    public $mapEntry;
+
+    public function __construct()
+    {
+        $this-&gt;mapEntry = new ArrayCollection();
+    }
+}
+
+class MapEntry
+{
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;mapKey&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $mapKey;
+
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;mappedValue&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $mappedValue;
+}
+
+Class ItemBody
+{
+    /**
+     * @JMS\XmlValue
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $text;
+
+    /**
+     * @JMS\Type(&quot;ArrayCollection&lt;PFC\AdminBundle\Entity\ChoiceInteraction&gt;&quot;)
+     * @JMS\XmlList(inline = true, entry=&quot;choiceInteraction&quot;)
+     */
+    public $choiceInteraction;
+
+    /**
+     * @JMS\Type(&quot;ArrayCollection&lt;PFC\AdminBundle\Entity\ExtendedTextInteraction&gt;&quot;)
+     * @JMS\XmlList(inline = true, entry=&quot;extendedTextInteraction&quot;)
+     */
+    public $extendedTextInteraction;
+
+    public function __construct()
+    {
+        $this-&gt;choiceInteraction = new ArrayCollection();
+        $this-&gt;extendedTextInteraction = new ArrayCollection();
+    }
+}
+
+Class ChoiceInteraction
+{
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;responseIdentifier&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $responseIdentifier;
+
+    /**
+     * Texto de la pregunta
+     * 
+     * @JMS\SerializedName(&quot;prompt&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $prompt;
+
+    /**
+     * @JMS\Type(&quot;ArrayCollection&lt;PFC\AdminBundle\Entity\SimpleChoice&gt;&quot;)
+     * @JMS\XmlList(inline = true, entry=&quot;simpleChoice&quot;)
+     */
+    public $simpleChoice;
+
+    public function __construct()
+    {
+        $this-&gt;simpleChoice = new ArrayCollection();
+    }
+}
+
+Class SimpleChoice
+{
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;identifier&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $identifier;
+
+    /**
+     * @JMS\XmlValue
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $value;
+
+}
+
+Class ExtendedTextInteraction
+{
+    /**
+     * @JMS\XmlAttribute
+     * @JMS\SerializedName(&quot;responseIdentifier&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $responseIdentifier;
+
+    /**
+     * Texto de la pregunta
+     * 
+     * @JMS\SerializedName(&quot;prompt&quot;)
+     * @JMS\Type(&quot;string&quot;)
+     */
+    public $prompt;
+}</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>
