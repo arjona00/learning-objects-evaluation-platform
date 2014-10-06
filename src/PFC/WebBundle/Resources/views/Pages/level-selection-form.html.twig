@@ -48,7 +48,7 @@
                                           <input  type="radio" name="level" value="{{ loop.index }}" />
                                         </td>
                                         <td>
-                                          <h5>&nbsp;{{ 'Nivel' | trans }} {{ loop.index }}:&nbsp;&nbsp;{{ level }} {{ 'questions' | trans }}</h5>
+                                          <h5>&nbsp;{{ 'Nivel' | trans }} {{ loop.index }} {#:&nbsp;&nbsp;{{ level }} {{ 'questions' | trans }}#}</h5>
                                           {% set count = count + level %}
                                         </td>
                                      </tr>
@@ -60,7 +60,7 @@
                                           <input  type="radio" name="level" value="0" checked/>
                                         </td>
                                         <td>
-                                          <h5>&nbsp;{{ 'level-selection.questionNumber.title' | trans }}:&nbsp;&nbsp;{{ count }} {{ 'questions' | trans }}</h5>
+                                          <h5>&nbsp;{{ 'level-selection.questionNumber.title' | trans }}{#:&nbsp;&nbsp;{{ count }} {{ 'questions' | trans }}#}</h5>
                                         </td>
                                     {% else %}
                                         <td>

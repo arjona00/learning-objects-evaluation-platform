@@ -11,7 +11,7 @@ namespace PFC\AdminBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation as JMS;
 
-/*    
+/*
  *    ┌─────────────────────────────────────────────────────────────────────────┐
  *      Jerarquía de un AssessmentItem XML de IMS QTI:
  *
@@ -28,7 +28,7 @@ use JMS\Serializer\Annotation as JMS;
  *              \_ ExtendedTextInteraction (Maybe several)
  *                  \_ Prompt
  *
- *      * contiene otros elementos y subelementos no usados en esta aplicación  
+ *      * contiene otros elementos y subelementos no usados en esta aplicación
  *    └─────────────────────────────────────────────────────────────────────────┘
  */
 
@@ -39,7 +39,7 @@ class AssessmentItem
     /*
      * Constante con todas las etiquetas del XML
      */
-    const TAGS = '<assessmentItem><responseDeclaration><correctResponse><value><mapping><mapEntry><itemBody><choiceInteraction><extendedTextInteraction><prompt><simpleChoice><feedbackInline><br><m:math><m:annotation>';
+    const TAGS = '<assessmentItem><responseDeclaration><correctResponse><value><mapping><mapEntry><itemBody><choiceInteraction><extendedTextInteraction><prompt><simpleChoice><feedbackInline><br><m_math><m_annotation>';
     //<br><m:math><m:annotation>
 
     /**
@@ -201,7 +201,7 @@ Class ChoiceInteraction
 
     /**
      * Texto de la pregunta
-     * 
+     *
      * @JMS\SerializedName("prompt")
      * @JMS\Type("string")
      */
@@ -247,7 +247,7 @@ Class ExtendedTextInteraction
 
     /**
      * Texto de la pregunta
-     * 
+     *
      * @JMS\Type("ArrayCollection<PFC\AdminBundle\Entity\Prompt>")
      * @JMS\XmlList(inline = true, entry="prompt")
      */
@@ -264,7 +264,7 @@ Class Prompt
 
     /**
      * @JMS\Type("ArrayCollection<PFC\AdminBundle\Entity\Math>")
-     * @JMS\XmlList(inline = true, entry="m:math")
+     * @JMS\XmlList(inline = true, entry="m_math")
      */
     public $math;
 
@@ -284,7 +284,7 @@ Class Math
 
     /**
      * @JMS\Type("ArrayCollection<PFC\AdminBundle\Entity\Annotation>")
-     * @JMS\XmlList(inline = true, entry="m:annotation")
+     * @JMS\XmlList(inline = true, entry="m_annotation")
      */
     public $annotation;
 

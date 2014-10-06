@@ -43,12 +43,12 @@ class importGift
         $this->arrayQuestions = array();
         $this->arrayQuestions = $this->getQuestionsArray($text);
 
-        ld("After Validator", $this->arrayQuestions);
+        //ld("After Validator", $this->arrayQuestions);
 
         $afterValidator = count($this->arrayQuestions); // Se guarda el número de cuestiones contenida en el array para comprobar si alguna se elimina luego de realizar la validación
         $this->arrayQuestions = $this->arrayQuestionsValidator($this->arrayQuestions); // Se verifica si todas las preguntas son correctas
 
-        ld("Before Validator", $this->arrayQuestions);
+        //ld("Before Validator", $this->arrayQuestions);
 
         if (empty($this->arrayQuestions)) { // Si no existen preguntas contenidas en el array
             return 4; // Código de error11

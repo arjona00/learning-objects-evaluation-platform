@@ -114,9 +114,13 @@ class importQTI
 
                 //ld("Ruta: ", $tempPath.$assessmentRef, " Contenido" ,$xmlFile);
 
+                $xmlFile = str_replace('m:math', 'm_math', $xmlFile); //Sustituimos las etiquetas de dominio math
+                $xmlFile = str_replace('m:annotation', 'm_annotation', $xmlFile); //Sustituimos las etiquetas de dominio annotation
                 $xmlFile = strip_tags($xmlFile, AssessmentItem::TAGS); // Se elimina las etiquetas html del archivo para que no puedan perjudicar al proceso de serializado
 
-                ld("Contenido" ,$xmlFile);
+
+
+                //ld("Contenido" ,$xmlFile);
 
                 $builder = SerializerBuilder::create();
                 $serializer = $builder->build();
@@ -133,7 +137,7 @@ class importQTI
             $afterValidator = $this->assessmentItemsXML->count(); // Se guarda el número de cuestiones contenida en el array para comprobar si alguna se elimina luego de realizar la validación
             $this->assessmentItemsXML = $this->assessmentItemValidator($this->assessmentItemsXML);
 
-            
+
 
             if ($this->assessmentItemsXML->count() === 0) { // Si no existen preguntas contenidas en el array
                 //ld("No validado");
@@ -543,19 +547,29 @@ class importQTI
      */
     private function getQuestionTitle ($objectInteraction)
     {
-       var_dump($objectInteraction->prompt);
+       //var_dump($objectInteraction->prompt);
 
        $class = get_class($objectInteraction);
 
         switch ($class) {
             case 'PFC\AdminBundle\Entity\ExtendedTextInteraction':
-                var_dump($objectInteraction->prompt[0]->math);
-                ld('math',$objectInteraction->prompt[0]->math);
-                return $objectInteraction->prompt[0]->text;
+                $promptText = trim($objectInteraction->prompt[0]->text . '<br/>');
+
+                if (isset($objectInteraction->prompt[0]->math)){
+                    foreach ($objectInteraction->prompt[0]->math as $math) {
+                        if(isset($math->annotation)){
+                            foreach ($math->annotation as $annotation) {
+                                $promptText = $promptText . '<br/>$$' . $annotation->text . '$$';
+                            }
+                        }
+                    }
+                }
+
+                return  $promptText;
                 break;
 
             default:
-                return trim($objectInteraction->prompt);
+                return trim($objectInteraction->prompt); //Aquí también podrían incluir fórmulas en este tipo de preguntas
                 break;
         }
     }
