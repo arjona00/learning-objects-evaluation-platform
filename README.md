@@ -20,18 +20,12 @@ Also, php5-xsl and php5-intl extensions are needed to stay loaded:
 	sudo apt-get install php5-xsl
 	sudo apt-get install php5-intl
 
-First, we need to install our project on server folder. We recommend Git use to perform this action, or copying PFC/repo folder in the new folder.
+First, we need to install our project on server folder. We recommend Git use to perform this action.
 
 	[cli]
-	git clone [unidad]/PFC/repo/.git directorioDestino
-
-	or
 
 	git clone ssh://git@github.com:arjona00/learning-objects-evaluation-platform.git directorioDestino
 
-	or
-
-	cp -R [unidad]/PFC/repo directorioDestino
 
 
 Once we are in destination folder, install application. Execute:
