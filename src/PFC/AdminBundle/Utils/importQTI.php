@@ -176,7 +176,7 @@ class importQTI
                     $question = new Question();
 
                     $question->setTitle($this->getQuestionTitle($item));
-                    $question->setDescription(""); // No existe las descripciones como tal en IMS QTI
+                    $question->setDescription($this->getQuestionDescription($item)); // No existe las descripciones como tal en IMS QTI
                     $question->setType($questionShape['type']);
                     $question->setLevel(5);
                     $question->setNumAnswers($this->getNumAnswers($item));
@@ -553,13 +553,41 @@ class importQTI
 
         switch ($class) {
             case 'PFC\AdminBundle\Entity\ExtendedTextInteraction':
-                $promptText = trim($objectInteraction->prompt[0]->text . '<br/>');
+                $promptText = trim($objectInteraction->prompt[0]->text); //Solo la parte de texto. Las fórmulas incluidas si las hay, van al campo description
+
+                return  $promptText;
+                break;
+
+            default:
+                return trim($objectInteraction->prompt); //Aquí también podrían incluir fórmulas en este tipo de preguntas
+                break;
+        }
+    }
+
+    /**
+     * Obtiene el título (enunciado) de una pregunta
+     *
+     * @param object $objectInteraction  Objeto de tipo interaction que contiene información sobre la estructura de una pregunta en QTI
+     * @return string
+     */
+    private function getQuestionDescription ($objectInteraction)
+    {
+       //var_dump($objectInteraction->prompt);
+
+       $class = get_class($objectInteraction);
+
+        switch ($class) {
+            case 'PFC\AdminBundle\Entity\ExtendedTextInteraction':
+                $promptText = ""; //QTI, no tienen descripción, pero las fórmulas deben insertarse en las descripciones 
 
                 if (isset($objectInteraction->prompt[0]->math)){
                     foreach ($objectInteraction->prompt[0]->math as $math) {
                         if(isset($math->annotation)){
                             foreach ($math->annotation as $annotation) {
-                                $promptText = $promptText . '<br/>$$' . $annotation->text . '$$';
+                                if ($promptText == "")
+                                    $promptText = '$$' . $annotation->text . '$$';
+                                else 
+                                    $promptText = $promptText . ' $$' . $annotation->text . '$$';
                             }
                         }
                     }

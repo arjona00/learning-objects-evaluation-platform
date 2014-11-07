@@ -87,7 +87,7 @@ class importXml {
                 //var_dump($questionXml);
                 $question = new Question();
     		    $question->setTitle(strip_tags($questionXml->name->text)); //Elimina etiqutas html. Para ignorar algunas, escribir strip_tags($text, 'etiqueta1,etiquta2')
-    		    $question->setDescription(strip_tags($questionXml->questiontext->text));
+    		    $question->setDescription($questionXml->questiontext->text);
     		    $question->setType($question_types[$questionXml->type]);
 
     		    $question->setLevel(5);

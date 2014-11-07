@@ -71,9 +71,9 @@ class importGift
     {
         foreach ($this->arrayQuestions as $singleQuestion) {
             $question = new Question();
-
+            
             $question->setTitle(strip_tags($singleQuestion['title']));
-            $question->setDescription(strip_tags($singleQuestion['description']));
+            $question->setDescription($singleQuestion['description']);
             $question->setType($singleQuestion['type']);
             $question->setLevel(5);
             $question->setNumAnswers($singleQuestion['numAnswers']);
